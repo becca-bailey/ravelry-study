@@ -1,0 +1,28 @@
+[project]
+name = "closingwindow"
+version = "0.1.0"
+description = "The Closing Window — Ravelry cohort study pipeline"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "httpx>=0.27",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "pandas>=2.2",
+    "pyarrow>=17.0",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/closingwindow"]
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "jupytext>=1.19.5",
+    "seaborn>=0.13.2",
+]

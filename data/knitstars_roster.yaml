@@ -1,0 +1,91 @@
+# Knit Stars season rosters — prestige-panel validation source.
+# Compiled 2026-08-07 from knitstars.com (Golden Ticket all-seasons bundle
+# page, per-season product pages) and web search. Seasons are annual;
+# Season 1 aired 2016, so season N ≈ 2015 + N. "Season of Genius" is the
+# bonus season slated for fall 2026.
+# Source URLs:
+#   https://knitstars.com/product/knit-stars-seasons-golden-ticket/
+#   https://knitstars.com/product/knit-stars-season-8/
+#   https://www.twoofwands.com/blog/im-a-knit-star (S8 announcement)
+
+seasons:
+  1:
+    year: 2016
+    stars: [Amy Small, Hannah Fettig, Julie & Jean-Francois Asselin,
+            Julie Weisenberger, Meghan Fernandes, Rosemary Hill,
+            Stephen West, Taiu Landra]
+  2:
+    year: 2017
+    stars: [Alexa Ludeman, Amy Herzog, Andrea Mowry, Beata Jezek,
+            Laura Nelkin, Michelle Wang, Nancy Marchant, Steven Berg,
+            Tamara Kelly, Tamara White]
+  3:
+    year: 2018
+    title: North Stars Rising
+    stars: [Andrea Rangel, Ann Shayne, Kay Gardiner, Ann Budd,
+            Arne & Carlos, Carson Demers, Cecelia Campochiaro,
+            Christel Seyfarth, Lorilee Beltman, Mary Jane Mucklestone,
+            Veera Välimäki]
+  4:
+    year: 2019
+    stars: [Andrea Wong, Blue Sky Fibers, Caitlin Hunter, Cecilia Lalanne,
+            Diane Ivey, Hannah Thiessen, Lucy Neatby, Marly Bird,
+            Martha Wissing, Susan B. Anderson]
+  5:
+    year: 2020
+    title: Together
+    stars: [Åsa Söderman, Francoise Danoy, Gaye Glasspie, Gayle Roehm,
+            Jacqueline Cieslak, Meri Tanaka, Tatiana Sarasa,
+            Tian Connaughton, Tina Tse, Yumiko Alexander]
+  6:
+    year: 2021
+    title: Live Colorfully
+    stars: [Ambah Obrien, Bronwyn Head, Dana Williams-Johnson,
+            Felicity Ford, Jacqui Fink, Jeannette Sloan, Jennifer Berg,
+            Kaffe Fassett, Brandon Mably, Louis Boria, Nina Machlin Dayton,
+            Vincent Williams]
+  7:
+    year: 2022
+    title: Texture & Wonder
+    stars: [Anna Hrachovec, Fatimah Hinds, Jeanne Tripplehorn,
+            Lauren Mcelroy, Lisa Borgnes Giramonti, Lotta Lundin,
+            Mary Martin, Mieka John, Patty Lyons, Summer Lee, Xandy Peters]
+  8:
+    year: 2023
+    title: Breaking the Ice
+    stars: [Alexandra Tavel, Beth Gorishek, Chelsea Heranic, Dawn Barker,
+            Ginnifer Goodwin, Hélène Magnússon, Jonah Larson,
+            Kathleen Lawton-Trask, Nancy Ricci, Olga Buraya-Kefelian,
+            Ross Taylor]
+  9:
+    year: 2024
+    title: Permission to Shine
+    stars: [Carol Feller, Carolyn Bloom, Chantal Miyagishima, ChiWei Ranck,
+            Emma Fassio, Gary Boston, Gudrun Johnston, Hazel Tindall,
+            Thomas Gregory Hamilton, Willie Smith]
+  10:
+    year: 2025
+    title: Be eXtraordinary
+    stars: [Alicia Plummer, Clara Parkes, Cecilia Losada,
+            Dominique Calvillo, Filipa Carneiro, Franklin Habit,
+            Jen Geigley, Julie Ann Lebouthillier, Laura Zander,
+            London Kaye, Ann Shayne, Kay Gardiner, Natalie Thomas,
+            Norah Gaughan, Pope Vergara, Samantha Brunson]
+  genius:
+    year: 2026
+    title: Season of Genius
+    stars: [Adella Colvin, Alice Hammer, Chandi Agee, Debbie Bliss,
+            Erika Knight, Lesley Anne Robinson, Melanie Falick, Rastus Hsu]
+
+# Observations (2026-08-07):
+# - Anchor overlap: Weisenberger + West (S1), Herzog + Mowry (S2),
+#   Gardiner/Shayne (S3, S10), Hunter (S4), Parkes + Gaughan (S10),
+#   Melanie Falick (gatekeeper editor, Genius season).
+# - Conspicuously ABSENT across all seasons: PetiteKnit, Isabell Kraemer,
+#   Joji Locatelli, the Danish wave — the Instagram mega-tier doesn't
+#   appear. KnitStars selects for teaching/community prestige, a separate
+#   currency from algorithmic reach. Supports the "different games"
+#   observation and H2's multi-currency structure.
+# - Recent seasons lean harder into legacy figures (Parkes, Gaughan,
+#   Bliss, Knight, Falick) — the prestige panel increasingly anoints
+#   institutional/blog-era figures rather than new algorithm-era stars.

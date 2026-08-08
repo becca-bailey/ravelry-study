@@ -1,0 +1,16 @@
+.env
+.claude/settings.local.json
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+data/raw/
+# designer-level datasets stay local (M1 data posture: publish
+# aggregates only, never compiled per-person data)
+data/full/
+data/pilot/
+data/ig_followers.parquet
+data/manifests/api_fetches.jsonl
+notebooks/*-executed.ipynb
+reports/

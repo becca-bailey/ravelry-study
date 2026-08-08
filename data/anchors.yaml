@@ -1,0 +1,83 @@
+# Named case-anchor designers for distributional placement and Wayback
+# case studies. `ravelry_name` = designer name as it appears on Ravelry
+# (verify during anchor pull; names here are best guesses where unsure).
+# cohort: institutional | blog_era | algorithm_era | bridge | system_builder
+
+designers:
+  - name: Jared Flood
+    ravelry_name: Jared Flood
+    cohort: blog_era
+    note: Brooklyn Tweed; blog 2005, designing 2007, yarn manufacturing 2010
+  - name: Ysolda Teague
+    ravelry_name: Ysolda Teague
+    cohort: blog_era
+    note: Knitty break, business 2008; early designer-owned direct sales
+  - name: Kate Davies
+    ravelry_name: Kate Davies
+    cohort: blog_era
+    note: academia -> Shetland design history
+  - name: Amy Herzog
+    ravelry_name: Amy Herzog
+    cohort: system_builder
+    note: Fit to Flatter -> books -> CustomFit software; stepped back ~2021
+  - name: Julie Weisenberger
+    ravelry_name: Julie Weisenberger
+    cohort: institutional
+    note: Cocoknits; 1980s knitwear company -> yarn-company design -> method
+      + tools; also fits system_builder
+  - name: Norah Gaughan
+    ravelry_name: Norah Gaughan
+    cohort: institutional
+    note: yarn-company staff design; Berroco design director
+  - name: Kim Hargreaves
+    ravelry_name: Kim Hargreaves
+    cohort: institutional
+    note: Rowan
+  - name: Stephen West
+    ravelry_name: Stephen West
+    cohort: bridge
+    note: Knitty-era entry, algorithm-era scale; MKAL franchise; West Wool
+  - name: PetiteKnit
+    ravelry_name: PetiteKnit
+    cohort: algorithm_era
+    note: ~2M Instagram; patterns since 2016; sharpest Ravelry-undercount test
+  - name: Andrea Mowry
+    ravelry_name: Andrea Mowry
+    cohort: algorithm_era
+    note: Drea Renee Knits; Find Your Fade
+  - name: Caitlin Hunter
+    ravelry_name: Caitlin Hunter
+    cohort: algorithm_era
+    note: Boyland Knitworks; Tegna
+  - name: Joji Locatelli
+    ravelry_name: Joji Locatelli
+    cohort: algorithm_era
+  - name: Isabell Kraemer
+    ravelry_name: Isabell Kraemer
+    cohort: algorithm_era
+  - name: Anne Ventzel
+    ravelry_name: Anne Ventzel
+    cohort: algorithm_era
+    note: Danish wave
+  - name: Lærke Bagger
+    ravelry_name: Lærke Bagger
+    cohort: algorithm_era
+    note: Danish wave
+
+# Context figures with no meaningful Ravelry designer record —
+# interview / narrative anchors only.
+context_figures:
+  - Clara Parkes (Knitter's Review 2000; wool sourcing; Substack 2020)
+  - Amy Singer (Knitty 2002; talent pipeline)
+  - Jess & Casey Forbes (Ravelry, 2007)
+  - Stephanie Pearl-McPhee (Yarn Harlot; essayist)
+  - Kay Gardiner & Ann Shayne (Mason-Dixon -> Modern Daily Knitting)
+
+gatekeepers:
+  - Laine magazine
+  - Long Thread Media
+  - Shetland Wool Week (patronage)
+  - Vogue Knitting Live
+  - Edinburgh Yarn Festival
+  - Rhinebeck (NY Sheep & Wool)
+  - Woollinn
