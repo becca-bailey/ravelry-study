@@ -777,3 +777,45 @@ could be "if you were just a little better at social media."
   yourself to when you started? Who do you compare yourself to now? What
   happens to your income/traffic when you stop posting for a month?
   When did you last feel your effort predictably produced results?
+
+## The evergreen objection, tested (Wayback favorites archaeology, 2026-08-09)
+
+Becca's sharpest methodological worry: knitting patterns are durable
+goods — a 2014 sweater keeps surfacing in search, so older designers
+amass fans just by being around longer. How much of the post-2016
+cohort decline is shelf time rather than closed doors? Three tests now
+run:
+
+- **Within-designer shelf slope (deep panel, 10,311 patterns):**
+  comparing each designer's own patterns against each other, an extra
+  year on the shelf associates with a median +4.4%/yr in favorites
+  (~1.5x per decade). Real, but the floor collapse is 3x. Spread is
+  wide: Behm's back catalog earns ~19%/yr (the Hitchhiker effect);
+  fast-growing designers show ~4% because a growing audience props up
+  their newest patterns.
+- **Wayback accumulation curves (95 captures, 6 winners, 4,456
+  pattern-date observations, data/full/wayback_favorites.parquet):**
+  a hit pattern holds ~52% of its eventual favorites at age 1, 66% at
+  2, 84% at 5, ~90% at 10. Careers reveal themselves fast; the
+  evergreen tail adds only the last ~15% over a decade.
+- **Flow by age and era (capture-to-capture gains):** in 2021–2026, a
+  10+-year-old star pattern still earns ~71 favorites/yr — the
+  becca mechanism, alive and measured — but a fresh pattern from the
+  same designers earns ~323/yr. The tail is ~20% of the fresh rate.
+  Note also the fresh rate itself fell across eras (510 → 410 → 323),
+  which is its own small exhibit: even the winners' new work earns
+  less per year than it used to.
+- **Sensitivity re-run of the floor:** age-adjusting the 100-fan
+  threshold by the winners' accumulation curve (generous to the youth
+  story — hits accumulate slower than average patterns) moves the
+  newest cohorts only modestly: 2023 20.6% → 29.4%, 2024 10% → 14%,
+  2020–2022 within ~2 points. The plateau was 60%. The collapse
+  survives its strongest objection.
+
+Selection caveat to state honestly: the Wayback curve is built from
+page-1 patterns of six era winners — the most evergreen inventory in
+the field. That makes the correction an upper bound, which is the
+right direction: the objection was given its best case and still
+falls short. The November wave-two re-measurement remains the
+decisive test (growth *rates* by cohort age), but the interim answer
+to "is it just time?" is: mostly no.
