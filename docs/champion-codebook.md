@@ -27,5 +27,6 @@ anything that doesn't fit; the odd detail is often the essay detail.
 | community_run | ravelry-group / kal-mkal / discord / fb / none | community infra |
 | institutional_ties | magazines / yarn-co collabs / books / knitstars / festivals / none | prestige currency |
 | trend_behavior | wave-rider / lane-setter / classic-catalog | canon vs feed |
+| first_major_product_year | year of first book/yarn/class/kit | escalator speed: entry -> product velocity per era |
 | ig_followers | number if visible | undercount ratio |
 | notes | free text | everything else |

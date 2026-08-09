@@ -24,6 +24,16 @@ pilot = DATA / "pilot" / "designers.parquet"
 df = pd.read_parquet(full if full.exists() else pilot)
 anchors = pd.read_parquet(DATA / "pilot" / "anchors.parquet")
 
+# apply targeted cohort-date corrections (audit_cohorts.py) if present
+corr = DATA / "full" / "cohort_corrections.parquet"
+if corr.exists() and "designer_id" in df:
+    fix = pd.read_parquet(corr)
+    fix = dict(zip(fix.loc[fix["changed"], "designer_id"],
+                   fix.loc[fix["changed"], "new_cohort"]))
+    df["cohort_year"] = [fix.get(i, y) for i, y in
+                         zip(df["designer_id"], df["cohort_year"])]
+    print(f"applied {len(fix)} cohort corrections")
+
 print(f"loaded {'FULL' if full.exists() else 'PILOT'}: {len(df)} designers, "
       f"{len(anchors)} anchors")
 df.head(3)
@@ -244,15 +254,20 @@ for era in ERA_LABELS:
     if len(fans) < 5 or fans.sum() == 0:
         continue
     n10 = max(1, len(fans) // 10)
+    top1 = fans.iloc[0] / fans.sum()
+    top10 = fans.head(n10).sum() / fans.sum()
     conc.append({"era": era,
-                 "top 10% of designers": fans.head(n10).sum() / fans.sum(),
-                 "top 1 designer": fans.iloc[0] / fans.sum()})
+                 "top 1 designer": top1,
+                 "rest of top 10%": top10 - top1,
+                 "bottom 90% of designers": 1 - top10})
 conc_df = pd.DataFrame(conc).set_index("era")
-conc_df.plot(kind="bar", ax=axes[1], rot=15)
+conc_df.plot(kind="bar", stacked=True, ax=axes[1], rot=15,
+             color=["#8c1d1d", "#d97757", "#c9c4bb"])
 axes[1].set_ylabel("share of cohort's total fans")
-axes[1].set_title("Attention share of the top")
+axes[1].set_title("Who holds the cohort's attention (stacks to 100%)")
+axes[1].legend(fontsize=8)
 plt.tight_layout()
-conc_df
+conc_df.round(3)
 
 # %% [markdown]
 # ## 3. Time-on-platform control: fans per year since first publication

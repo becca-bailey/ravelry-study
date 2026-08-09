@@ -426,6 +426,105 @@ could be "if you were just a little better at social media."
   the commercial canon when testing the crochet lag. Attic24's blog
   archives = measurable cadence case study (H5); Lucy is an interview
   long-shot but a strong documentary case either way.
+- **The West discovery post (becca's find — primary source, Aug 13,
+  2009: westknits.blogspot.com/2009/08/blog-posts-about-daybreak.html).**
+  Days after publishing Daybreak, West — then a yarn-shop employee
+  blogging casually about a hobby — catalogs his own discovery in real
+  time: established designer Stefanie Japel (Glampyre) blogging about
+  him, KnitPicks' blog covering the pattern, a fan club forming on
+  Ravelry "created with Patricia," commissions arriving, an Etsy shop
+  opening. What the artifact shows: (1) blog-era discovery ran on
+  ENDORSEMENT — named humans with standing audiences chose to point at
+  a newcomer; the link-as-gift economy in action. (2) The mechanism was
+  LEGIBLE: he could list exactly who saw him and thank them by name. An
+  algorithm-era breakout can't name its window — "the algorithm picked
+  it up" is unthankable and unrepeatable. Legibility of one's own
+  discovery is itself an era marker. (3) The community organized his
+  audience FOR him (the fan club). (4) The bar to entry was casual —
+  becca: "you can literally see the moment when he was seen." Data
+  cross-check: our sample independently crowns him class-of-2009
+  champion (49,508 fans); the timing matches. (5) Methodological gift:
+  the blog era DOCUMENTED ITSELF — contemporaneous records immune to
+  memory distortion, checkable against interviews. The algorithm era
+  leaves no equivalent record (stories vanish in 24h). West's
+  discovery week can be reconstructed nearly day-by-day from archives:
+  the anatomy of a window working as intended, for Essay 1 or 2.
+- **The escalator's speed: West at T+12 months (becca's find #2 —
+  "Farewell Urbana," Aug 16, 2010).** Exactly 368 days after the
+  Daybreak reception post: final proofs of Westknits Book One
+  (SELF-published — he hired the unbundled institutional roles à la
+  carte: a project manager and a graphic designer), a new website
+  launching, and an international move to Amsterdam with the career
+  traveling portably along. One year, first pattern → book with staff.
+  What it shows: (1) the blog-era window didn't just admit people, it
+  ACCELERATED them — a year of pattern income could fund a production
+  team; (2) the owned-audience model was location-independent; (3) his
+  entire ascent has timestamped receipts (T+0 discovery post, T+12mo
+  book post) — the case-study timeline for Essay 2 assembles itself
+  from his own archive. Cohort-comparable metric this suggests: TIME
+  FROM FIRST PATTERN TO FIRST MAJOR PRODUCT (book/yarn/class) per
+  champion — the escalator-speed measure, codeable from archives.
+  T+8mo (becca's find #3, Apr 30 2010): an invited East Coast tour —
+  trunk shows, classes, designer talks at the era's premier shops (Loop
+  Philadelphia, Knitty City, PURL SOHO) for a designer eight months
+  old. The retail-institutional layer embraced him physically. AND the
+  cadence datum (becca): through this entire ascent he blogged roughly
+  ONCE A MONTH. One good pattern; the infrastructure did the marketing,
+  the touring, the audience-building. Full timeline with receipts:
+  Aug 2009 first pattern + named discovery → Apr 2010 Purl Soho tour →
+  Aug 2010 book with hired staff + Amsterdam. Champion cadence,
+  blog era: ~1 post/month while ascending. Champion cadence, algorithm
+  era: daily + stories. That pair of numbers is H5's whole argument.
+- **The West/Behm matched pair (Essay 2 spine).** Class of 2009, both.
+  Artifact ledger: Hitchhiker (62,059 favorites, 37,358 projects)
+  beats Boneyard (53,542 / 12,205) — her masterpiece triples his on
+  projects. Person ledger: West 49,508 fans vs Behm 13,270 — 3.7:1 his
+  way. His person is as followed as his best artifact is favorited;
+  her artifact is 4.7x more favorited than her person is followed. The
+  community made her thing and followed him. Four inseparable
+  explanations, all same-direction: strategy (his persona business —
+  MKALs subscribe people to the PERSON — vs her pattern business),
+  output (663 vs 129 releases), language/geography (German rural blog
+  vs English Amsterdam), and the glass escalator. Her year-one archive
+  coding adjudicates. Primary sources: her Hitchhiker follow-up post
+  ("and thanks for all the fish," strickmich.frischetexte.de) — and
+  becca's find: ITS SCREENSHOT of the Ravelry rankings shows Stephen
+  West holding the TOP TWO slots while Hitchhiker climbs beneath them.
+  The discovery surface photographed mid-concentration, inside her own
+  celebration post; her triumph framed as arriving in his
+  neighborhood. Unposed, contemporaneous, devastating. Behm = top
+  interview target (the counterpart voice; "did the tours come? did
+  you want them?"). Regardless of cause: person-fame and artifact-fame
+  decoupled WITHIN the blog era, and everything durable followed
+  person-fame — the algorithm era industrialized a preference the
+  community already had.
+- **The middle were visible hobbyists (becca + Kirrmaier sources).**
+  Heidi Kirrmaier (class of 2009, 18,307 fans, top-5 woman of the West
+  classes): 30-year full-time job elsewhere, retired 2017; designing
+  was always the second occupation. Entry was DEMAND-PULLED: she
+  posted projects on Ravelry, users asked for patterns, she wrote them
+  up — the community recruited her into designing (2016 interview,
+  knittingrobin.blogspot.com; corroborated by 2021 Pearl Together
+  video interview, transcript in data/raw/html/video_yq1NdSOIvTM.json:
+  'I wouldn't have done it without Ravelry'; 'when I had both things
+  going on I created a lot more designs' — the busy-person paradox).
+  Becca's reframe: the middle band was never failed professionals — it
+  was hobbyists with visibility and side income. So the middle-band
+  collapse (26%→9%) is the story of CASUAL PARTICIPATION losing its
+  discoverability: the post-it-and-see path that created Kirrmaier no
+  longer creates anyone. The window's closure revoked the ordinary
+  person's chance of mattering a little — most people wanted Heidi's
+  life, not PetiteKnit's, and Heidi's is what stopped being available.
+  Era time-capsule quotes: 'once you have a career in knitting, it is
+  no longer a hobby'; volunteer test knitters (2016, unpaid QA
+  documented). Interview question added: 'how did you become a
+  designer — did you decide, or did someone ask you?' Demand-pulled
+  vs self-launched entry may split cleanly by cohort.
+  Method note: knitting podcast archives (Pearl Together, Fruity
+  Knitting etc.) are a pre-existing interview corpus — hours of
+  recorded testimony from anchor-tier designers, transcript-
+  extractable, quotable with attribution, and cross-checkable against
+  blog archives.
 - **Interview questions this thread generates:** Who did you compare
   yourself to when you started? Who do you compare yourself to now? What
   happens to your income/traffic when you stop posting for a month?

@@ -44,7 +44,8 @@ def main() -> None:
     rows = [line.split() for line in cdx.text.strip().splitlines()]
     print(f"{permalink}: {len(rows)} archived years: {[r[1][:4] for r in rows]}")
 
-    for row in rows[:4]:
+    max_caps = int(sys.argv[2]) if len(sys.argv) > 2 else len(rows)
+    for row in rows[:max_caps]:
         ts, orig = row[1], row[2]
         page = get_with_retry(client,
                               f"https://web.archive.org/web/{ts}id_/{orig}")
