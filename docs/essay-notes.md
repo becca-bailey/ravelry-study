@@ -750,6 +750,29 @@ could be "if you were just a little better at social media."
   hobbyists-with-visibility, the try-and-wait careers: all of it was
   people MID-RAMP. When the ramp stopped leading anywhere, the middle
   emptied. One fact, two shadows.
+- **Brand names as honest labeling (becca, on My Favourite Things /
+  Wool & Pine).** Her insight: the person->brand transition may partly
+  function as EXPLICITNESS about team effort — brand naming as
+  truthful plural labeling rather than (only) aspiration machinery.
+  This creates a 2x2 (name type x labor visibility) that reorders the
+  moral reading of the naming trend: (1) personal name + concealed
+  firm (Mowry: "work-at-home mama" + spouse-photographer + invisible
+  staff) = the aspirational fiction at maximum — ALSO the
+  configuration the person-as-product economy most rewards, so the
+  fiction is incentivized; (2) personal name + genuinely solo
+  (Kirrmaier, Behm) = the honest hobbyist-professional; (3) brand
+  name + world-building (PetiteKnit) = person semi-concealed, solo-
+  ness never claimed; (4) brand name + acknowledged team (Wool &
+  Pine's open duo, Cocoknits' "owned and run by women," MFT) =
+  honest plural labeling. The brandification trend (15%->23% brand-
+  style names) thus carries TWO currents: aspiration-world-building
+  AND a quiet honesty movement declining to claim "she does it all."
+  The least honest configuration is the most rewarded one — which is
+  the aspiration economy's indictment stated structurally, without
+  naming villains. Late-era chart nominations (becca): Wool & Pine
+  (open duo, post-2018), Ozetta/Hailey Smedley (early entrant,
+  2020 acceleration knee — retooled mid-career at the pandemic demand
+  shock), My Favourite Things Knitwear (recent Danish-wave brand).
 - **Interview questions this thread generates:** Who did you compare
   yourself to when you started? Who do you compare yourself to now? What
   happens to your income/traffic when you stop posting for a month?

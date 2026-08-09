@@ -390,24 +390,67 @@ plt.tight_layout()
 pl = pd.read_parquet(DATA / "full" / "pattern_level.parquet")
 pl["date"] = pd.to_datetime(pl["published"], format="%Y/%m/%d",
                             errors="coerce")
+# EZ's classics carry no published date on Ravelry; date them from their
+# documented print history (BSJ: 1968 newsletter; Tomten/Seamless
+# Hybrid: Knitting Without Tears 1971; February/September sweaters:
+# Knitter's Almanac 1974). Curated overrides, flagged in any caption.
+EZ_DATES = {"Baby Surprise Jacket": "1968-06-01",
+            "Tomten Jacket": "1971-06-01",
+            "Seamless Hybrid": "1971-06-01",
+            "Baby Sweater on Two Needles (February)": "1974-06-01",
+            "Nether Garments - Adult (September)": "1974-06-01"}
+ez_mask = pl["designer_name"] == "Elizabeth Zimmermann"
+pl.loc[ez_mask, "date"] = pl.loc[ez_mask].apply(
+    lambda r: pd.Timestamp(EZ_DATES[r["name"]])
+    if r["name"] in EZ_DATES else r["date"], axis=1)
 pl = pl.dropna(subset=["date"])
 
 # rows sorted by entrance: each designer's first published pattern
 # (institutional back-catalogs float naturally to the top).
 # Pearl-McPhee's near-empty row is the essayist model; Herzog's row
 # stops in 2021 (the exit, visible); Attic24 is blog-era crochet.
-CANON = ["Norah Gaughan", "Julie Weisenberger",
-         "Stephanie Pearl-McPhee", "Lucy of Attic24", "Anne Hanson",
-         "Ysolda Teague", "Jared Flood", "Heidi Kirrmaier",
-         "Amy Herzog", "Martina Behm", "Veera Välimäki",
-         "Stephen West",
-         "Andrea Mowry", "Caitlin Hunter", "PetiteKnit"]
+# MECHANICAL CAST (becca's rule, 2026-08-09): knitters holding >=2 of
+# four currencies — C: class champion in the random sample (self-pub
+# route, corrections applied); F: >=20k Ravelry fans; K: KnitStars
+# roster; E: >=3 prestige-periodical patterns. Entities excluded per
+# collection protocol. No editorial picks; case studies live in
+# companion exhibits. Row labels carry the badges.
+import yaml as _yaml
+_df = pd.read_parquet(DATA / "full" / "designers.parquet")
+_corr = pd.read_parquet(DATA / "full" / "cohort_corrections.parquet")
+_fix = dict(zip(_corr.loc[_corr["changed"], "designer_id"],
+                _corr.loc[_corr["changed"], "new_cohort"]))
+_df["cohort_year"] = [_fix.get(i, y) for i, y in
+                      zip(_df["designer_id"], _df["cohort_year"])]
+_a = pd.read_parquet(DATA / "pilot" / "anchors.parquet")
+_k = pd.concat([_df, _a.assign(cohort_year=pd.NA)]) \
+       .drop_duplicates("designer_id")
+_k = _k[_k["n_knitting"] >= _k["n_crochet"]]
+_sp = _k[(_k["print_source_share"] <= 0.5)
+         & _k["cohort_year"].between(2007, 2024)]
+C = set(_sp.sort_values("fan_count", ascending=False)
+           .groupby("cohort_year").head(1)["designer_name"])
+F = set(_k[_k["fan_count"] >= 20000]["designer_name"])
+_ks = _yaml.safe_load((DATA / "knitstars_roster.yaml").read_text())
+_stars = {s for sea in _ks["seasons"].values() for s in sea["stars"]}
+K = {n for n in _k["designer_name"]
+     if any(str(n).split(" (")[0].lower() in s.lower()
+            or s.lower() in str(n).lower() for s in _stars)}
+_ed = pd.read_csv(DATA / "full" / "editorial_prestige.csv")
+E = set(_ed[_ed["prestige_patterns"] >= 3]["designer"]) \
+    & set(_k["designer_name"])
+ENTITIES = {"Purl Soho"}
+badge = {n: "".join(b for b, s in zip("CFKE", (C, F, K, E)) if n in s)
+         for n in (C | F | K | E) - ENTITIES}
+CANON = [n for n, b in badge.items() if len(b) >= 2]
 sub = pl[pl["designer_name"].isin(CANON)].copy()
+CANON = [n for n in CANON if n in set(sub["designer_name"])]
 first_date = sub.groupby("designer_name")["date"].min()
 CANON = sorted(CANON, key=lambda n: first_date.get(n, pd.Timestamp.max))
+ROW_LABELS = [f"{n}  [{badge[n]}]" for n in CANON]
 sub = sub[sub["date"] >= "2005-01-01"]
 
-fig, ax = plt.subplots(figsize=(14, 0.75 * len(CANON) + 2))
+fig, ax = plt.subplots(figsize=(14, 0.65 * len(CANON) + 2))
 rng_j = np.random.default_rng(2)
 for i, name in enumerate(CANON):
     g = sub[sub["designer_name"] == name]
@@ -416,14 +459,18 @@ for i, name in enumerate(CANON):
     ax.scatter(g["date"], np.full(len(g), i) + jitter, s=sizes,
                alpha=0.55, edgecolors="none")
 ax.set_yticks(range(len(CANON)))
-ax.set_yticklabels(CANON)
+ax.set_yticklabels(ROW_LABELS)
 ax.invert_yaxis()
 for year, label in MILESTONES:
     x = pd.Timestamp(f"{year}-06-01")
     ax.axvline(x, ls="--", lw=0.8, color="grey", alpha=0.6)
     ax.text(x, -0.7, f" {label}", rotation=90, va="bottom", ha="left",
             fontsize=7, color="grey")
-ax.set_title("Release timelines: one dot per pattern, sized by favorites")
+ax.set_title(
+    "What success took, by era of entry — every pattern released by "
+    "rule-selected designers\n(one dot per pattern, sized by favorites; "
+    "badges: C class champion · F ≥20k fans · K KnitStars · "
+    "E ≥3 prestige-venue patterns)", fontsize=11)
 plt.tight_layout()
 fig.savefig(ROOT / "reports" / "cadence_timeline.png", dpi=150,
             bbox_inches="tight")
