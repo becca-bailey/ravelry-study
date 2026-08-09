@@ -380,6 +380,55 @@ ax.set_title("Each cohort's current champion: how long they kept publishing")
 plt.tight_layout()
 
 # %% [markdown]
+# ## 4d. Release timelines: every pattern, every canon designer
+# One row per designer (ordered by entry year), one dot per pattern at
+# its publication date. Dot size = favorites (the hits surface from the
+# stream). The cadence differences read as dot density; the era
+# milestones cross all rows.
+
+# %%
+pl = pd.read_parquet(DATA / "full" / "pattern_level.parquet")
+pl["date"] = pd.to_datetime(pl["published"], format="%Y/%m/%d",
+                            errors="coerce")
+pl = pl.dropna(subset=["date"])
+
+# rows sorted by entrance: each designer's first published pattern
+# (institutional back-catalogs float naturally to the top).
+# Pearl-McPhee's near-empty row is the essayist model; Herzog's row
+# stops in 2021 (the exit, visible); Attic24 is blog-era crochet.
+CANON = ["Norah Gaughan", "Julie Weisenberger",
+         "Stephanie Pearl-McPhee", "Lucy of Attic24", "Anne Hanson",
+         "Ysolda Teague", "Jared Flood", "Heidi Kirrmaier",
+         "Amy Herzog", "Martina Behm", "Veera Välimäki",
+         "Stephen West",
+         "Andrea Mowry", "Caitlin Hunter", "PetiteKnit"]
+sub = pl[pl["designer_name"].isin(CANON)].copy()
+first_date = sub.groupby("designer_name")["date"].min()
+CANON = sorted(CANON, key=lambda n: first_date.get(n, pd.Timestamp.max))
+sub = sub[sub["date"] >= "2005-01-01"]
+
+fig, ax = plt.subplots(figsize=(14, 0.75 * len(CANON) + 2))
+rng_j = np.random.default_rng(2)
+for i, name in enumerate(CANON):
+    g = sub[sub["designer_name"] == name]
+    jitter = rng_j.uniform(-0.22, 0.22, len(g))
+    sizes = 4 + np.sqrt(g["favorites"].fillna(0)) * 0.55
+    ax.scatter(g["date"], np.full(len(g), i) + jitter, s=sizes,
+               alpha=0.55, edgecolors="none")
+ax.set_yticks(range(len(CANON)))
+ax.set_yticklabels(CANON)
+ax.invert_yaxis()
+for year, label in MILESTONES:
+    x = pd.Timestamp(f"{year}-06-01")
+    ax.axvline(x, ls="--", lw=0.8, color="grey", alpha=0.6)
+    ax.text(x, -0.7, f" {label}", rotation=90, va="bottom", ha="left",
+            fontsize=7, color="grey")
+ax.set_title("Release timelines: one dot per pattern, sized by favorites")
+plt.tight_layout()
+fig.savefig(ROOT / "reports" / "cadence_timeline.png", dpi=150,
+            bbox_inches="tight")
+
+# %% [markdown]
 # ## 5. The institutional route — print share by cohort
 
 # %%

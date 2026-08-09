@@ -525,6 +525,231 @@ could be "if you were just a little better at social media."
   recorded testimony from anchor-tier designers, transcript-
   extractable, quotable with attribution, and cross-checkable against
   blog archives.
+- **Mowry 2015 (becca's IG archaeology, continued).** Jan 2015: calls
+  it "a business she is building" while home with the baby, cooking
+  vegan every afternoon, publishing MULTIPLE PATTERNS PER MONTH. Feb
+  2015: first event (StitchesWest); 200–300 likes; teaching by June.
+  Aug 2015: photographs herself WITH Stephen West —
+  #wannabemybestiewestie — the endorsement economy pursued in person,
+  the Oct-2014 like now a selfie, the baton pass continuing. Cadence
+  contrast (pattern-level collection launched to quantify): Mowry
+  multiple/month (2015, interregnum hustle) vs West ~monthly blogging
+  while ascending (2010) vs Kirrmaier one-every-few-months (blog-era
+  middle) vs Behm 129 lifetime patterns. The interregnum's winners
+  posted like the algorithm was already watching.
+- **The authenticity double-bind (becca's self-aware observation —
+  candidate heart of Essay 5, reframed).** Her honest reaction to 2014
+  Mowry: the VSCO aesthetic, constant posting, curated vegan-tattoo
+  styling reads as "cringe... inauthentic" now. And her own catch: 
+  "Women who really hustle for their notoriety often come off as less
+  authentic than the people who were just 'discovered.' Visible
+  ambition can be a turn-off, even though [it] is probably what it
+  took to succeed... in that era." The structural version: 
+  AUTHENTICITY IS WHAT EFFORT LOOKS LIKE WHEN INFRASTRUCTURE HIDES IT.
+  West seems authentic because the machine worked invisibly on his
+  behalf — bloggers, tours, fan clubs arrived unbidden while he posted
+  monthly. Mowry had to perform manually everything the machine once
+  did, in public, with hashtags — and the visible seams read as
+  striving. The "discovered" are subsidized; the self-assembled are
+  penalized for showing the assembly. Gendered on both ends (who gets
+  discovered; whose hustle reads as gauche). This IS the ambition
+  penalty — the series' title, enacted in the researcher's own gut
+  reaction, caught and named by her. Becca marked the personal version
+  do-not-publish; the reframed version — "I caught myself finding her
+  cringe, and here is what that reaction is made of" — may be the
+  strongest possible Essay 5 move. Her call.
+- **Each discovery regime reprices human attributes (becca, on Mowry's
+  embodied capital).** Her observation: Mowry's IG success was
+  conditioned on being an extremely attractive, stylish, young, white
+  woman — aspirational in exactly the way Instagram rewards — AND it
+  still took enormous work. Both true; attributes set the exchange
+  rate on the labor. Structural version: when the marketing surface is
+  your own body, face, and home, embodiment becomes a factor of
+  production. Text-RSS didn't price appearance (Yarn Harlot's era;
+  hands-only photos); the visual feed does; TikTok prices on-camera
+  charisma further. The rising skill floor includes increasingly
+  UNEARNABLE attributes — you can learn photography, you can't learn
+  young. Scholarly hook: Duffy's aspirational-labor research documents
+  the influencer economy's winner template (young, white,
+  conventionally attractive, middle-class, "relatable but
+  aspirational"). Community context: the 2019 fiber-community racism
+  reckoning is the community's OWN documentation of unequal conversion
+  on equal work — citable testimony, no researcher adjudication
+  needed. Measurable trace: KnitStars rosters diversify sharply in
+  S5–S6 (2020–21, post-reckoning: Glasspie, Ivey, Sloan,
+  Williams-Johnson, Boria, Williams) — the prestige panel's response
+  visible in our own roster data. The devastating inversion for the
+  essay: knitting's canonical authority figures were OLDER WOMEN
+  (Zimmermann, the whole print pantheon) — the aspirational feed
+  repriced the craft's own core demographic out of visibility.
+  Grandmothers made the canon; the feed made grandmothers invisible.
+- **The labor-in-labor timeline (becca's IG archaeology — May 2016).**
+  May 5, 2016: Mowry photographs herself knitting IN THE HOSPITAL,
+  IN LABOR — 2,000 likes (~10x her average; her best-performing
+  content class = life-event merged with brand). May 6: baby photo.
+  May 7: ONE DAY POSTPARTUM, posts a Hedgehog Fibres giveaway she's
+  running on her blog. May 15: blogging about swatching. Days later:
+  recruiting test knitters for the shawl she knit in the hospital.
+  Jan 2017, eight months postpartum: Find Your Fade — her breakout
+  year was her newborn year. What it documents: (1) the algorithm-era
+  business has no maternity leave — the American version; against
+  PetiteKnit, FOUNDED on Denmark's state-funded year, the welfare-state
+  contrast in its starkest form (same craft, same life event, same
+  year: one woman's leave funded a brand's founding; the other worked
+  through delivery). BECCA'S CORRECTION (2026-08-08): Mowry had the
+  closest thing American women get to maternity leave — a working
+  husband. Sharpened frame: SOCIALIZED vs PRIVATIZED leave — Mette's
+  subsidy was a citizen's entitlement, Andrea's was a marriage; the
+  honest comparison is eligibility pools, not the two women's luck.
+  AND the cadence contrast stays hypothesis until measured: Wayback
+  IG-history pass launched (post counts over time, both handles);
+  Ravelry release cadence arrives with the pattern-level collection.
+  Don't print the Denmark/America pair until both series are in. (2) The feed paid 10x for collapsing the boundary
+  between life and business — the incentive structure teaches that
+  intimacy is the highest-converting inventory. (3) Completes the
+  shape-of-time triptych: Lucy's nap-time empire (blog era
+  accommodated children) → Mette's funded year (welfare state
+  accommodated) → Mowry's zero-day turnaround (the feed accommodates
+  nothing; she accommodated IT). CARE IN FRAMING: not a judgment of
+  her choices — knitters bring projects to the hospital; this may have
+  been joy, self-soothing, agency. The finding is the incentive
+  gradient, not her character: the era's winning strategy was
+  indistinguishable from never stopping, and the feed rewarded her
+  precisely for not stopping.
+- **The deleted ingredient: childcare (becca — essay-grade line:
+  "Motherhood doesn't free women to find their passion unless someone
+  else is doing part of the mothering.")** The origin narrative ("the
+  birth of my daughter was the catalyst") + the tableau (coffee,
+  needles, baby sleeping peacefully) requires an unnamed input: care
+  labor. Two patterns/month + KALs + event travel + daily curated
+  content is not compatible with solo full-time infant care — every
+  mother knows the tableau isn't reality. Key points: (1) CARE
+  TRANSFER is its own subsidy category (alongside state leave, spousal
+  income, pensions, family money) and it is systematically deleted
+  from mother-founder narratives because logistics breaks the magic.
+  (2) The deletion is advice-shaped harm: thousands of mothers receive
+  an incompletely-specified recipe ("she did it with a baby"), fail to
+  replicate it, and blame themselves — the ambition-penalty loop fed
+  by a missing variable. Advice doesn't just have a vintage; it has
+  deleted ingredients. (3) Plausibility check = CADENCE ARITHMETIC:
+  Lucy's nap-time story was believable because her output matched
+  nap-time hours; Mowry's 2015–16 output implies full-time-plus labor
+  (sample-knitting alone for 2 designs/month ≈ 80–160 hrs; the
+  yardage doesn't lie). The labor-hours model is buildable from
+  pattern-level data — invisible labor made visible by arithmetic,
+  no private knowledge claimed. (4) THE CAMERA IS THE TELL: every
+  serene solo-mother-with-baby photo was taken by someone — and
+  Mowry's photographer is her husband. The image of unassisted
+  motherhood is produced by the co-parent whose presence it erases.
+  The picture sells a life that the taking of the picture disproves.
+  (5) Fairness rail: the critique targets the narrative convention,
+  not the woman — some arrangement existed (fine!); the genre's
+  omission of it is what sets impossible bars. Interview question:
+  "what did childcare actually look like during your building years?"
+- **Envy as business model (becca: "She WANTS people to envy her,
+  because that's what sells knitting patterns.")** Writing-safe
+  formulation: intent unprovable and unnecessary — the STRATEGY
+  requires envy (aspiration = the monetized gap between viewer's life
+  and image; "aspiration" is the seller's word for envy). She
+  optimized toward it observably (the vegan-recipe pruning). Moral
+  weight distribution: the externality argument (comparison suffering
+  as pollution — unintended, predictable, borne by non-consenting
+  viewers, incl. struggling mothers = the researcher's standing);
+  the gray DARKENS WITH SCALE (micro-accounts comply with the norm;
+  icons set it; power raises duties — and post-2020 she could afford
+  to slow down, per the cadence split). Parasocial trust makes
+  peer-delivered aspiration more potent than ads. THE HISTORICAL
+  FALSIFICATION (key): envy is not what sells patterns — it's what
+  sells patterns NOW. Print sold on schematics/utility; EZ sold on
+  trust and engineering wit; Ravelry project pages sold on real-body
+  honesty; Hitchhiker sold 37k projects on a garter-stitch idea with
+  no life attached to envy. The envy engine is a REGIME feature, not
+  a product necessity. Essay 5 thesis line: the craft didn't need
+  envy to sell; the platform did — and it taught a generation of
+  women that mastering envy-production was what "marketing skill"
+  meant. The machine is the defendant; its best operators are the
+  evidence.
+- **The geography of the windows (becca's journal 2026-08-08 +
+  data test).** Her observation: British designers dominated the blog
+  era (the "Attic24 era" — quirky, colorful, imperfect); the algorithm
+  era brought the Denmark craze (muted, simple, "effortless"). Data
+  refinements (country codes, full sample): (1) The headline
+  population story is US COLLAPSE INTO GLOBALIZATION — US share of
+  entrants 61% → 41% → 25%; "other" countries now HALF of all
+  entrants. The image era removed the English-language moat: prose
+  needs translation, grids don't. (Behm's German-language cap vs the
+  Danes' post-linguistic rise.) (2) Scandi share of the random-sample
+  population is modest (~10%) and its top decile steady — the
+  "Denmark craze" is a SUPERSTAR-STRATUM phenomenon (PetiteKnit,
+  Ventzel at 22x IG ratios): the detached tier sets the aesthetic
+  discourse; random samples barely see it. Perception of eras is
+  made at the top. (3) UK top-decile share actually RISES (8→14%) —
+  heritage authority persists (Shetland, festivals). (4) A second
+  Scandi generation is already in the 2020-24 random sample (Sisu
+  Knitwear, Thea Vesterby...) — regional success breeds regional
+  entrants. THESES: each medium's grammar picks the nation whose
+  vernacular matches it — the prose era selected Britain (voice,
+  coziness, literary self-deprecation), the image era selected
+  Scandinavia (design-school minimalism, hygge interiors, light).
+  And the welfare-state layer: "effortless" is what funded time
+  looks like — the Danish aesthetic as the visual export of
+  subsidized ease (leave-founded PetiteKnit), envied by audiences in
+  countries where time is scarce. Hygge = commodified time-wealth.
+- **The influencerification of the wool festival (becca, brainstorm —
+  the physical layer chapter).** Her texture: missed Seattle's Flock
+  (time, money, toddler, yarn guilt) but "FORTUNATELY" YouTube
+  influencers recap it; Rhinebeck discourse — THE festival, where
+  "WHO you are wearing matters"; Mowry designs an annual Rhinebeck
+  Sweater that becomes the hot commodity to wear there. Threads:
+  (1) Festival three-phase history mirrors the windows: commons
+  gathering (wool, classes, meetups — Yarn Harlot-era Rhinebeck blogger
+  meetups) → status arena (who-are-you-wearing imported from red
+  carpets to a livestock fair) → content set (attendance as production;
+  the event's audience is no longer at the event). (2) The Rhinebeck
+  Sweater = fashion-week-ification: knitting acquires SEASONS and a
+  runway; an annual product tied to an event, with a built-in KAL
+  sprint deadline economy (finish in time to wear it). Function =
+  LEGIBILITY: a recognizable design identifies tribe and tier to
+  strangers — handknits as parasocial merch. MEASURABLE: count
+  "Rhinebeck sweater" patterns/projects by year on Ravelry = the
+  ritual's growth curve. (3) The recap economy is dual: genuine access
+  for the excluded (becca watches free) AND another envy inventory
+  (watching others attend what you couldn't). (4) Event-tier
+  stratification: attend (leisure-rich) / Knit Stars (mid-price
+  virtual festival — Nicole's video literally pitches it as the
+  alternative "if you are not able to attend knitting events") /
+  free recaps (parasocial). The festival economy stratified like
+  everything else. (5) Winner-take-all among EVENTS: one festival
+  becomes The Festival (Venus room in event form) while regionals
+  stay local. (6) The leisure gate at its most physical: travel +
+  tickets + workshop fees + days of time — the in-person layer is
+  the most gated of all, so the already-visible compound there.
+  REPORTING OPTION: Rhinebeck is mid-October — attending as
+  researcher converts the side quest into fieldwork (scene reporting +
+  on-site interviews; many subjects attend).
+- **The disappearing on-ramp (becca, reading the cadence timeline).**
+  Her observation: rows get denser by cohort AND the late rows are
+  dense FROM THE FIRST DOT — no ease-in period (publish one, wait,
+  try another, gradually professionalize). "It was a career plan from
+  the very beginning for many of them, except the very earliest."
+  Mechanisms: (1) the cold-start wall killed the iterate-and-wait
+  strategy — one pattern into a 10M-pattern catalog returns no
+  signal, so rational entrants front-load volume; (2) the feed's
+  cadence requirement has no low gear — you cannot ease onto a
+  treadmill; (3) entry professionalized — the brand, content runway,
+  and test-knit pipeline are assembled BEFORE launch (designers became
+  startups: capital requirements moved from post-success scale-up to
+  pre-entry build-out). (4) HONEST DOUBLE CAUSE: the chart shows the
+  canon (winners), so it reflects both strategy change AND selection —
+  ease-in entrants still exist by the thousands (the sampled designers
+  at 33 median fans); they just no longer become canon. The on-ramp
+  still exists; it no longer connects to the highway. THE UNIFICATION:
+  the middle band WAS the ramp — the cross-sectional middle (500–5k
+  fans) and the longitudinal ease-in period are the same structural
+  object viewed from two angles. Kirrmaier's demand-pulled entry, the
+  hobbyists-with-visibility, the try-and-wait careers: all of it was
+  people MID-RAMP. When the ramp stopped leading anywhere, the middle
+  emptied. One fact, two shadows.
 - **Interview questions this thread generates:** Who did you compare
   yourself to when you started? Who do you compare yourself to now? What
   happens to your income/traffic when you stop posting for a month?
