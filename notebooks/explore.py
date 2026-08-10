@@ -508,3 +508,94 @@ for _, a in anchors.iterrows():
         ax.axhline(np.log10(a["fan_count"] + 1), lw=0.5, alpha=0.4, color="crimson")
 ax.set_title("Sampled designers (grey) vs anchor fan levels (red lines)")
 plt.tight_layout()
+
+# %% [markdown]
+# ## 8. The evergreen objection — Wayback accumulation + flow curves
+# Phase 3: 95 archived designer pages give per-pattern favorite counts
+# at ~annual snapshots, 2010–2026, for six era winners. Two views:
+# how fast a pattern collects its lifetime favorites (stock), and what
+# it still earns per year as it ages (flow), by calendar era.
+
+# %%
+from closingwindow.wayback import slugify
+
+wb = pd.read_parquet(DATA / "full" / "wayback_favorites.parquet")
+pl = pd.read_parquet(DATA / "full" / "pattern_level.parquet")
+SLUG2NAME = {
+    "stephen-west": "Stephen West", "martina-behm": "Martina Behm",
+    "veera-valimaki": "Veera Välimäki", "joji-locatelli": "Joji Locatelli",
+    "ysolda-teague": "Ysolda Teague", "lucy-of-attic24": "Lucy of Attic24",
+}
+wpl = pl[pl["designer_name"].isin(SLUG2NAME.values())].copy()
+wpl["permalink"] = wpl["name"].map(slugify)
+wpl["pub"] = pd.to_datetime(wpl["published"], format="%Y/%m/%d", errors="coerce")
+wb["designer_name"] = wb["designer_slug"].map(SLUG2NAME)
+wbm = wb.merge(
+    wpl[["designer_name", "permalink", "pub", "favorites"]]
+        .rename(columns={"favorites": "current_fav"}),
+    on=["designer_name", "permalink"], how="inner").dropna(subset=["pub"])
+wbm["age_yr"] = (wbm["capture_date"] - wbm["pub"]).dt.days / 365.25
+wbm = wbm[wbm["age_yr"] >= 0]
+print(f"{len(wbm)} matched observations, "
+      f"{wbm['permalink'].nunique()} patterns, "
+      f"{wbm['designer_name'].nunique()} designers")
+
+# %%
+fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+
+# stock: share of today's favorites already held, by pattern age
+acc = wbm[wbm["current_fav"] >= 200].copy()
+acc["share"] = acc["favorites"] / acc["current_fav"].clip(lower=1)
+acc["age_bin"] = acc["age_yr"].round().astype(int)
+q = acc[acc["age_bin"] <= 14].groupby("age_bin")["share"].quantile(
+    [0.25, 0.5, 0.75]).unstack()
+ax = axes[0]
+ax.fill_between(q.index, q[0.25] * 100, q[0.75] * 100, alpha=0.2,
+                color="tab:blue", label="middle 50% of patterns")
+ax.plot(q.index, q[0.5] * 100, marker="o", color="tab:blue", label="median")
+ax.axhline(50, lw=0.5, color="grey", ls="--")
+for age, lbl in [(1, "year 1"), (5, "year 5")]:
+    ax.annotate(f"{q.loc[age, 0.5]*100:.0f}% by {lbl}",
+                (age, q.loc[age, 0.5] * 100),
+                textcoords="offset points", xytext=(10, -14), fontsize=9)
+ax.set_xlabel("pattern age (years)")
+ax.set_ylabel("% of its 2026 favorites already collected")
+ax.set_title("A hit pattern earns most of its lifetime\naudience early (stock)")
+ax.set_ylim(0, 105)
+ax.legend(loc="lower right", fontsize=9)
+
+# flow: favorites gained per year between consecutive captures
+s = wbm.sort_values(["designer_name", "permalink", "capture_date"]).copy()
+grp = s.groupby(["designer_name", "permalink"])
+s["prev_fav"] = grp["favorites"].shift()
+s["prev_date"] = grp["capture_date"].shift()
+fl = s.dropna(subset=["prev_fav"]).copy()
+fl["years"] = (fl["capture_date"] - fl["prev_date"]).dt.days / 365.25
+fl = fl[fl["years"].between(0.5, 2.5)]
+fl["gain_yr"] = (fl["favorites"] - fl["prev_fav"]) / fl["years"]
+fl["mid"] = fl["prev_date"] + (fl["capture_date"] - fl["prev_date"]) / 2
+fl["age_mid"] = (fl["mid"] - fl["pub"]).dt.days / 365.25
+fl = fl[fl["age_mid"] >= 0]
+AGE_BINS, AGE_LBL = [0, 2, 5, 10, 25], ["0–2", "2–5", "5–10", "10+"]
+fl["age_grp"] = pd.cut(fl["age_mid"], AGE_BINS, labels=AGE_LBL)
+fl["period"] = pd.cut(fl["mid"].dt.year, [2010, 2015, 2020, 2026],
+                      labels=["2011–2015", "2016–2020", "2021–2026"])
+flow = fl.pivot_table(index="age_grp", columns="period", values="gain_yr",
+                      aggfunc="median", observed=True)
+ax = axes[1]
+colors = {"2011–2015": "tab:green", "2016–2020": "tab:orange",
+          "2021–2026": "tab:red"}
+for period in flow.columns:
+    ax.plot(range(len(flow)), flow[period], marker="o",
+            color=colors[str(period)], label=str(period))
+ax.set_xticks(range(len(flow)), AGE_LBL)
+ax.set_xlabel("pattern age at measurement (years)")
+ax.set_ylabel("median favorites gained per year")
+ax.set_title("...but old hits never stop earning (flow):\nthe evergreen tail, by era")
+ax.legend(title="measured during", fontsize=9)
+
+fig.suptitle("Six era winners' catalogs through the Wayback Machine, 2010–2026",
+             y=1.02, fontsize=13)
+plt.tight_layout()
+fig.savefig(ROOT / "reports" / "wayback_curves.png", dpi=150,
+            bbox_inches="tight")

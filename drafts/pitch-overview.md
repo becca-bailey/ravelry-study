@@ -9,6 +9,18 @@ universal registry — and measured exactly when, how, and for whom
 
 ## The pitch (working draft, ~450 words)
 
+In August 2009, Stephen West was working in a yarn shop in Urbana, IL while studying dance at the University of Illinois. He had been sporadically posting about his knitting projects on blogger, and a few people were starting to follow along. When he published his first knitting pattern, the Daybreak Shawl, other bloggers took notice and started writing about it, and it shot to the top of the charts on Ravelry. He followed it up with a couple more shawl designs, and by April 2010 he was on an east coast tour, teaching at several well-known yarn shops. And in August 2010, just a year after his first pattern relese, he was finishing the draft of his first book and moving to Amsterdam to start Westknits, his knitting design business.
+
+In December 2016, Andrea Mowry published a shawl pattern that became an immediate sensation. The Find Your Fade shawl showed up at the top of everyone's feeds, and kicked off a hand-dyed, technicolor craze that lasted for the next couple of years. A 2019 [profile in The Cut](https://www.thecut.com/2019/01/a-love-letter-to-knitting-designer-andrea-mowry.html) says she "rocketed to the top from out of almost nowhere" after publishing her first pattern in August 2014. But during those two years, she had been raising her two young children while participating in knit-a-longs, posting daily Instagram posts about her work, networking with designers and yarn companies (including Stephen West), and releasing 2-3 new patterns each month that she personally tested, modeled, and marketed. She was the designer for the Instagram era—polished, colorful, and conventionally attractive, and she amassed a fan base that returned to her patterns over and over again.
+
+And I would be amiss not to mention the current reigning champion of Ravelry, who arrived on the scene in 2016 with timeless neutrals, clean lines, and a signature effortless Scandinavian aesthetic. Mette Wendelboe Okkels, known by her brand name PetiteKnit started publishing knitting patterns while on (state-subsidied, year-long) maternity leave in Denmark in 2016, and has continued to release at least three patterns per month ever since.
+
+Every one of these designers is undeniably good at what they do, but they have something in common beyond the appeal of their work. Each of them started publishing on Ravelry during a specific window of opportunity. Stephen started in the Google reader era, where his small, regular audience could discover his work without a lot of fanfare. Many others in his era could tell similar stories. Andrea and Mette were both products of the early Instagram era, where effortless good looks, curated flat-lays, and the right hashtags could go a long way, as long as you were churning out new content every single day.
+
+But something that I suspect many of us feel, but struggle to measure, is the fact that in recent years, these windows of opportunities have been closing. It feels like it is genuinely harder to break into a crowded platform and get your work in front of the right people. The data I have collected from Ravelry says that at least in the knitting world, it is. During the Google reader era, a designer who published five patterns had about a 60% chance of finding a modest following (100 fans). Today, it is near 20%. The winners from these earlier eras are still wildly successful, but the middle is hollowing out.
+
+![alt text](<Screenshot 2026-08-09 at 9.37.28 PM.png>)
+
 In August 2009, a yarn-shop employee in central Illinois named
 Stephen West published his first knitting pattern. Within days,
 established bloggers had featured him by name. Within eight months,
