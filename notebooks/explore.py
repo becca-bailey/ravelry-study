@@ -405,6 +405,15 @@ pl.loc[ez_mask, "date"] = pl.loc[ez_mask].apply(
     if r["name"] in EZ_DATES else r["date"], axis=1)
 pl = pl.dropna(subset=["date"])
 
+# curated career-start overrides (data/cohort_overrides.yaml): where a
+# designer's first published pattern misrepresents their entry (e.g.
+# Emma Jaeger's dormant teenage catalog before her 2024 relaunch).
+# Applies wherever entrance is computed from pattern dates.
+import yaml as _oyaml
+_ov = _oyaml.safe_load((DATA / "cohort_overrides.yaml").read_text())
+ENTRY_OVERRIDES = {o["designer_name"]: pd.Timestamp(o["career_start"])
+                   for o in _ov["overrides"]}
+
 # rows sorted by entrance: each designer's first published pattern
 # (institutional back-catalogs float naturally to the top).
 # Pearl-McPhee's near-empty row is the essayist model; Herzog's row
@@ -446,6 +455,9 @@ CANON = [n for n, b in badge.items() if len(b) >= 2]
 sub = pl[pl["designer_name"].isin(CANON)].copy()
 CANON = [n for n in CANON if n in set(sub["designer_name"])]
 first_date = sub.groupby("designer_name")["date"].min()
+for _n, _d in ENTRY_OVERRIDES.items():
+    if _n in first_date.index:
+        first_date.loc[_n] = _d
 CANON = sorted(CANON, key=lambda n: first_date.get(n, pd.Timestamp.max))
 ROW_LABELS = [f"{n}  [{badge[n]}]" for n in CANON]
 sub = sub[sub["date"] >= "2005-01-01"]

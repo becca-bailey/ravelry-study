@@ -19,6 +19,13 @@ from fetch_designers import list_patterns
 OUT = config.DATA_DIR / "full" / "pattern_level.parquet"
 
 
+# case-study designers outside both the sample and the anchor list,
+# added by hand. Emma Jaeger = midsummer.knits, 2024 breakout; her
+# lone 2010 pattern (teenage iPod-shuffle pouch) is a dormancy case —
+# career start overridden to 2024 in data/cohort_overrides.yaml.
+MANUAL_EXTRAS = [(32020, "Emma Jaeger")]
+
+
 def cast() -> pd.DataFrame:
     df = pd.read_parquet(config.DATA_DIR / "full" / "designers.parquet")
     champs = (df.dropna(subset=["cohort_year", "fan_count"])
@@ -28,8 +35,10 @@ def cast() -> pd.DataFrame:
     extra = df[df["designer_name"].isin(["Heidi Kirrmaier",
                                          "Martina Behm",
                                          "Veera Välimäki"])]
+    manual = pd.DataFrame(MANUAL_EXTRAS,
+                          columns=["designer_id", "designer_name"])
     cols = ["designer_id", "designer_name"]
-    out = pd.concat([champs[cols], anchors[cols], extra[cols]])
+    out = pd.concat([champs[cols], anchors[cols], extra[cols], manual])
     return out.drop_duplicates("designer_id")
 
 

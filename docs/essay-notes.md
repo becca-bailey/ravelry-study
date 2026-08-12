@@ -819,3 +819,38 @@ right direction: the objection was given its best case and still
 falls short. The November wave-two re-measurement remains the
 decisive test (growth *rates* by cohort age), but the interim answer
 to "is it just time?" is: mostly no.
+
+## Case: Emma Jaeger / midsummer.knits — the door still opens (2026-08-09)
+
+Becca spotted her; pulled into the extras panel (designer 32020, 11
+patterns). The record: four teenage-era patterns 2010–2012 with
+modest blog-era traction (Viridescent 617 favs, Lykia 403 — free
+patterns, found without a feed), twelve dormant years, then a 2024
+relaunch as midsummer.knits: Heartless Top, 16,058 favorites, and a
+steady paid catalog since. Career start manually overridden to 2024
+(data/cohort_overrides.yaml, becca's call — the iPod-shuffle pouch
+dates the early cluster as a teenager's, not a career).
+
+Why she matters to the argument:
+- She's the survivorship counterexample the thesis must carry: the
+  20% who still get through are real people. Cite her BEFORE a critic
+  does.
+- Her success is pattern-shaped, not person-shaped: 16k favorites on
+  one pattern, 781 fans of *her*. Modern discovery finds objects.
+- The re-entry detail sharpens rather than weakens the era story: she
+  didn't walk through the modern door cold — she came back with
+  (presumably) adult design skills and an Instagram-native brand.
+  Check her IG cadence/aesthetic before citing as "cold entry."
+- Blog-era teenage her earned 600 favorites on a free pattern by
+  existing; 2024 her needed a 16k-favorite hit for 781 people to
+  follow the person. Same human, both eras — the cleanest possible
+  within-person era comparison, better than any West-vs-Mowry
+  cross-person contrast. Interview candidate, high priority.
+
+Methods caveat filed by this case: "entry = first published pattern"
+mis-dates dormant-then-relaunched careers. The corrections audit only
+catches backdating (looks-newer errors), not dormancy (looks-older).
+Prevalence in the sample unknown — likely rare (needs long dormancy +
+comeback), but state the definition honestly: cohort = first
+publication, with curated overrides for known dormancy cases, all
+disclosed. Emma Jaeger is currently the only override.
