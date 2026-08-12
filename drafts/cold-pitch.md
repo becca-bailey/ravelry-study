@@ -12,39 +12,56 @@ me, out. Target 250–300 words. Customize the [BRACKETS] per outlet.
 
 ## The pitch body
 
+Built from the AHP email — same sentences, cut down. Phrases that are
+NOT from the original are marked with footnotes so nothing sneaks into
+your voice unreviewed.
+
 Dear [EDITOR NAME],
 
-In 2009, a yarn-shop employee named Stephen West published his first
-knitting pattern; within a year he had a book deal and a design
-business in Amsterdam. The best new knitting designer of 2025 has 188
-followers. I can measure exactly what changed in between, because
-knitting has something no other creative field does: Ravelry, a
-community-run pattern registry that predates the algorithmic feed and
-never adopted one, where nearly every working designer has listed
-their work for twenty years.
+In August 2009, Stephen West was working in a yarn shop in Urbana, IL
+while studying dance at the University of Illinois. When he published
+his first knitting pattern, the Daybreak Shawl, other bloggers took
+notice and started writing about it, and it shot to the top of the
+charts on Ravelry. A year later[^1] he was finishing the draft of his
+first book and moving to Amsterdam to start Westknits, his knitting
+design business.
 
-I'm a software engineer and a knitter, and I built a dataset of 3,130
-designers — every entering class from 2007 to 2024, sampled at random.
-For a full decade, about 60 percent of newcomers who made a genuine
-attempt (five or more published patterns) found a modest audience.
-That figure held flat until 2015, broke the year the blog-and-RSS
-ecosystem died, rebounded for exactly one year when Instagram's
-algorithm was new (the class of 2016 produced most of the field's
-current stars), and has slid steadily since, down to about 20 percent.
-The middle went from a quarter of each entering class to 9 percent.
-The winners detached from the distribution entirely.
+Something that I suspect many of us feel, but struggle to measure, is
+that the windows of opportunity that made careers like his[^2] have
+been closing. It feels like it is genuinely harder to break into a
+crowded platform and get your work in front of the right people. The
+data I have collected from Ravelry says that at least in the knitting
+world, it is. During the Google Reader and early Instagram eras, a
+designer who published five patterns had about a 60% chance of finding
+a modest following. Today, it is near 20%. The winners from these
+earlier eras are still wildly successful, but the middle is hollowing
+out, and the newcomers are struggling to get started.
 
-I'd like to write [FORMAT — see notes below] telling this through
-three careers: West, Andrea Mowry (the Instagram window's American
-star), and the anonymous best designer of the class of 2025. The
-charts are publication-ready and nothing from the dataset has been
-published anywhere yet.
+A little bit about me: I live in Seattle, I'm a software engineer by
+trade, but I'm currently researching and writing about the social
+science of work. Basically, I keep asking questions like _why are
+there no good jobs anymore_ and then attempting to answer them with
+data. I have tracked 3,130 knitting designers across twenty years,
+and I am attempting to piece together the story of what it took to be
+successful, and why it seems so much harder now.
 
-[CREDENTIAL LINE — e.g., "I write about the social science of work at
-LINK; my day job is software engineering."]
+I would love to write [FORMAT — see notes below] telling this story
+through three careers: Stephen West, Andrea Mowry, and the best
+designer of the class of 2025, who so far has 188 fans.[^3] I haven't
+written about any of my findings yet, and the charts are ready.[^4]
 
 Thank you for considering it,
 Becca Bailey
+
+[^1]: Compressed from "And in August 2010, just a year after his first
+    pattern release" — restore the fuller version if you prefer.
+[^2]: My connective tissue; your original was "in recent years, these
+    windows of opportunity have been closing."
+[^3]: My sentence — the ask paragraph didn't exist in the email. The
+    188 detail is the strongest cold-open credibility signal we have,
+    but it's yours to cut.
+[^4]: Adapted from your "I haven't written about any of my findings
+    yet" — repositioned as an exclusivity offer instead of an apology.
 
 ## Format line by outlet type
 
