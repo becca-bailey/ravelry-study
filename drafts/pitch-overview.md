@@ -1,83 +1,28 @@
-# Pitch overview + AHP talking points (drafted 2026-08-09)
+# Pitch kit — The Closing Window
 
-## The logline
+## The email to Anne Helen Petersen (sent Aug 2026; full-length draft)
 
-I spent [months] building a complete dataset of a creative economy —
-3,130 knitting designers across twenty years of Ravelry, the field's
-universal registry — and measured exactly when, how, and for whom
-"just make good work" stopped being enough. The answer has dates.
+A little bit about me: I live in Seattle, I'm a software engineer by trade, but I'm currently researching and writing about the social science of work. Basically, I keep asking questions like _why are there no good jobs anymore_ and then attempting to answer them with data. I have spent the past few months doing a longitudinal study on what company careers pages say about work culture, but that was getting... more than a little bit depressing. So more recently, I have been trying to figure out why creators feel like they are working harder for less payoff by looking at data from Ravelry. I have tracked 3,130 knitting designers across twenty years, and I am attempting to piece together the story of what it took to be successful, and why it seems so much harder now.
 
-## The pitch (working draft, ~450 words)
+At the moment, this is all just a collection of notes and data. I haven't written about any of my findings yet, but here's the general shape of what I have to say.
 
-In August 2009, Stephen West was working in a yarn shop in Urbana, IL while studying dance at the University of Illinois. He had been sporadically posting about his knitting projects on blogger, and a few people were starting to follow along. When he published his first knitting pattern, the Daybreak Shawl, other bloggers took notice and started writing about it, and it shot to the top of the charts on Ravelry. He followed it up with a couple more shawl designs, and by April 2010 he was on an east coast tour, teaching at several well-known yarn shops. And in August 2010, just a year after his first pattern relese, he was finishing the draft of his first book and moving to Amsterdam to start Westknits, his knitting design business.
+In August 2009, Stephen West was working in a yarn shop in Urbana, IL while studying dance at the University of Illinois. He had been sporadically posting about his knitting projects on blogger, and a few people were starting to follow along. When he published his first knitting pattern, the Daybreak Shawl, other bloggers took notice and started writing about it, and it shot to the top of the charts on Ravelry. He followed it up with a couple more shawl designs, and by April 2010 he was on an east coast tour, teaching workshops at several well-known yarn shops. And in August 2010, just a year after his first pattern release, he was finishing the draft of his first book and moving to Amsterdam to start Westknits, his knitting design business.
 
-In December 2016, Andrea Mowry published a shawl pattern that became an immediate sensation. The Find Your Fade shawl showed up at the top of everyone's feeds, and kicked off a hand-dyed, technicolor craze that lasted for the next couple of years. A 2019 [profile in The Cut](https://www.thecut.com/2019/01/a-love-letter-to-knitting-designer-andrea-mowry.html) says she "rocketed to the top from out of almost nowhere" after publishing her first pattern in August 2014. But during those two years, she had been raising her two young children while participating in knit-a-longs, posting daily Instagram posts about her work, networking with designers and yarn companies (including Stephen West), and releasing 2-3 new patterns each month that she personally tested, modeled, and marketed. She was the designer for the Instagram era—polished, colorful, and conventionally attractive, and she amassed a fan base that returned to her patterns over and over again.
+In December 2016, Andrea Mowry published a shawl pattern that became an immediate sensation. The Find Your Fade shawl showed up at the top of everyone's feeds, and kicked off a hand-dyed, technicolor craze that lasted for the next couple of years. A 2019 [profile in The Cut](https://www.thecut.com/2019/01/a-love-letter-to-knitting-designer-andrea-mowry.html) says she "rocketed to the top from out of almost nowhere" after publishing her first pattern in August 2014. But during those two years, she had been participating in knit-a-longs, posting daily Instagram posts about her work, networking with designers and yarn companies (including Stephen West), and releasing 2-3 new patterns each month that she personally tested, modeled, and marketed. She was the designer for the Instagram era—polished, colorful, and conventionally attractive, and she amassed a fan base that returned to her patterns over and over again.
 
-And I would be amiss not to mention the current reigning champion of Ravelry, who arrived on the scene in 2016 with timeless neutrals, clean lines, and a signature effortless Scandinavian aesthetic. Mette Wendelboe Okkels, known by her brand name PetiteKnit started publishing knitting patterns while on (state-subsidied, year-long) maternity leave in Denmark in 2016, and has continued to release at least three patterns per month ever since.
+And then there's the reigning champion of Ravelry, who arrived on the scene in 2016 with timeless neutrals, clean lines, and a signature effortless Scandinavian aesthetic. Mette Wendelboe Okkels, known by her brand name PetiteKnit started publishing knitting patterns while on (state-subsidized, year-long) maternity leave in Denmark in 2016, and has continued to release at least three new patterns per month ever since and post about them for her 1.5 million followers on Instagram.
 
-Every one of these designers is undeniably good at what they do, but they have something in common beyond the appeal of their work. Each of them started publishing on Ravelry during a specific window of opportunity. Stephen started in the Google reader era, where his small, regular audience could discover his work without a lot of fanfare. Many others in his era could tell similar stories. Andrea and Mette were both products of the early Instagram era, where effortless good looks, curated flat-lays, and the right hashtags could go a long way, as long as you were churning out new content every single day.
+Every one of these designers is undeniably good at what they do, but they have something in common beyond the appeal of their work. Each of them started publishing on Ravelry during a specific window of opportunity. Stephen started in the Google reader era, where his small, regular audience could discover his work without a lot of fanfare. Andrea and Mette were both products of the pre-algorithm Instagram era, where effortless good looks, curated flat-lays, and the right hashtags could go a long way, as long as you were churning out new content for the feed every single day.
 
-But something that I suspect many of us feel, but struggle to measure, is the fact that in recent years, these windows of opportunities have been closing. It feels like it is genuinely harder to break into a crowded platform and get your work in front of the right people. The data I have collected from Ravelry says that at least in the knitting world, it is. During the Google reader era, a designer who published five patterns had about a 60% chance of finding a modest following (100 fans). Today, it is near 20%. The winners from these earlier eras are still wildly successful, but the middle is hollowing out.
+But something that I suspect many of us feel, but struggle to measure, is the fact that in recent years, these windows of opportunities have been closing. It feels like it is genuinely harder to break into a crowded platform and get your work in front of the right people. The data I have collected from Ravelry says that at least in the knitting world, it is. During the Google reader and early Instagram eras, a designer who published five patterns had about a 60% chance of finding a modest following (100 fans). Today, it is near 20%. The winners from these earlier eras are still wildly successful, but the middle is hollowing out, and the newcomers are struggling to get started.
 
 ![alt text](<Screenshot 2026-08-09 at 9.37.28 PM.png>)
 
-In August 2009, a yarn-shop employee in central Illinois named
-Stephen West published his first knitting pattern. Within days,
-established bloggers had featured him by name. Within eight months,
-Purl Soho was hosting his trunk show. Within a year he had a book, a
-hired production team, and a one-way ticket to Amsterdam. Through all
-of it he blogged about once a month, documenting the ascent in real
-time, including a thank-you post listing the people who discovered
-him.
+There are many potential causes—maybe it's the algorithmic feeds that started around 2016, or the decline of print media. Established designers have support staff, test knitters, and active communities to provide guidance before you spend 80 hours making a sweater, but newer designers have neither institutional backing nor name recognition.
 
-Five years later, Andrea Mowry published her first pattern, a pair of
-mittens, and nobody noticed. What eventually worked was a different
-kind of project: an aspirational operation run at professional tempo —
-fifteen patterns a year, a curated Instagram feed, a workforce of
-unpaid test knitters, a giveaway posted one day postpartum. She caught
-the brief window when Instagram's algorithm was new and generous, and
-by 2019 The Cut was writing her a love letter that did the income math
-on a viral shawl.
+🫣 Anyway, I'm getting a little carried away, and this is turning into a whole essay. But I would love to hear about what you are working on, and how I can help! If you think my data could be useful, I would be happy to chat and share more.
 
-Somewhere out there is the best designer of the class of 2025, paying
-a higher entry fee than West and Mowry combined: the going rate is now
-a fully built brand, launched at top speed before the first sale,
-backed by what I've come to call the invisible firm — the
-spouse-photographer, the unpaid testers, the undisclosed childcare. I
-know exactly how this designer's career is going, because they're in
-my dataset, though I won't name them. They have 188 fans.
-
-I can be precise about this because the knitting world still runs on
-the same marketplace it did in 2009. Ravelry, a community-built site
-that predates the algorithmic feed and never adopted one, is the
-industry's registry: nearly every designer who sells patterns lists
-there, whatever platform their audience lives on. It records twenty
-years of entries, prices, and audiences for an entire creative field.
-I'm a software engineer and a knitter, and I built the dataset: every
-entering class of designers from 2007 to 2024, sampled at random,
-3,130 careers.
-
-What it shows is not the slow decline everyone assumes — the decline
-has a start date. For a full decade, West's odds were everyone's odds:
-about 60 percent of people who made a genuine attempt (five or more
-published patterns) found at least a modest audience, and a quarter of
-each entering class reached the livable middle. Then 2015 broke the
-floor, an 11-point drop the year the blog-and-RSS ecosystem finished
-dying. One generous rebound year followed, when Instagram's algorithm
-was new — Mowry's window, the class that produced most of the field's
-current stars — and then a steady slide down to the class of 2025.
-One in five of the newest entrants finds an audience. The middle went
-from 26 percent to 9. And the winners stopped being the top of the
-distribution and became a separate species: the field's biggest name,
-PetiteKnit, publishes thirty-five patterns a year with professional
-production and holds an audience 22 times larger off Ravelry than on
-it. I can show all of it in a single chart, one dot per pattern,
-twenty years of careers side by side.
-
-Knitting is the case study, but the finding is the creator economy's
-biography told with receipts — and it's the same story currently being
-lived, without receipts, by everyone watching their newsletter stall
-and being told to get better at marketing.
+Becca
 
 ## Key numbers (memorize for the call)
 
