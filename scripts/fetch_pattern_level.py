@@ -20,9 +20,8 @@ OUT = config.DATA_DIR / "full" / "pattern_level.parquet"
 
 
 # case-study designers outside both the sample and the anchor list,
-# added by hand. Emma Jaeger = midsummer.knits, 2024 breakout; her
-# lone 2010 pattern (teenage iPod-shuffle pouch) is a dormancy case —
-# career start overridden to 2024 in data/cohort_overrides.yaml.
+# added by hand. Emma Jaeger = midsummer.knits: class of 2010 by the
+# mechanical rule, relaunched 2024 — see data/career_annotations.yaml.
 MANUAL_EXTRAS = [(32020, "Emma Jaeger")]
 
 

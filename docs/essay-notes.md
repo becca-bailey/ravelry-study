@@ -827,9 +827,11 @@ patterns). The record: four teenage-era patterns 2010–2012 with
 modest blog-era traction (Viridescent 617 favs, Lykia 403 — free
 patterns, found without a feed), twelve dormant years, then a 2024
 relaunch as midsummer.knits: Heartless Top, 16,058 favorites, and a
-steady paid catalog since. Career start manually overridden to 2024
-(data/cohort_overrides.yaml, becca's call — the iPod-shuffle pouch
-dates the early cluster as a teenager's, not a career).
+steady paid catalog since. Coded class of 2010 by the mechanical rule
+(entry = first publication, no exceptions); the relaunch is recorded
+as an annotation in data/career_annotations.yaml. Becca initially set
+a 2024 override, then reversed it the same day for rule consistency —
+itself a good methods anecdote.
 
 Why she matters to the argument:
 - She's the survivorship counterexample the thesis must carry: the
@@ -850,7 +852,13 @@ Why she matters to the argument:
 Methods caveat filed by this case: "entry = first published pattern"
 mis-dates dormant-then-relaunched careers. The corrections audit only
 catches backdating (looks-newer errors), not dormancy (looks-older).
-Prevalence in the sample unknown — likely rare (needs long dormancy +
-comeback), but state the definition honestly: cohort = first
-publication, with curated overrides for known dormancy cases, all
-disclosed. Emma Jaeger is currently the only override.
+Panel check (2026-08-09): among 47 full catalogs, Emma's 12.1-yr gap
+is the only dormancy spanning the platform era; other 3yr+ gaps are
+print-era dating artifacts (Weisenberger, EZ, Hargreaves, Gaughan) or
+the essayist model (Pearl-McPhee). Resolution: cohort = first
+publication uniformly, no overrides ever — known dormancy cases get
+annotations (data/career_annotations.yaml), used in prose only and
+always disclosed. Rationale: sample catalogs can't be gap-checked, so
+correcting known cases but not unknown ones would bias extras
+relative to sample; and any mechanical spell threshold (e.g. 5-yr
+gap) would misclassify the print-era artifacts too.
