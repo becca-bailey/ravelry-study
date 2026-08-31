@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import WindowExplorer from "../components/WindowExplorer";
+import CadenceTimeline from "../components/CadenceTimeline";
 ---
 
 <Layout>
@@ -14,5 +15,9 @@ import WindowExplorer from "../components/WindowExplorer";
     </header>
 
     <WindowExplorer client:load />
+
+    <div class="mt-16">
+      <CadenceTimeline client:load />
+    </div>
   </main>
 </Layout>

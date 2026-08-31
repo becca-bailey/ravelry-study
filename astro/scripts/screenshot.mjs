@@ -15,6 +15,7 @@ const PORT = 4322; // off the dev-server port so the two never collide
 const OUT_DIR = new URL("../../reports/", import.meta.url).pathname;
 const TARGETS = [
   { path: "/", selector: "#window-chart", out: "window_explorer.png" },
+  { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
 ];
 
 const preview = spawn("npx", ["astro", "preview", "--port", String(PORT)], {
