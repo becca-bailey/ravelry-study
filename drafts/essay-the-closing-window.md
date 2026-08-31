@@ -101,31 +101,31 @@ predates the algorithmic feed and never adopted one. It is the
 industry's registry: nearly every designer who sells patterns lists
 there, whatever platform their audience actually lives on. Which means
 it has quietly recorded twenty years of entries, prices, and audiences
-for an entire creative field. I sampled every entering class of
+for an entire creative field. I sampled every entering cohort of
 designers from 2007 to 2024 at random — 3,130 careers.
 
 For a full decade, the odds held completely steady. From 2007 through
 2014, a designer who made a genuine attempt — five or more published
 patterns — had about a 60% chance of finding a modest following
 (favorited by 100 or more Ravelry users), and about a quarter of each
-entering class reached a real middle: favorited by 500 to 5,000, the
+entering cohort reached a real middle: favorited by 500 to 5,000, the
 zone where patterns start paying for more than the yarn.
 
 Then 2015 broke the floor: an 11-point drop, the year the
 blog-and-RSS ecosystem finished dying. One strangely generous year
-followed, when Instagram's algorithm was new — the class of 2016
+followed, when Instagram's algorithm was new — the 2016 cohort
 produced most of the field's current stars, and in my data you can
-watch that single class glow. And then the slide: steady, year after
-year, down to about 20% for the newest entering classes. The middle
-went from 26% of each class to 9%.
+watch that single cohort glow. And then the slide: steady, year after
+year, down to about 20% for the newest entering cohorts. The middle
+went from 26% of each cohort to 9%.
 
 [FIGURE: floor-collapse chart]
 
 The winners from these earlier eras are still wildly successful, but
 the middle is hollowing out, and the newcomers are struggling to get
-started. <!-- [B] --> The best designer of the entering class of 2009
+started. <!-- [B] --> The best designer of the 2009 cohort
 has been favorited by 49,508 Ravelry users and has a yarn company.
-The best of the class of 2024: 471.
+The best of the 2024 cohort: 471.
 
 ## "But old patterns just keep collecting favorites"
 
@@ -133,7 +133,7 @@ That was my own first objection, and it's a serious one. A knitting
 pattern is a durable good in a way a blog post never was — a good 2014
 sweater keeps surfacing in search results a decade later, so maybe
 older designers just accumulate audience by existing longer, and the
-newest classes simply haven't had their turn.
+newest cohorts simply haven't had their turn.
 
 I tested this three ways, and it doesn't come close to explaining the
 collapse. Comparing patterns within a single designer's catalog, an
@@ -144,7 +144,7 @@ real time since 2010: a hit pattern collects half of its lifetime
 favorites in its first year and 84% within five, so young careers
 reveal themselves fast. And when I re-ran the numbers crediting every
 young designer with all the future accumulation the winners' own
-catalogs enjoy, the newest classes moved a few points — 21% became
+catalogs enjoy, the newest cohorts moved a few points — 21% became
 29% — against a plateau of 60. The evergreen tail is real. A
 ten-year-old hit still earns about a fifth of what a fresh pattern
 earns. It is nowhere near enough to reopen the window.
@@ -161,7 +161,7 @@ The steady 60% era and the 20% era don't just differ in odds. They
 differ in what the attempt itself costs.
 
 Stephen West blogged about once a month in the year his career
-ignited. Martina Behm, another star of his class, released eight
+ignited. Martina Behm, another star of his cohort, released eight
 patterns a year at her peak. Andrea Mowry's window demanded fifteen a
 year, plus the daily Instagram presence, plus the knit-a-longs, plus
 the networking — a full aspirational operation she staffed herself.
@@ -207,7 +207,7 @@ party that has already ended.
 
 ## Endnotes / method box (optional collapse section)
 
-- Sample: every entering class of Ravelry designers 2007–2024,
+- Sample: every entering cohort of Ravelry designers 2007–2024,
   sampled at random from the pattern registry; N=3,130. "Genuine
   attempt" = 5+ published patterns. "Modest following" = favorited by
   100+ Ravelry users (the designer-level favorites count); "middle" =
