@@ -179,6 +179,14 @@ Meanwhile the crowd at the door has never been bigger. The platform's
 output peaked in 2020 at roughly 109,000 new patterns in a single
 year. More people are trying than ever. The odds fell anyway.
 
+<!-- DECISION NEEDED (2026-08-18): Emma Jaeger was removed from the
+     data collection to keep the sampled methodology clean. This
+     section is built on her record. Options: (a) cut the section,
+     (b) keep it as clearly-labeled reporting from public Ravelry
+     pages (it never depended on her being IN the study), (c) keep
+     pending an interview/permission. The endnote about her coding
+     must be cut or reworded either way. -->
+
 ## The same knitter, twice
 
 One designer in my dataset ended up telling the whole story by

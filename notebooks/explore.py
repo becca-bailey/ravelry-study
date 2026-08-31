@@ -405,14 +405,6 @@ pl.loc[ez_mask, "date"] = pl.loc[ez_mask].apply(
     if r["name"] in EZ_DATES else r["date"], axis=1)
 pl = pl.dropna(subset=["date"])
 
-# curated career annotations (data/career_annotations.yaml): context
-# for dormancy/relaunch cases (e.g. Emma Jaeger, class of 2010,
-# relaunched 2024). Annotations never change cohort assignment —
-# entry = first publication, one mechanical rule for everyone.
-import yaml as _ayaml
-_an = _ayaml.safe_load((DATA / "career_annotations.yaml").read_text())
-CAREER_ANNOTATIONS = {a["designer_name"]: a for a in _an["annotations"]}
-
 # rows sorted by entrance: each designer's first published pattern
 # (institutional back-catalogs float naturally to the top).
 # Pearl-McPhee's near-empty row is the essayist model; Herzog's row

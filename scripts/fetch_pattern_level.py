@@ -20,9 +20,10 @@ OUT = config.DATA_DIR / "full" / "pattern_level.parquet"
 
 
 # case-study designers outside both the sample and the anchor list,
-# added by hand. Emma Jaeger = midsummer.knits: class of 2010 by the
-# mechanical rule, relaunched 2024 — see data/career_annotations.yaml.
-MANUAL_EXTRAS = [(32020, "Emma Jaeger")]
+# added by hand. Empty by protocol decision (2026-08-18): ad hoc
+# additions dilute the sampled methodology — the Emma Jaeger /
+# midsummer.knits record was removed; see docs/essay-notes.md.
+MANUAL_EXTRAS: list[tuple[int, str]] = []
 
 
 def cast() -> pd.DataFrame:

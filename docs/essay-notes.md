@@ -862,3 +862,11 @@ always disclosed. Rationale: sample catalogs can't be gap-checked, so
 correcting known cases but not unknown ones would bias extras
 relative to sample; and any mechanical spell threshold (e.g. 5-yr
 gap) would misclassify the print-era artifacts too.
+
+**Update 2026-08-18:** Emma Jaeger removed from the pattern panel and
+the fetch cast (becca's call: ad hoc additions dilute the sampled
+methodology; study the original set). Her numbers above remain as
+notes from public Ravelry pages. The essay draft's "same knitter,
+twice" section is flagged for a decision; if kept, it's reporting,
+not study data. career_annotations.yaml deleted with her record —
+recreate the format if a sampled dormancy case ever surfaces.
