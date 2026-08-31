@@ -93,7 +93,7 @@ function Chart({ width, height }: { width: number; height: number }) {
   return (
     <div className="relative">
       <svg width={width} height={height} role="img"
-        aria-label="Share of each entering class of Ravelry designers favorited by 100+ users (a modest audience) and by 500 to 5,000 users (the middle), 2007 to 2024. Both lines hold steady through 2014, break in 2015, rebound in 2016, then fall.">
+        aria-label="Share of each entering cohort of Ravelry designers favorited by 100+ users (a modest audience) and by 500 to 5,000 users (the middle), 2007 to 2024. Both lines hold steady through 2014, break in 2015, rebound in 2016, then fall.">
         <Group left={MARGIN.left} top={MARGIN.top}>
           {/* golden age background */}
           <rect
@@ -225,7 +225,7 @@ function Chart({ width, height }: { width: number; height: number }) {
             lineHeight: 1.5,
           }}
         >
-          <div className="font-semibold">Entering class of {tooltipData.year}</div>
+          <div className="font-semibold">{tooltipData.year} cohort</div>
           <div style={{ color: theme.chart[0] }}>
             {tooltipData.floor}% favorited by 100+ users
           </div>
@@ -245,7 +245,7 @@ export default function WindowExplorer() {
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">The window of opportunity, measured</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
-          Share of each entering class of Ravelry designers (5+ published patterns) to
+          Share of each entering cohort of Ravelry designers (5+ published patterns) to
           find an audience — steady for a decade, broken in 2015, briefly generous in
           2016, closing since.
         </p>
@@ -254,7 +254,7 @@ export default function WindowExplorer() {
         <ParentSize>{({ width, height }) => <Chart width={width} height={height} />}</ParentSize>
       </div>
       <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-        Source: Ravelry pattern registry, random sample of all entering classes
+        Source: Ravelry pattern registry, random sample of all entering cohorts
         2007–2024 (N=3,130 designers). Designer favorite counts as of August 2026.
       </p>
     </figure>
