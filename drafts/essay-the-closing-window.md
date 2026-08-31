@@ -106,10 +106,10 @@ designers from 2007 to 2024 at random — 3,130 careers.
 
 For a full decade, the odds held completely steady. From 2007 through
 2014, a designer who made a genuine attempt — five or more published
-patterns — had about a 60% chance of finding a modest following (100+
-fans), and about a quarter of each entering class reached a real
-middle: 500 to 5,000 fans, the zone where patterns start paying for
-more than the yarn.
+patterns — had about a 60% chance of finding a modest following
+(favorited by 100 or more Ravelry users), and about a quarter of each
+entering class reached a real middle: favorited by 500 to 5,000, the
+zone where patterns start paying for more than the yarn.
 
 Then 2015 broke the floor: an 11-point drop, the year the
 blog-and-RSS ecosystem finished dying. One strangely generous year
@@ -124,10 +124,10 @@ went from 26% of each class to 9%.
 The winners from these earlier eras are still wildly successful, but
 the middle is hollowing out, and the newcomers are struggling to get
 started. <!-- [B] --> The best designer of the entering class of 2009
-today has 49,508 fans and a yarn company. The best of the class of
-2024 has 471.
+has been favorited by 49,508 Ravelry users and has a yarn company.
+The best of the class of 2024: 471.
 
-## "But old patterns just keep collecting fans"
+## "But old patterns just keep collecting favorites"
 
 That was my own first objection, and it's a serious one. A knitting
 pattern is a durable good in a way a blog post never was — a good 2014
@@ -141,7 +141,7 @@ extra year on the shelf is worth about 4% more favorites — real, but
 tiny against a threefold drop in the odds. Archived Ravelry pages from
 the Wayback Machine let me watch six winners' catalogs accumulate in
 real time since 2010: a hit pattern collects half of its lifetime
-audience in its first year and 84% within five, so young careers
+favorites in its first year and 84% within five, so young careers
 reveal themselves fast. And when I re-ran the numbers crediting every
 young designer with all the future accumulation the winners' own
 catalogs enjoy, the newest classes moved a few points — 21% became
@@ -177,39 +177,11 @@ careers side by side]
 
 Meanwhile the crowd at the door has never been bigger. The platform's
 output peaked in 2020 at roughly 109,000 new patterns in a single
-year. More people are trying than ever. The odds fell anyway.
-
-<!-- DECISION NEEDED (2026-08-18): Emma Jaeger was removed from the
-     data collection to keep the sampled methodology clean. This
-     section is built on her record. Options: (a) cut the section,
-     (b) keep it as clearly-labeled reporting from public Ravelry
-     pages (it never depended on her being IN the study), (c) keep
-     pending an interview/permission. The endnote about her coding
-     must be cut or reworded either way. -->
-
-## The same knitter, twice
-
-One designer in my dataset ended up telling the whole story by
-herself. Emma Jaeger published four patterns as a teenager between
-2010 and 2012 — one of them is an iPod shuffle pouch, which dates it
-as precisely as tree rings. She wasn't famous, but the blog era did
-what it did back then: a free pattern of hers collected six hundred
-favorites, essentially for existing. Then she put knitting down for
-twelve years.
-
-In August 2024 she came back as midsummer.knits, with clean
-photography, a real brand, and a debut sweater that has since
-collected sixteen thousand favorites — a top-tier modern hit. And
-here is the era she returned to: after all that, 781 people follow
-_her_. Discovery now finds objects, not people. The same knitter,
-on both sides of the window — in one era her existence was enough
-to gather an audience, and in the other, a certified hit pattern
-mostly just sells itself.
-
-She's proof the door still opens; one in five newcomers still gets
-through, and I want to be honest about that. But what it takes now is
-what she brought: a fully built brand, launched at full speed, into a
-market that rewards the work and barely remembers the worker.
+year. More people are trying than ever. The odds fell anyway. And I
+want to be honest that the door still opens — one in five newcomers
+finds an audience even now. But the ones who get through arrive the
+way today's winners do: brand fully built, at full speed, from the
+first release.
 
 ## The part that isn't about knitting
 
@@ -237,17 +209,16 @@ party that has already ended.
 
 - Sample: every entering class of Ravelry designers 2007–2024,
   sampled at random from the pattern registry; N=3,130. "Genuine
-  attempt" = 5+ published patterns. "Modest following" = 100+
-  designer fans; "middle" = 500–5,000.
+  attempt" = 5+ published patterns. "Modest following" = favorited by
+  100+ Ravelry users (the designer-level favorites count); "middle" =
+  favorited by 500–5,000.
 - Cohort = year of first published pattern, one mechanical rule for
-  everyone; a corrections audit re-dated 72 designers. Emma Jaeger is
-  coded class of 2010 and described here as a relaunch, disclosed in
-  data/career_annotations.yaml.
-- The evergreen tests: within-designer shelf-age slopes (10,322
-  patterns, 47 designers); Wayback Machine captures of six designer
+  everyone; a corrections audit re-dated 72 designers.
+- The evergreen tests: within-designer shelf-age slopes (10,311
+  patterns, 46 designers); Wayback Machine captures of six designer
   pages 2010–2026 (4,456 pattern-date observations); age-adjusted
   floor thresholds.
-- Attention inequality (Gini over fan counts) is 0.81–0.84 in every
-  era — inequality didn't rise; the floor fell.
+- Attention inequality (Gini over designer favorite counts) is
+  0.81–0.84 in every era — inequality didn't rise; the floor fell.
 - Data and code: [repo link]. Raw designer-level data stays private;
   aggregates published.
