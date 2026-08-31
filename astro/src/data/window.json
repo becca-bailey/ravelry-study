@@ -1,0 +1,119 @@
+{
+  "meta": {
+    "source": "Ravelry, random sample of entering classes 2007-2024, N=3,130 designers",
+    "universe": "designers with 5+ published patterns (a genuine attempt)",
+    "floor": "share of the class favorited by 100+ Ravelry users",
+    "middle": "share favorited by 500-5,000 users",
+    "generated": "2026-08-31"
+  },
+  "rows": [
+    {
+      "year": 2007,
+      "n": 590,
+      "floor": 61.9,
+      "middle": 25.9
+    },
+    {
+      "year": 2008,
+      "n": 228,
+      "floor": 45.2,
+      "middle": 18.9
+    },
+    {
+      "year": 2009,
+      "n": 169,
+      "floor": 58.6,
+      "middle": 26.0
+    },
+    {
+      "year": 2010,
+      "n": 173,
+      "floor": 57.8,
+      "middle": 25.4
+    },
+    {
+      "year": 2011,
+      "n": 206,
+      "floor": 58.3,
+      "middle": 22.3
+    },
+    {
+      "year": 2012,
+      "n": 169,
+      "floor": 63.3,
+      "middle": 26.0
+    },
+    {
+      "year": 2013,
+      "n": 169,
+      "floor": 59.8,
+      "middle": 27.2
+    },
+    {
+      "year": 2014,
+      "n": 153,
+      "floor": 56.9,
+      "middle": 23.5
+    },
+    {
+      "year": 2015,
+      "n": 140,
+      "floor": 45.7,
+      "middle": 15.7
+    },
+    {
+      "year": 2016,
+      "n": 146,
+      "floor": 54.8,
+      "middle": 27.4
+    },
+    {
+      "year": 2017,
+      "n": 155,
+      "floor": 50.3,
+      "middle": 20.6
+    },
+    {
+      "year": 2018,
+      "n": 181,
+      "floor": 44.2,
+      "middle": 21.0
+    },
+    {
+      "year": 2019,
+      "n": 162,
+      "floor": 45.7,
+      "middle": 16.7
+    },
+    {
+      "year": 2020,
+      "n": 151,
+      "floor": 39.7,
+      "middle": 14.6
+    },
+    {
+      "year": 2021,
+      "n": 100,
+      "floor": 32.0,
+      "middle": 10.0
+    },
+    {
+      "year": 2022,
+      "n": 87,
+      "floor": 25.3,
+      "middle": 4.6
+    },
+    {
+      "year": 2023,
+      "n": 68,
+      "floor": 20.6,
+      "middle": 4.4
+    },
+    {
+      "year": 2024,
+      "n": 50,
+      "floor": 10.0,
+      "middle": 0.0
+    }
+  ]
+}
