@@ -13,6 +13,7 @@ import { chromium } from "playwright";
 
 const PORT = 4322; // off the dev-server port so the two never collide
 const OUT_DIR = new URL("../../reports/", import.meta.url).pathname;
+const PAD = 24; // whitespace around each captured element, in CSS px
 const TARGETS = [
   { path: "/", selector: "#window-chart", out: "window_explorer.png" },
   { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
@@ -38,8 +39,10 @@ try {
   await waitForServer(`http://localhost:${PORT}/`);
   mkdirSync(OUT_DIR, { recursive: true });
   const browser = await chromium.launch();
+  // Tall viewport so every chart sits fully in view: clip coordinates stay
+  // viewport-relative and no mid-capture resize retriggers ParentSize.
   const page = await browser.newPage({
-    viewport: { width: 1200, height: 800 },
+    viewport: { width: 1200, height: 2600 },
     deviceScaleFactor: 2,
     colorScheme: "light",
   });
@@ -48,7 +51,18 @@ try {
     const el = page.locator(t.selector);
     await el.waitFor();
     await page.waitForTimeout(400); // let fonts + hydration settle
-    await el.screenshot({ path: `${OUT_DIR}${t.out}` });
+    // clip = element box expanded by PAD so the page background frames it
+    const box = await el.boundingBox();
+    if (!box) throw new Error(`no bounding box for ${t.selector}`);
+    await page.screenshot({
+      path: `${OUT_DIR}${t.out}`,
+      clip: {
+        x: Math.max(0, box.x - PAD),
+        y: Math.max(0, box.y - PAD),
+        width: box.width + PAD * 2,
+        height: box.height + PAD * 2,
+      },
+    });
     console.log(`wrote reports/${t.out}`);
   }
   await browser.close();
