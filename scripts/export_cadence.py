@@ -82,7 +82,7 @@ def main() -> None:
             "source": "Ravelry pattern registry; full catalogs for the "
                       "rule-selected cast",
             "cast_rule": "knitters holding >=2 of: C cohort champion in "
-                         "the random sample, F favorited by 20k+ users, "
+                         "the random sample, F 20k+ designer fans, "
                          "K KnitStars roster, E 3+ prestige-venue patterns",
             "generated": date.today().isoformat(),
         },

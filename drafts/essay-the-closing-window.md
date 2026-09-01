@@ -107,9 +107,10 @@ designers from 2007 to 2024 at random — 3,130 careers.
 For a full decade, the odds held completely steady. From 2007 through
 2014, a designer who made a genuine attempt — five or more published
 patterns — had about a 60% chance of finding a modest following
-(favorited by 100 or more Ravelry users), and about a quarter of each
-entering cohort reached a real middle: favorited by 500 to 5,000, the
-zone where patterns start paying for more than the yarn.
+(100 or more Ravelry fans — users who follow the designer, distinct
+from favoriting an individual pattern), and about a quarter of each
+entering cohort reached a real middle: 500 to 5,000 fans, the zone
+where patterns start paying for more than the yarn.
 
 Then 2015 broke the floor: an 11-point drop, the year the
 blog-and-RSS ecosystem finished dying. One strangely generous year
@@ -124,8 +125,7 @@ went from 26% of each cohort to 9%.
 The winners from these earlier eras are still wildly successful, but
 the middle is hollowing out, and the newcomers are struggling to get
 started. <!-- [B] --> The best designer of the 2009 cohort
-has been favorited by 49,508 Ravelry users and has a yarn company.
-The best of the 2024 cohort: 471.
+has 49,508 fans and a yarn company. The best of the 2024 cohort: 471.
 
 ## "But old patterns just keep collecting favorites"
 
@@ -209,16 +209,18 @@ party that has already ended.
 
 - Sample: every entering cohort of Ravelry designers 2007–2024,
   sampled at random from the pattern registry; N=3,130. "Genuine
-  attempt" = 5+ published patterns. "Modest following" = favorited by
-  100+ Ravelry users (the designer-level favorites count); "middle" =
-  favorited by 500–5,000.
+  attempt" = 5+ published patterns. "Modest following" = 100+ fans;
+  "middle" = 500–5,000 fans. Fans are Ravelry's designer-level count
+  (a user follows the designer); favorites are pattern-level (a user
+  bookmarks one pattern). Cohort odds use fans; pattern shelf-life and
+  conversion use favorites.
 - Cohort = year of first published pattern, one mechanical rule for
   everyone; a corrections audit re-dated 72 designers.
 - The evergreen tests: within-designer shelf-age slopes (10,311
   patterns, 46 designers); Wayback Machine captures of six designer
   pages 2010–2026 (4,456 pattern-date observations); age-adjusted
   floor thresholds.
-- Attention inequality (Gini over designer favorite counts) is
+- Attention inequality (Gini over designer fan counts) is
   0.81–0.84 in every era — inequality didn't rise; the floor fell.
 - Data and code: [repo link]. Raw designer-level data stays private;
   aggregates published.

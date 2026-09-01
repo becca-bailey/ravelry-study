@@ -57,13 +57,13 @@ function Chart({ width, height }: { width: number; height: number }) {
   const series = [
     {
       key: "floor" as const,
-      label: "favorited by 100+ users",
+      label: "reached 100+ fans",
       sub: "a modest audience",
       color: theme.chart[0],
     },
     {
       key: "middle" as const,
-      label: "favorited by 500–5,000",
+      label: "reached 500–5,000 fans",
       sub: "the middle",
       color: theme.chartContrast[0],
     },
@@ -93,7 +93,7 @@ function Chart({ width, height }: { width: number; height: number }) {
   return (
     <div className="relative">
       <svg width={width} height={height} role="img"
-        aria-label="Share of each entering cohort of Ravelry designers favorited by 100+ users (a modest audience) and by 500 to 5,000 users (the middle), 2007 to 2024. Both lines hold steady through 2014, break in 2015, rebound in 2016, then fall.">
+        aria-label="Share of each entering cohort of Ravelry designers reaching 100+ fans (a modest audience) and 500 to 5,000 fans (the middle), 2007 to 2024. Both lines hold steady through 2014, break in 2015, rebound in 2016, then fall.">
         <Group left={MARGIN.left} top={MARGIN.top}>
           {/* golden age background */}
           <rect
@@ -227,10 +227,10 @@ function Chart({ width, height }: { width: number; height: number }) {
         >
           <div className="font-semibold">{tooltipData.year} cohort</div>
           <div style={{ color: theme.chart[0] }}>
-            {tooltipData.floor}% favorited by 100+ users
+            {tooltipData.floor}% reached 100+ fans
           </div>
           <div style={{ color: theme.chartContrast[0] }}>
-            {tooltipData.middle}% favorited by 500–5,000
+            {tooltipData.middle}% reached 500–5,000 fans
           </div>
           <div style={{ color: theme.role.muted }}>{tooltipData.n} designers sampled</div>
         </TooltipWithBounds>
@@ -255,7 +255,8 @@ export default function WindowExplorer() {
       </div>
       <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
         Source: Ravelry pattern registry, random sample of all entering cohorts
-        2007–2024 (N=3,130 designers). Designer favorite counts as of August 2026.
+        2007–2024 (N=3,130 designers). Fan counts (Ravelry's designer-level follow, distinct from
+        pattern favorites) as of August 2026.
       </p>
     </figure>
   );

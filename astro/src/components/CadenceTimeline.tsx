@@ -226,14 +226,14 @@ export default function CadenceTimeline() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Every pattern released by the rule-selected cast — one dot per pattern,
           sized by favorites, rows sorted by entrance. Badges: C cohort champion ·
-          F favorited by 20k+ users · K KnitStars faculty · E 3+ prestige-venue
+          F 20k+ designer fans · K KnitStars faculty · E 3+ prestige-venue
           patterns.
         </p>
       </figcaption>
       <ParentSize>{({ width }) => <Chart width={width} />}</ParentSize>
       <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
         Source: Ravelry pattern registry, full catalogs of 18 designers selected
-        by mechanical rule (2+ badges); favorite counts as of August 2026.
+        by mechanical rule (2+ badges); pattern favorite counts as of August 2026.
       </p>
     </figure>
   );
