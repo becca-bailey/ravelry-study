@@ -16,6 +16,7 @@ const OUT_DIR = new URL("../../reports/", import.meta.url).pathname;
 const PAD = 24; // whitespace around each captured element, in CSS px
 const TARGETS = [
   { path: "/", selector: "#window-chart", out: "window_explorer.png" },
+  { path: "/", selector: "#evergreen-chart", out: "evergreen_curves_web.png" },
   { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
 ];
 
@@ -42,7 +43,7 @@ try {
   // Tall viewport so every chart sits fully in view: clip coordinates stay
   // viewport-relative and no mid-capture resize retriggers ParentSize.
   const page = await browser.newPage({
-    viewport: { width: 1200, height: 2600 },
+    viewport: { width: 1200, height: 4000 },
     deviceScaleFactor: 2,
     colorScheme: "light",
   });

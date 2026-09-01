@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import WindowExplorer from "../components/WindowExplorer";
+import EvergreenCurves from "../components/EvergreenCurves";
 import CadenceTimeline from "../components/CadenceTimeline";
 ---
 
@@ -15,6 +16,10 @@ import CadenceTimeline from "../components/CadenceTimeline";
     </header>
 
     <WindowExplorer client:load />
+
+    <div class="mt-16">
+      <EvergreenCurves client:load />
+    </div>
 
     <div class="mt-16">
       <CadenceTimeline client:load />
