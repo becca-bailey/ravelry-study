@@ -908,3 +908,15 @@ panel, patterns with 100+ favorites:
   patterns people actually finish; approachability at scale is its own
   moat, distinct from (and complicating) the aspiration-economy
   reading. Behm 8:1 remains the purest making economy in the panel.
+
+## Fan-vs-favorites bridge (2026-09-01)
+
+Becca's catch: cohort odds are fan-denominated; the evergreen due
+diligence is favorites-denominated. Two measured bridges close it:
+(1) fans ~ total pattern favorites at r=0.97 log-log across 37
+full-catalog designers — a fan count is compressed pattern attention;
+(2) in fan currency, floor slope on cohort age within the 2007-2014
+plateau is -0.63 pts/yr (~zero): seven extra years of existing buys
+no fan floor, so saturation holds in the essay's own metric and the
+favorites curve only needs to carry the young cohorts. Wave two
+(November) remains the direct in-currency test of fan growth rates.
