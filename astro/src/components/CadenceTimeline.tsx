@@ -23,7 +23,7 @@ interface Designer {
 const DESIGNERS: Designer[] = cadenceData.designers as Designer[];
 const MILESTONES: [number, string][] = cadenceData.milestones as [number, string][];
 
-const MARGIN = { top: 30, right: 24, bottom: 36, left: 176 };
+const MARGIN = { top: 148, right: 24, bottom: 36, left: 176 }; // top holds the vertical milestone labels
 const ROW_H = 34;
 const X_MIN = 2005;
 const X_MAX = 2026.7;
@@ -157,11 +157,12 @@ function Chart({ width }: { width: number }) {
               <line x1={xScale(year)} x2={xScale(year)} y1={0} y2={innerH}
                 stroke={theme.role.muted} strokeDasharray="5 4"
                 strokeWidth={1} opacity={0.6} />
-              {/* rotated along the marker, matplotlib-style, to avoid
-                  horizontal collisions in the 2016-2020 cluster */}
-              <text fontSize={9} fill={theme.role.muted}
-                transform={`rotate(90 ${xScale(year)} 4)`}
-                x={xScale(year) + 4} y={0} textAnchor="start">
+              {/* vertical label in the reserved top band — clear of the
+                  dot field entirely, rotated to survive the 2016-2020
+                  marker cluster */}
+              <text fontSize={10} fill={theme.role.muted}
+                transform={`rotate(-90 ${xScale(year)} -8)`}
+                x={xScale(year) + 4} y={-8} textAnchor="start">
                 {label}
               </text>
             </g>
