@@ -142,7 +142,7 @@ export default function ConversionChart() {
   return (
     <figure id="conversion-chart" className="w-full">
       <figcaption className="mb-3">
-        <h2 className="text-lg font-semibold">Admiring is replacing making</h2>
+        <h2 className="text-lg font-semibold">The share of admirers who cast on</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Of every 100 users who favorited a pattern, how many started a
           project? Median across patterns by publication year, with the middle
