@@ -870,3 +870,41 @@ notes from public Ravelry pages. The essay draft's "same knitter,
 twice" section is flagged for a decision; if kept, it's reporting,
 not study data. career_annotations.yaml deleted with her record —
 recreate the format if a sampled dormancy case ever surfaces.
+
+## The "is Ravelry dying?" confound, measured (project census, 2026-09-01)
+
+Becca's due-diligence question: maybe favorites decline because
+engagement moved off-platform. Answer via project-ID census (project
+IDs sequential; scatter-sampled 6,783 id/date pairs, year-boundary
+interpolation — scripts/project_census.py): knitters created ~2.0-2.3M
+projects EVERY year 2011-2025, 2025 highest since 2014 (2.32M). No
+exodus. Combined with the pattern census (supply 55k->109k/yr), the
+mechanism sharpens: pattern supply roughly doubled while the attention
+pool stayed constant — more claims on the same 2.2M projects a year.
+The door didn't just close; the hallway got crowded in front of a
+fixed number of seats. Caveats to disclose: measures project creation
+(cataloging), not favoriting specifically; boundary interpolation is
+approximate for early years; 2008-2010 ramp is the platform filling.
+
+## Favorites-per-project: the conversion lens (2026-09-01)
+
+Projects adopted as second metric (becca's question). Findings, deep
+panel, patterns with 100+ favorites:
+- Era gradient: median favorites-per-project 14.5 (2007-12 pubs) → 26
+  (2013-19) → 34 (2020-26). Attention decoupling from making. Caveat:
+  newest era partly lag-inflated (knitting trails favoriting); the
+  14.5-vs-26 comparison is between mature catalogs and is solid.
+- Commitment size drives ratios platform-wide: garments 32, shawls 24,
+  socks/hats/mitts 20 (name-keyword genre split).
+- Becca's hypothesis, confirmed and sharpened: PetiteKnit converts ~2x
+  better than West IN EVERY GENRE (garments 13.6 vs 22.3, shawls 10.8
+  vs 25.2, accessories 7.9 vs 13.5; Mowry between). Her read: "her
+  projects tend to be simple and manageable for different levels...
+  Andrea Mowry and Stephen West make a lot of things that are eye
+  candy... but a knitter only needs so many neon shawls." The
+  neon-shawl effect shows within West: his shawls 25:1 vs his
+  accessories 13.5:1 — most admired genre, least knit.
+- Essay line this supports: PetiteKnit's celebrity is built on
+  patterns people actually finish; approachability at scale is its own
+  moat, distinct from (and complicating) the aspiration-economy
+  reading. Behm 8:1 remains the purest making economy in the panel.
