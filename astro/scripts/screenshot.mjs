@@ -17,6 +17,7 @@ const PAD = 24; // whitespace around each captured element, in CSS px
 const TARGETS = [
   { path: "/", selector: "#window-chart", out: "window_explorer.png" },
   { path: "/", selector: "#evergreen-chart", out: "evergreen_curves_web.png" },
+  { path: "/", selector: "#conversion-chart", out: "conversion_web.png" },
   { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
 ];
 
