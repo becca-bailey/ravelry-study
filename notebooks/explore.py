@@ -599,3 +599,68 @@ fig.suptitle("Six era winners' catalogs through the Wayback Machine, 2010–2026
 plt.tight_layout()
 fig.savefig(ROOT / "reports" / "wayback_curves.png", dpi=150,
             bbox_inches="tight")
+
+# %% [markdown]
+# ## 8b. Favorites growth over a pattern's lifecycle
+# The raw version of the stock story above: each hit pattern's favorite
+# count climbing across its whole archived life (log y so the small and
+# the blockbuster patterns share one frame). Direct-labelled, one line
+# per pattern. Saves reports/wayback_favorite_growth.png.
+
+# %%
+from matplotlib.ticker import FuncFormatter
+
+DESIGNER = {
+    "ysolda-teague": "Ysolda Teague", "martina-behm": "Martina Behm",
+    "lucy-of-attic24": "Lucy of Attic24",
+}
+# (slug, permalink): display title — chosen for clear multi-year growth
+PICKS = {
+    ("ysolda-teague", "musselburgh"): "Musselburgh",
+    ("lucy-of-attic24", "granny-stripes-2"): "Granny Stripes",
+    ("martina-behm", "hitchhiker"): "Hitchhiker",
+    ("lucy-of-attic24", "hexagon-how-to"): "Hexagon How-To",
+    ("lucy-of-attic24", "cosy-stripe-blanket"): "Cosy Stripe Blanket",
+    ("ysolda-teague", "garter-stitch-mitts"): "Garter Stitch Mitts",
+    ("lucy-of-attic24", "blooming-flower-cushion"): "Blooming Flower Cushion",
+}
+# colorblind-safe categorical order (dataviz skill default palette)
+GROWTH_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100",
+                 "#e87ba4", "#008300", "#4a3aa7"]
+
+fig, ax = plt.subplots(figsize=(11, 6.6))
+ends = []
+for (key, title), color in zip(PICKS.items(), GROWTH_COLORS):
+    slug, permalink = key
+    g = wb[(wb["designer_slug"] == slug) & (wb["permalink"] == permalink)] \
+        .sort_values("capture_date")
+    ax.plot(g["capture_date"], g["favorites"], marker="o", ms=5, lw=2,
+            color=color, zorder=3)
+    last = g.iloc[-1]
+    ends.append((last["capture_date"], last["favorites"], color,
+                 f"  {title} · {DESIGNER[slug]}"))
+
+ax.set_yscale("log")
+for x, y, color, text in ends:  # direct end-labels (relief for low-contrast hues)
+    ax.annotate(text, (x, y), color=color, fontsize=9.5, va="center",
+                fontweight="bold", xytext=(6, 0), textcoords="offset points")
+
+ax.set_ylim(40, 130000)
+ax.set_xlim(right=pd.Timestamp("2031-06-01"))  # room for the labels
+ax.set_yticks([50, 100, 500, 1000, 5000, 10000, 50000, 100000])
+ax.yaxis.set_major_formatter(FuncFormatter(
+    lambda v, _: f"{int(v/1000)}k" if v >= 1000 else f"{int(v)}"))
+ax.set_xlabel("Wayback Machine capture date")
+ax.set_ylabel("favorites on Ravelry (log scale)")
+ax.set_title("Favorites keep accumulating across a pattern's whole life",
+             fontsize=14, fontweight="bold", loc="left", pad=34)
+ax.text(0, 1.03, "Seven hit patterns tracked through archived designer "
+        "pages, 2010–2026", transform=ax.transAxes, fontsize=10, color="#666")
+ax.grid(True, which="major", axis="both", lw=0.4, color="#ddd", zorder=0)
+ax.grid(True, which="minor", axis="y", lw=0.3, color="#eee", zorder=0)
+for spine in ("top", "right"):
+    ax.spines[spine].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(ROOT / "reports" / "wayback_favorite_growth.png", dpi=150,
+            bbox_inches="tight", facecolor="white")

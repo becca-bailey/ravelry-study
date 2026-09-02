@@ -1,0 +1,16 @@
+# Astro static site, same layout as language-of-work: the whole web app
+# lives in `astro/`; the Python pipeline writes its JSON into
+# `astro/src/data` (scripts/export_*.py), so the build has no dependency
+# outside that directory.
+#
+# `base` makes Netlify run the build from `astro/`; `publish` is resolved
+# relative to that base, so `dist` = `astro/dist`. Astro's trailingSlash:
+# "always" + directory output emit `/<route>/index.html`, which Netlify
+# serves for both `/route` and `/route/`.
+[build]
+  base = "astro"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
