@@ -19,3 +19,13 @@ reports/
 docs/journal/
 docs/designer-notes.md
 docs/designer-origins-2015.md
+docs/essay-notes.md
+# pitches, outreach and social drafts
+drafts/
+# notebook with saved outputs (per-designer rows); explore.py is the source
+notebooks/*.ipynb
+# per-person Instagram follower data
+data/anchors_instagram.csv
+data/ig_history.parquet
+# essay-series plan (personal planning + pitch strategy)
+closing-window-research-plan.md
