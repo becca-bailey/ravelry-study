@@ -9,6 +9,7 @@ import { ParentSize } from "@visx/responsive";
 import { scaleLinear, scalePoint } from "@visx/scale";
 import { AreaClosed, LinePath } from "@visx/shape";
 import { useThemeColors } from "@/lib/themeColors";
+import { useVariant } from "@/lib/variant";
 import evergreenData from "@/data/evergreen.json";
 
 /* Section 8's due-diligence figure: does pattern age explain the cohort
@@ -193,8 +194,35 @@ function FlowPanel({ width }: { width: number }) {
 }
 
 export default function EvergreenCurves() {
+  const article = useVariant() === "article";
+  if (article) {
+    // Article variant: the prose only cites the accumulation numbers, so
+    // show the stock panel alone at full width.
+    return (
+      <figure id="evergreen-chart" className="w-full">
+        <figcaption className="mb-3">
+          <h2 className="text-lg font-semibold">
+            A hit pattern earns most of its favorites early
+          </h2>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            Share of a pattern's lifetime favorites it had already collected
+            at each age, for six top designers' catalogs. The line is the
+            median pattern; the shaded band covers the middle half.
+          </p>
+        </figcaption>
+        <div className="h-[340px] w-full">
+          <ParentSize>{({ width }) => <StockPanel width={width} />}</ParentSize>
+        </div>
+        <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
+          Source: archived copies of six designers' Ravelry pages from the
+          Wayback Machine, 2010–2026.
+        </p>
+      </figure>
+    );
+  }
   return (
     <figure id="evergreen-chart" className="w-full">
+
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">
           Do old patterns explain the gap? Measured, and no

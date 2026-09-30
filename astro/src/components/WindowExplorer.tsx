@@ -12,6 +12,7 @@ import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { bisector, extent } from "d3-array";
 import { localPoint } from "@visx/event";
 import { useThemeColors } from "@/lib/themeColors";
+import { useVariant } from "@/lib/variant";
 import windowData from "@/data/window.json";
 
 export interface CohortRow {
@@ -240,23 +241,39 @@ function Chart({ width, height }: { width: number; height: number }) {
 }
 
 export default function WindowExplorer() {
+  const article = useVariant() === "article";
   return (
     <figure id="window-chart" className="w-full">
       <figcaption className="mb-3">
-        <h2 className="text-lg font-semibold">The window of opportunity, measured</h2>
-        <p className="text-sm" style={{ color: "var(--muted)" }}>
-          Share of each entering cohort of Ravelry designers (5+ published patterns) to
-          find an audience — steady for a decade, broken in 2015, briefly generous in
-          2016, closing since.
-        </p>
+        {article ? (
+          <>
+            <h2 className="text-lg font-semibold">
+              A new designer's odds of finding an audience, by starting year
+            </h2>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              Share of designers who started publishing on Ravelry each year
+              who went on to reach a modest audience (100+ fans) or the
+              middle band (500–5,000 fans).
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-semibold">The window of opportunity, measured</h2>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              Share of each entering cohort of Ravelry designers (5+ published patterns) to
+              find an audience — steady for a decade, broken in 2015, briefly generous in
+              2016, closing since.
+            </p>
+          </>
+        )}
       </figcaption>
       <div className="h-[440px] w-full">
         <ParentSize>{({ width, height }) => <Chart width={width} height={height} />}</ParentSize>
       </div>
       <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-        Source: Ravelry pattern registry, random sample of all entering cohorts
-        2007–2024 (N=3,130 designers). Fan counts (Ravelry's designer-level follow, distinct from
-        pattern favorites) as of August 2026.
+        {article
+          ? "Source: random sample of 3,130 Ravelry designers with five or more patterns, grouped by the year of their first pattern. Fan counts as of August 2026."
+          : "Source: Ravelry pattern registry, random sample of all entering cohorts 2007–2024 (N=3,130 designers). Fan counts (Ravelry's designer-level follow, distinct from pattern favorites) as of August 2026."}
       </p>
     </figure>
   );

@@ -19,6 +19,10 @@ const TARGETS = [
   { path: "/", selector: "#evergreen-chart", out: "evergreen_curves_web.png" },
   { path: "/", selector: "#conversion-chart", out: "conversion_web.png" },
   { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
+  // stripped-down versions for the essay/interview (see src/lib/variant.ts)
+  { path: "/?variant=article", selector: "#window-chart", out: "window_explorer_article.png" },
+  { path: "/?variant=article", selector: "#evergreen-chart", out: "evergreen_curves_article.png" },
+  { path: "/?variant=article", selector: "#cadence-chart", out: "cadence_timeline_article.png" },
 ];
 
 const preview = spawn("npx", ["astro", "preview", "--port", String(PORT)], {

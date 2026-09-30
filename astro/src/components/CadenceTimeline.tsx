@@ -7,6 +7,7 @@ import { scaleLinear } from "@visx/scale";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { quadtree } from "d3-quadtree";
 import { useThemeColors } from "@/lib/themeColors";
+import { useVariant, type Variant } from "@/lib/variant";
 import cadenceData from "@/data/cadence.json";
 
 /* The flagship chart: every pattern released by the 18 rule-selected
@@ -22,6 +23,8 @@ interface Designer {
 
 const DESIGNERS: Designer[] = cadenceData.designers as Designer[];
 const MILESTONES: [number, string][] = cadenceData.milestones as [number, string][];
+// article variant: only the events the prose actually discusses
+const ARTICLE_MILESTONES = new Set([2007, 2013, 2016]);
 
 const MARGIN = { top: 148, right: 24, bottom: 36, left: 176 }; // top holds the vertical milestone labels
 const ROW_H = 34;
@@ -55,8 +58,12 @@ function decimalYear(month: string): number {
   return y + (m - 0.5) / 12;
 }
 
-function Chart({ width }: { width: number }) {
+function Chart({ width, variant }: { width: number; variant: Variant }) {
   const theme = useThemeColors();
+  const article = variant === "article";
+  const milestones = article
+    ? MILESTONES.filter(([year]) => ARTICLE_MILESTONES.has(year))
+    : MILESTONES;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dots, setDots] = useState<Dot[]>([]);
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
@@ -145,14 +152,16 @@ function Chart({ width }: { width: number }) {
               <text x={-10} y={rowY(i) + 4} textAnchor="end" fontSize={11}
                 fill="var(--foreground)">
                 {d.name}
-                <tspan fill={theme.role.muted} fontSize={9}>
-                  {"  " + d.badges}
-                </tspan>
+                {!article && (
+                  <tspan fill={theme.role.muted} fontSize={9}>
+                    {"  " + d.badges}
+                  </tspan>
+                )}
               </text>
             </g>
           ))}
 
-          {MILESTONES.map(([year, label]) => (
+          {milestones.map(([year, label]) => (
             <g key={year}>
               <line x1={xScale(year)} x2={xScale(year)} y1={0} y2={innerH}
                 stroke={theme.role.muted} strokeDasharray="5 4"
@@ -219,21 +228,40 @@ function Chart({ width }: { width: number }) {
 }
 
 export default function CadenceTimeline() {
+  const variant = useVariant();
+  const article = variant === "article";
   return (
     <figure id="cadence-chart" className="w-full">
       <figcaption className="mb-3">
-        <h2 className="text-lg font-semibold">What success took, by era of entry</h2>
-        <p className="text-sm" style={{ color: "var(--muted)" }}>
-          Every pattern released by the rule-selected cast — one dot per pattern,
-          sized by favorites, rows sorted by entrance. Badges: C cohort champion ·
-          F 20k+ designer fans · K KnitStars faculty · E 3+ prestige-venue
-          patterns.
-        </p>
+        {article ? (
+          <>
+            <h2 className="text-lg font-semibold">
+              How much work success takes
+            </h2>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              Every pattern released by 18 of Ravelry's most successful
+              knitting designers. One dot per pattern, sized by how many
+              knitters favorited it. Rows are sorted by when each designer
+              started publishing.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-semibold">What success took, by era of entry</h2>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              Every pattern released by the rule-selected cast — one dot per pattern,
+              sized by favorites, rows sorted by entrance. Badges: C cohort champion ·
+              F 20k+ designer fans · K KnitStars faculty · E 3+ prestige-venue
+              patterns.
+            </p>
+          </>
+        )}
       </figcaption>
-      <ParentSize>{({ width }) => <Chart width={width} />}</ParentSize>
+      <ParentSize>{({ width }) => <Chart width={width} variant={variant} />}</ParentSize>
       <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-        Source: Ravelry pattern registry, full catalogs of 18 designers selected
-        by mechanical rule (2+ badges); pattern favorite counts as of August 2026.
+        {article
+          ? "Source: Ravelry pattern data, favorite counts as of August 2026."
+          : "Source: Ravelry pattern registry, full catalogs of 18 designers selected by mechanical rule (2+ badges); pattern favorite counts as of August 2026."}
       </p>
     </figure>
   );
