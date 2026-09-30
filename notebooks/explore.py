@@ -664,3 +664,253 @@ for spine in ("top", "right"):
 fig.tight_layout()
 fig.savefig(ROOT / "reports" / "wayback_favorite_growth.png", dpi=150,
             bbox_inches="tight", facecolor="white")
+
+# %% [markdown]
+# ## 9. Fans vs. pattern favorites — is the substitution safe?
+#
+# The cohort headline counts **designer fans**. The Wayback snapshots in
+# §8/§8b count **favorites on individual patterns**, because the archive
+# preserved pattern listings and not fan counts. The due-diligence
+# paragraph in the draft leans on those two being interchangeable, so:
+# do they move together, and does the exchange rate hold across cohorts?
+#
+# Gut check only, on designers already fetched. `pattern_level.parquet`
+# is the **named cast** — the top-fan designer of each cohort year plus
+# the anchors — not a random sample, so every number here inherits that
+# selection. Restricted to catalogs ≥95% fetched, so the totals are totals.
+
+# %%
+_pl = pd.read_parquet(DATA / "full" / "pattern_level.parquet")
+_pl = _pl.assign(pub=pd.to_datetime(_pl["published"], errors="coerce"))
+NOW = pd.Timestamp("2026-09-25")
+
+_tot = _pl.groupby("designer_id").agg(
+    fav_total=("favorites", "sum"),
+    n_fetched=("pattern_id", "size"),
+    mean_pattern_age=("pub", lambda s: ((NOW - s).dt.days / 365.25).mean()))
+
+cast = (_tot.join(df.set_index("designer_id")
+                  [["designer_name", "fan_count", "n_patterns", "cohort_year"]],
+                  how="inner")
+        .dropna(subset=["cohort_year", "fan_count", "mean_pattern_age"]))
+cast = cast[cast["n_fetched"] >= 0.95 * cast["n_patterns"]].copy()
+cast["ratio"] = cast["fan_count"] / cast["fav_total"]
+
+print(f"{len(cast)} designers with a full catalog and a cohort year, "
+      f"{int(cast.cohort_year.min())}–{int(cast.cohort_year.max())}")
+cast.sort_values("cohort_year")[
+    ["designer_name", "cohort_year", "fan_count", "fav_total", "ratio"]]
+
+# %% [markdown]
+# ### 9a. They do move together
+#
+# Log-log r ≈ 0.99, and the slope sits near 1, so fans and summed
+# favorites scale about proportionally. That's the gut check: favorites
+# are not measuring some unrelated thing.
+#
+# What it doesn't settle: across designers spanning two orders of
+# magnitude in size, even r = 0.99 would survive a cohort-varying
+# multiplicative offset untouched. §9b looks for one.
+
+# %%
+_lf, _lv = np.log10(cast["fan_count"]), np.log10(cast["fav_total"])
+_r = np.corrcoef(_lf, _lv)[0, 1]
+_fit = np.polyfit(_lv, _lf, 1)
+
+fig, ax = plt.subplots(figsize=(7.4, 6))
+sc = ax.scatter(cast["fav_total"], cast["fan_count"], c=cast["cohort_year"],
+                cmap="viridis", s=78, zorder=3, edgecolor="white", lw=0.7)
+_grid = np.logspace(np.log10(cast.fav_total.min()),
+                    np.log10(cast.fav_total.max()), 50)
+ax.plot(_grid, 10 ** np.polyval(_fit, np.log10(_grid)),
+        color="#999", lw=1.2, ls="--", zorder=2)
+
+ax.set_xscale("log")
+ax.set_yscale("log")
+ax.set_xlabel("sum of favorites across the designer's patterns")
+ax.set_ylabel("designer fan count")
+ax.set_title("Fans and summed pattern favorites scale together",
+             fontsize=13.5, fontweight="bold", loc="left", pad=30)
+ax.text(0, 1.03, f"{len(cast)} full catalogs · log-log r = {_r:.3f} · "
+        f"slope {_fit[0]:.2f} · roughly one fan per "
+        f"{1 / cast.ratio.median():.0f} favorites",
+        transform=ax.transAxes, fontsize=10, color="#666")
+ax.grid(True, lw=0.4, color="#ddd", zorder=0)
+for spine in ("top", "right"):
+    ax.spines[spine].set_visible(False)
+fig.colorbar(sc, ax=ax, label="cohort year", pad=0.02)
+fig.tight_layout()
+
+# %% [markdown]
+# ### 9b. The exchange rate does drift by cohort
+#
+# Fans per favorite rises with cohort year — later designers in this cast
+# show more fans per favorite, around 1.2× per decade. Two readings, and
+# a cross-section can't separate them:
+#
+# - **behavioural** — later knitters fan a designer more readily relative
+#   to favouriting individual patterns
+# - **mechanical** — a knitter fans a designer once, so fans saturate
+#   against a finite audience, while summed favorites compound with every
+#   new pattern *and* keep accruing over each pattern's whole life (§8b)
+#
+# The mechanical story predicts this exact result with no behavioural
+# difference at all. Note the direction: if the drift is real, a
+# favorites-denominated cohort curve would decline **more steeply** than
+# the fan curve, which would make the substitution conservative.
+
+# %%
+fig, axes = plt.subplots(1, 2, figsize=(13, 5.2), sharey=True)
+for ax, xcol, xlabel, color, logx in [
+        (axes[0], cast["cohort_year"], "cohort year", "#2a78d6", False),
+        (axes[1], cast["n_patterns"], "patterns published (log)", "#eb6834", True)]:
+    ax.scatter(xcol, cast["ratio"], s=68, color=color, alpha=0.85,
+               edgecolor="white", lw=0.7, zorder=3)
+    lx = np.log10(xcol) if logx else xcol
+    f = np.polyfit(lx, np.log10(cast["ratio"]), 1)
+    xs = np.linspace(lx.min(), lx.max(), 30)
+    ax.plot(10 ** xs if logx else xs, 10 ** np.polyval(f, xs),
+            color="#555", lw=1.3, ls="--", zorder=2)
+    ax.set_xlabel(xlabel)
+    ax.grid(True, lw=0.4, color="#ddd", zorder=0)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+
+axes[1].set_xscale("log")
+axes[0].set_ylabel("fans per favorite")
+axes[0].set_title("Fans per favorite rises with cohort year", fontsize=12,
+                  fontweight="bold", loc="left")
+axes[1].set_title("Flat against catalog size", fontsize=12,
+                  fontweight="bold", loc="left")
+fig.suptitle("The exchange rate is not constant across cohorts",
+             fontsize=13.5, fontweight="bold", x=0.02, ha="left")
+fig.tight_layout()
+
+# %% [markdown]
+# ### 9c. Cohort year and pattern age are the same variable here
+#
+# The test that would separate behavioural from mechanical: put mean
+# pattern age in the regression next to cohort year. A 2007 designer who
+# published most of their catalog recently has a young mean pattern age
+# despite an old cohort year, so in principle there's independent
+# variation to exploit.
+#
+# In this cast there isn't: `corr(cohort_year, mean_pattern_age) ≈ −0.95`.
+# Each predictor is significant alone and neither survives when both are
+# in. Twenty-six champion designers can't carry this.
+
+# %%
+def _ols(frame, cols, target="log_ratio"):
+    X = np.column_stack([np.ones(len(frame))] + [frame[c].values for c in cols])
+    y = frame[target].values
+    beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+    resid = y - X @ beta
+    s2 = resid @ resid / (len(frame) - X.shape[1])
+    se = np.sqrt(np.diag(s2 * np.linalg.inv(X.T @ X)))
+    r2 = 1 - (resid @ resid) / ((y - y.mean()) @ (y - y.mean()))
+    return pd.DataFrame({"beta": beta, "se": se, "t": beta / se},
+                        index=["intercept"] + cols).assign(r2=r2)
+
+
+cast["log_ratio"] = np.log10(cast["ratio"])
+cast["cohort_since_2007"] = cast["cohort_year"] - 2007
+cast["log_n_patterns"] = np.log10(cast["n_patterns"])
+
+print("corr(cohort_year, mean_pattern_age) = "
+      f"{np.corrcoef(cast.cohort_year, cast.mean_pattern_age)[0, 1]:+.3f}\n")
+for label, cols in [
+        ("cohort only", ["cohort_since_2007"]),
+        ("pattern age only", ["mean_pattern_age"]),
+        ("both", ["cohort_since_2007", "mean_pattern_age"]),
+        ("both + catalog size", ["cohort_since_2007", "mean_pattern_age",
+                                 "log_n_patterns"])]:
+    print(f"log10(fans / total favorites) — {label}")
+    print(_ols(cast, cols).round(4).to_string(), "\n")
+
+# %% [markdown]
+# **Verdict.** Favorites and fans are strongly correlated and scale about
+# proportionally, so favorites are a reasonable stand-in for the shape of
+# the argument. The exchange rate is not constant across cohorts, and
+# whether that drift is behavioural or an artifact of favorites
+# accumulating over a pattern's life is undetermined from one snapshot of
+# 26 champions. The drift points in the conservative direction, so the
+# substitution doesn't look like it flatters the finding — but that's a
+# lean, not a result.
+#
+# Settling it needs a random sample rather than champions, measured at a
+# **common pattern age** (2–3 years), deflating today's counts with the
+# accumulation curves in §8. §9d prices that.
+
+# %% [markdown]
+# ### 9d. Why the cohort curve can't be re-run on favorites for free
+#
+# `data/raw/api/` holds ~27,900 cached pattern details spread across all
+# 3,130 sampled designers, a median 8% of catalog each — which looks like
+# a free subsample to scale up to totals. It isn't. Those ~5 details per
+# designer are exactly the set `fetch_designers.enrich()` pulls for date
+# resolution: the first two hits in `date_asc` order, the minimum pattern
+# ID, and the maximum pattern ID. Earliest and newest by construction —
+# both ends of the accumulation curve, nothing from the middle.
+
+# %%
+FRAME = df.dropna(subset=["cohort_year", "fan_count"]).query("n_patterns >= 5")
+
+
+def fetch_cost(per_cohort, max_catalog=None, seed=0):
+    """Pattern-detail API calls for a stratified full-catalog sample."""
+    pool = FRAME if max_catalog is None else FRAME[FRAME["n_patterns"] <= max_catalog]
+    picked = (pool.groupby("cohort_year", group_keys=False)
+              .apply(lambda g: g.sample(min(per_cohort, len(g)), random_state=seed),
+                     include_groups=False))
+    return int(picked["n_patterns"].sum()), len(picked)
+
+
+for _per, _cap in [(20, None), (12, None), (20, 120), (20, 40)]:
+    _calls, _n = fetch_cost(_per, _cap)
+    _txt = "no cap" if _cap is None else f"catalogs ≤ {_cap}"
+    print(f"{_per:>3} per cohort, {_txt:<14} {_n:>4} designers · "
+          f"{_calls:>7,} calls · {_calls // _n:>4} per designer")
+print(f"\nfull sampled frame, no subsampling: {int(FRAME.n_patterns.sum()):,} calls")
+
+# %% [markdown]
+# A catalog cap is what makes this affordable: ≤120 patterns halves the
+# bill and still covers 377 of the 378 designers a 20-per-cohort sample
+# would pick, because the median catalog is 60 and the cost concentrates
+# in a handful of very prolific 2007-era designers. §9b licenses the cap
+# for the ratio question — fans per favorite is flat against catalog size.
+# It would bias a *level* comparison, so it belongs on the ratio only.
+
+# %% [markdown]
+# ### 9e. Flagged while sizing the above: the headline and catalog size
+#
+# Not part of the favorites question, but material. Split the sample by
+# catalog size and the cohort differences in P(fans ≥ 100) largely go
+# away until 2019.
+
+# %%
+_f = FRAME.copy()
+_f["era"] = pd.cut(_f["cohort_year"], [2006, 2013, 2018, 2026],
+                   labels=["2007–13", "2014–18", "2019–25"])
+_f["catalog"] = pd.cut(_f["n_patterns"], [4, 10, 20, 40, 80, 160, 100_000],
+                       labels=["5–10", "11–20", "21–40", "41–80", "81–160", "160+"])
+print("P(fans >= 100) within catalog-size strata:\n")
+print(pd.crosstab(_f["era"], _f["catalog"],
+                  values=(_f["fan_count"] >= 100), aggfunc="mean").round(2).to_string())
+print("\nn:\n")
+print(pd.crosstab(_f["era"], _f["catalog"]).to_string())
+print("\nmedian catalog size by cohort year:")
+print(_f.groupby("cohort_year")["n_patterns"].median().to_string())
+
+# %% [markdown]
+# Catalog size is not a confound to control away. It's partly an outcome
+# of tenure (a 2025 designer has had one year to publish) and partly an
+# outcome of success (designers who get traction keep publishing), so
+# conditioning on it conditions on both — and inside the 160+ bin, a
+# 2019–25 designer who shipped 160 patterns in six years is a different
+# animal from a 2007 designer who shipped 160 over nineteen.
+#
+# The headline holds as stated: a designer who started in cohort Y has
+# probability P of reaching 100 fans, observed today. What the strata add
+# is a sharper sentence — conversion per pattern held roughly flat through
+# 2018, and what changed across cohorts is how many patterns a cohort has
+# had time to publish. That's Secondary Question 1 from the research plan.
