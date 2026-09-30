@@ -14,3 +14,8 @@ data/ig_followers.parquet
 data/manifests/api_fetches.jsonl
 notebooks/*-executed.ipynb
 reports/
+# personal notes: journal and observations about individual designers
+# stay local (files kept on disk, untracked)
+docs/journal/
+docs/designer-notes.md
+docs/designer-origins-2015.md
