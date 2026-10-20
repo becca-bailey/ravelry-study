@@ -8,11 +8,13 @@ Serves two rosters:
   --roster yarn-brands  the evergreen pattern panel (data/yarn_brands.yaml).
                         No separate project list; the search *is* the list.
 
-Route, read-only key: projects/search.json?pattern=<permalink>
-&include=notes packs, one pass per status, paged. `pattern=` takes the
-pattern's permalink (found 2026-10-20; `pattern-id=`/`pattern_id=` are
-ignored and `pattern=<numeric id>` returns nothing). It is ~98% on target,
-so hits are still filtered locally on pattern_id. Before this the script
+Route, read-only key: projects/search.json?pattern=<pattern name>
+&include=notes packs, one pass per status, paged. `pattern=` matches the
+pattern *name* (found 2026-10-20; `pattern-id=`/`pattern_id=` are ignored,
+`pattern=<numeric id>` and a hyphenated or suffixed permalink return
+nothing). The pattern's name from patterns/{id}.json is used. It is
+30-100% on target ("The Weekender" also matches other weekenders), so hits
+are still filtered locally on pattern_id. Before this the script
 used a quoted-name fulltext query, which for generic names ("Monkey",
 "Barley") returned up to 96k hits with 1-8% on target and missed renamed
 projects. Deep paging works (page 600 of a 658-page result is full); an
@@ -130,7 +132,10 @@ def bulk_search(client: RavelryClient, item, fetched_at: str, include: str,
     the search cap and lets a renamed-project miss show up as such."""
     rows: dict[int, dict] = {}
     packs: list[dict] = []
-    permalink = client.get_pattern(item.pattern_id)["pattern"]["permalink"]
+    # `pattern=` is a name match. The permalink does not work: hyphens kill
+    # it ("color-affection" -> 0 hits) and duplicate-name suffixes too
+    # ("sophie-scarf-2" -> 6 hits). The pattern's own name does.
+    permalink = client.get_pattern(item.pattern_id)["pattern"]["name"]
     for status in STATUSES:
         page = 1
         while True:

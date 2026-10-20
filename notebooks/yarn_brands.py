@@ -44,12 +44,23 @@ except NameError:
 pd.set_option("display.width", 200); pd.set_option("display.max_columns", 30); pd.set_option("display.max_colwidth", 120)
 sns.set_theme(style="whitegrid", context="notebook")
 plt.rcParams["axes.grid.axis"] = "y"
+_orig_savefig = plt.Figure.savefig
+def _savefig(fig, *a, **k):
+    """Years on line charts are integers (no 2007.5)."""
+    for ax in fig.axes:
+        if (ax.lines and not ax.containers and not ax.images and not ax.collections
+                and isinstance(ax.xaxis.get_major_locator(), mtick.AutoLocator)):
+            ax.xaxis.set_major_locator(mtick.MaxNLocator(integer=True))
+    return _orig_savefig(fig, *a, **k)
+plt.Figure.savefig = _savefig
 plt.rcParams["axes.spines.top"] = plt.rcParams["axes.spines.right"] = False
 PCT = mtick.PercentFormatter(1.0, decimals=0)
 # Okabe-Ito: colourblind-safe, assigned to brands in a fixed order below.
 CAT = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442", "#999999"]
 
 ACQUIRED = 2017          # Blue Point / Premier Needle Arts closes on Crafts Americana, Feb 2017
+MIN_PATTERNS = 5         # a panel-year needs this many patterns before its index is shown
+YEAR_LOC = mtick.MaxNLocator(integer=True)
 THIS_YEAR = pd.Timestamp.today().year
 LAST_FULL_YEAR = THIS_YEAR - 1
 
@@ -122,6 +133,14 @@ display(dups[["norm", "company_id", "company_name", "n"]].to_string(index=False)
 # %%
 shares = B.brand_share(frame, brands)
 index = B.panel_index(shares, min_denom=50)
+index = index[index["n_patterns"] >= MIN_PATTERNS]
+FIRST_YEAR = int(index["year"].min())
+print(f"panel index shown from {FIRST_YEAR} (first year with >= {MIN_PATTERNS} patterns)")
+# evergreen-only variant: recent anchors bring designer/yarn pairings (The
+# Shift and Spincycle) that look like brand spikes but are pattern arrivals
+EVERGREEN = [k for k, p in roster.items() if p.role == "evergreen"]
+index_ev = B.panel_index(shares[shares["key"].isin(EVERGREEN)], min_denom=50)
+index_ev = index_ev[index_ev["n_patterns"] >= MIN_PATTERNS]
 top = B.top_companies(shares, 30)
 display(top)
 
@@ -165,14 +184,15 @@ print("Knit Picks ids:", KP, {k: v for k, v in CONTROL.items()})
 CONTROL_IDS = sorted({i for v in CONTROL.values() for i in v})
 
 
-def group_share(frame, brands, ids, min_denom=50):
+def group_share(frame, brands, ids, min_denom=50, min_patterns=MIN_PATTERNS):
     """Equal-weight panel index for a *group* of company ids (a project
     using any of them counts once)."""
     b = brands[brands["company_id"].isin(ids)].drop_duplicates(["project_id"])
     b = b.assign(company_id=0, company_name="group")
     s = B.brand_share(frame, b)
-    # brand_share only knows denominators from projects with a linked brand
-    return B.panel_index(s, min_denom=min_denom).set_index("year")["index"].sort_index()
+    ix = B.panel_index(s, min_denom=min_denom)
+    ix = ix[ix["n_patterns"] >= min_patterns]
+    return ix.set_index("year")["index"].sort_index()
 
 
 kp = group_share(frame, brands, KP)
@@ -213,15 +233,16 @@ for ax, st in zip(axes, ["shawl", "sock", "hat", "cowl", "garment"]):
     f = frame[frame["key"].map(lambda k: roster[k].stratum) == st]
     if f["has_brand"].sum() < 500:
         ax.set_title(f"{st} (too few)"); continue
-    a = group_share(f, brands, KP, min_denom=30); c = group_share(f, brands, CONTROL_IDS, min_denom=30)
+    a = group_share(f, brands, KP, min_denom=30, min_patterns=1); c = group_share(f, brands, CONTROL_IDS, min_denom=30, min_patterns=1)
     a, c = a[a.index <= LAST_FULL_YEAR], c[c.index <= LAST_FULL_YEAR]
     ax.plot(a.index, a.values, color=CAT[0], lw=2, label="Knit Picks")
     ax.plot(c.index, c.values, color=CAT[7], lw=2, label="control")
     ax.axvline(ACQUIRED, color="0.6", lw=1, ls="--")
     ax.set_title(st)
+    ax.set_xlim(2007, LAST_FULL_YEAR + 1); ax.xaxis.set_major_locator(mtick.MultipleLocator(6))
 axes[0].yaxis.set_major_formatter(PCT); axes[0].legend(frameon=False, fontsize=8)
-fig.suptitle("Knit Picks vs control basket, by pattern type", y=1.02)
-fig.tight_layout(); fig.savefig(REPORTS / "knit_picks_by_stratum.png", dpi=150)
+fig.suptitle("Knit Picks vs control basket, by pattern type")
+fig.tight_layout(); fig.savefig(REPORTS / "knit_picks_by_stratum.png", dpi=150, bbox_inches="tight")
 
 # %%
 # stayers: the same knitters before and after
@@ -276,7 +297,7 @@ print(f"{(has_notes & ~frame['has_packs']).sum():,} projects have notes but no p
 # %%
 N_RAREFY = 200
 div = B.rarefied_diversity(frame, brands, n=N_RAREFY, boots=100, tail_k=3)
-div = div[div["year"] <= LAST_FULL_YEAR]
+div = div[div["year"].between(FIRST_YEAR, LAST_FULL_YEAR)]
 dy = div.groupby("year").agg(eff_brands=("eff_brands", "mean"), top10_share=("top10_share", "mean"),
                              tail_share=("tail_share", "mean"), n_patterns=("key", "nunique"))
 display(dy.round(3))
@@ -291,6 +312,18 @@ for ax, col, title in [(axes[0], "eff_brands", f"Effective number of brands\n(pe
 axes[1].yaxis.set_major_formatter(PCT); axes[2].yaxis.set_major_formatter(PCT)
 fig.tight_layout(); fig.savefig(REPORTS / "variety.png", dpi=150)
 
+# %%
+# the same patterns, then and now: a paired comparison so the mix of
+# patterns in each year cannot drive the trend
+THEN, NOW = (2011, 2013), (2021, 2023)
+paired = (div.assign(era=np.select([div["year"].between(*THEN), div["year"].between(*NOW)], ["then", "now"], None))
+             .dropna(subset=["era"]).groupby(["key", "era"])["eff_brands"].mean().unstack())
+paired = paired.dropna().assign(change=lambda d: d["now"] - d["then"])
+paired.index = [roster[k].name for k in paired.index]
+display(paired.round(1).sort_values("change"))
+print(f"{(paired['change'] > 0).sum()} of {len(paired)} patterns have more effective brands in {NOW} than in {THEN}; "
+      f"median change {paired['change'].median():+.1f}")
+
 # %% [markdown]
 # ## 4. Trend shapes
 #
@@ -300,7 +333,7 @@ fig.tight_layout(); fig.savefig(REPORTS / "variety.png", dpi=150)
 # above half-peak in the last full year has a censored fall.
 
 # %%
-idx_full = index[index["year"] <= LAST_FULL_YEAR]
+idx_full = index_ev[index_ev["year"] <= LAST_FULL_YEAR]
 shp = B.shapes(idx_full, min_total=500)
 display(shp.head(40))
 
@@ -315,8 +348,8 @@ for _, r in shp.head(20).iterrows():
 lim = max(shp["rise"].max(), shp["fall"].max()) + 1
 ax.plot([0, lim], [0, lim], color="0.8", lw=1, ls=":")
 ax.set(xlabel="years to rise (half-peak → peak)", ylabel="years to fall (peak → half-peak)",
-       title="Fast up, fast down? Brand trend shapes (size = panel projects)")
-ax.legend(frameon=False, fontsize=9, loc="upper left")
+       title="Fast up, fast down? Brand trend shapes, evergreen patterns (size = panel projects)")
+ax.legend(frameon=False, fontsize=9, loc="lower right")
 fig.tight_layout(); fig.savefig(REPORTS / "trend_shapes.png", dpi=150)
 
 # %%
@@ -325,7 +358,7 @@ TOPN = top.head(24)
 fig, axes = plt.subplots(4, 6, figsize=(16, 9), sharex=True)
 for ax, (cid, nm) in zip(axes.flat, TOPN[["company_id", "company_name"]].itertuples(index=False)):
     s = idx_full[idx_full["company_id"] == cid].set_index("year")["index"].sort_index()
-    s = s.reindex(range(2005, LAST_FULL_YEAR + 1))
+    s = s.reindex(range(FIRST_YEAR, LAST_FULL_YEAR + 1))
     ax.fill_between(s.index, 0, s.values, color=CAT[0], alpha=0.25)
     ax.plot(s.index, s.values, color=CAT[0], lw=1.5)
     ax.axvline(ACQUIRED, color="0.7", lw=0.8, ls="--")
@@ -333,7 +366,7 @@ for ax, (cid, nm) in zip(axes.flat, TOPN[["company_id", "company_name"]].itertup
     ax.set_yticks([]); ax.grid(False)
 for ax in axes[-1]:
     ax.set_xticks([2008, 2014, 2020])
-fig.suptitle("Share of panel projects by brand (each panel on its own scale)", y=1.0)
+fig.suptitle("Share of evergreen-panel projects by brand (each panel on its own scale)", y=1.0)
 fig.tight_layout(); fig.savefig(REPORTS / "small_multiples.png", dpi=150)
 
 # %% [markdown]

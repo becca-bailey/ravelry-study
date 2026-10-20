@@ -117,10 +117,14 @@ Replacement strategy, three layers:
 
 Probed while setting up the yarn-brand panel (`scripts/enrich_projects.py`):
 
-- `pattern=<permalink>` **works** as a pattern filter on `projects/search.json`
+- `pattern=<pattern name>` **works** as a pattern filter on `projects/search.json`
   (e.g. `pattern=hitchhiker`: 33,884 finished results, 98% with the target
-  `pattern_id`; the rest are presumably multi-pattern projects). Hits are
-  still validated on `pattern_id` locally.
+  `pattern_id`; `pattern=color affection`: 13,514, 100%). It is a name
+  match, not a permalink match: `pattern=color-affection` returns zero
+  results and so does `pattern=sophie scarf 2` (the permalink of a
+  duplicate-named pattern), so pass the pattern's `name`. Hits are still
+  validated on `pattern_id` locally (`pattern=The Weekender` is only ~30%
+  on target).
 - `pattern-id=`, `pattern_id=` and `pattern-permalink=` are ignored (the
   earlier "pattern-id is ignored" note stands); `pattern=<numeric id>`
   returns zero results. An ignored filter with no query returns the whole

@@ -228,10 +228,20 @@ patterns:
     role: anchor
     note: projects=15237
 
-# Fold renamed / sub-label companies into one brand key. Filled in from the
-# data (see notebooks/yarn_brands.py section 0, which lists near-duplicate
-# company names). ids are Ravelry yarn_company_id.
-company_aliases: []
-#  - id: 0            # canonical yarn_company_id
-#    name: Knit Picks
-#    aliases: [0]     # e.g. WeCrochet
+# Fold renamed / sub-label companies into one brand key (ids are Ravelry
+# yarn_company_id, found from the near-duplicate list in notebook section 0).
+# Knit Picks has no second id in the panel: WeCrochet yarns are linked
+# under Knit Picks (96).
+company_aliases:
+  - id: 45
+    name: Patons
+    aliases: [4403, 4417]     # Patons Australia, Patons UK
+  - id: 10437
+    name: Regia
+    aliases: [13336]          # Schachenmayr Regia (same line, renamed)
+  - id: 19
+    name: Cascade Yarns
+    aliases: [30013]          # stray duplicate entry
+  - id: 8150
+    name: DyeForYarn
+    aliases: [9089]           # DyeForWool
