@@ -75,6 +75,17 @@
   --mkal-finish-3: var(--palette-plasma); /* later */
   --mkal-open: var(--palette-slate);
   --mkal-abandoned: #e8955e; /* peach fuzz, deepened to clear the chroma floor */
+
+  /* Yarn-brand grapher (src/components/YarnBrandGrapher.tsx): six categorical
+     line colours, one per picker slot. Lines on a white page need more
+     contrast than fills, so the pale palette steps are swapped for darker
+     hues of the same family; the dark-mode set below is its own pick. */
+  --brand-line-1: var(--palette-arcade);
+  --brand-line-2: var(--palette-halt);
+  --brand-line-3: #1f7a73; /* teal */
+  --brand-line-4: #d63384; /* magenta */
+  --brand-line-5: #9a7b00; /* ochre */
+  --brand-line-6: #0072b2; /* blue */
 }
 
 @theme inline {
@@ -120,6 +131,12 @@
     --mkal-finish-1: #8b6dff;
     --mkal-finish-2: #a98cff;
     --mkal-finish-3: var(--palette-plasma);
+    --brand-line-1: #a98cff;
+    --brand-line-2: var(--palette-halt);
+    --brand-line-3: #5fbfb2;
+    --brand-line-4: #f277b5;
+    --brand-line-5: #e6c04a;
+    --brand-line-6: #56b4e9;
   }
 }
 

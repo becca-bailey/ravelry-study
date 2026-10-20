@@ -57,6 +57,12 @@ const FALLBACK: Record<string, string> = {
   "--mkal-finish-3": "#d599fb",
   "--mkal-open": "#9ca3af",
   "--mkal-abandoned": "#e8955e",
+  "--brand-line-1": "#5e1af4",
+  "--brand-line-2": "#ff6230",
+  "--brand-line-3": "#1f7a73",
+  "--brand-line-4": "#d63384",
+  "--brand-line-5": "#9a7b00",
+  "--brand-line-6": "#0072b2",
 };
 
 function readToken(name: string): string {
