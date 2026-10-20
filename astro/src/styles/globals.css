@@ -35,6 +35,7 @@
   --palette-peach: #ffbe98; /* Peach fuzz */
   --palette-halt: #ff6230; /* Halt and catch fire */
   --palette-slate: #9ca3af; /* neutral grey for control/muted */
+  --palette-arcade-deep: #3a1097; /* arcade at 62% toward black (same as --chart-5) */
 
   /* Layer B — semantic roles */
   --info: var(--palette-slate-blue);
@@ -63,6 +64,17 @@
   --chart-contrast-1: var(--palette-halt);
   --chart-contrast-2: var(--palette-peach);
   --chart-contrast-3: color-mix(in srgb, var(--palette-slate-blue) 48%, white); /* periwinkle */
+
+  /* MKAL outcome scale (src/components/Mkal*.tsx). The three finished tiers are
+     an ORDINAL ramp of the arcade hue (fast -> slow = dark -> light), "still
+     open" is the de-emphasis grey, "abandoned" the one warm slot. Validated
+     with the dataviz palette checker in both modes; the dark steps below are
+     their own picks, not a flip. */
+  --mkal-finish-1: var(--palette-arcade-deep); /* on time */
+  --mkal-finish-2: var(--palette-arcade); /* within 90 days */
+  --mkal-finish-3: var(--palette-plasma); /* later */
+  --mkal-open: var(--palette-slate);
+  --mkal-abandoned: #e8955e; /* peach fuzz, deepened to clear the chroma floor */
 }
 
 @theme inline {
@@ -104,6 +116,10 @@
     /* On dark, the light roles read fine as text — use them directly. */
     --accent-text: var(--accent);
     --warning-text: var(--warning);
+    /* MKAL ramp: lifted so the dark end clears the dark surface (4.75:1). */
+    --mkal-finish-1: #8b6dff;
+    --mkal-finish-2: #a98cff;
+    --mkal-finish-3: var(--palette-plasma);
   }
 }
 
@@ -118,4 +134,43 @@ body {
 h1,
 h2 {
   color: var(--origin);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PAGE PALETTE: "west" (the MKAL page). Stephen West's book-cover set:
+   deep teal, chartreuse, saffron, bubblegum pink, sky blue. Chart jobs keep
+   the same encoding as the default palette (one-hue ramp for the finished
+   tiers, grey for still open, one warm slot for abandoned) and every pair
+   was run through the dataviz validator. Pink is kept out of the data
+   series: against teal it fails deutan separation (ΔE 5.9). Chartreuse is
+   decorative only in light mode (1.9:1 on white) and the heading colour in
+   dark mode (passes). Activated by <Layout palette="west">.
+   ───────────────────────────────────────────────────────────────────────── */
+:root[data-palette="west"] {
+  --west-teal-deep: #0f3d3a;
+  --west-teal: #1f7a73;
+  --west-teal-light: #5fbfb2;
+  --west-teal-pale: #b5e9e0;
+  --west-chartreuse: #d9e021;
+  --west-saffron: #f0a030;
+  --west-pink: #e2458f;
+  --west-grey: #7d786f;
+
+  --origin: var(--west-teal-deep);
+  --mkal-finish-1: var(--west-teal-deep); /* on time */
+  --mkal-finish-2: var(--west-teal); /* within 90 days */
+  --mkal-finish-3: var(--west-teal-light); /* later */
+  --mkal-abandoned: var(--west-saffron);
+  --mkal-open: var(--west-grey);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-palette="west"] {
+    --origin: var(--west-chartreuse);
+    /* ramp lifted one step so the dark end clears the dark surface (3.4:1) */
+    --mkal-finish-1: var(--west-teal);
+    --mkal-finish-2: var(--west-teal-light);
+    --mkal-finish-3: var(--west-teal-pale);
+    --mkal-open: #8a857c;
+  }
 }

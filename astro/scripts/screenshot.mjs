@@ -19,10 +19,17 @@ const TARGETS = [
   { path: "/", selector: "#evergreen-chart", out: "evergreen_curves_web.png" },
   { path: "/", selector: "#conversion-chart", out: "conversion_web.png" },
   { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
+  { path: "/mkal/", selector: "#mkal-participation", out: "mkal_participation_web.png" },
+  { path: "/mkal/", selector: "#mkal-outcomes", out: "mkal_outcomes_web.png" },
   // stripped-down versions for the essay/interview (see src/lib/variant.ts)
   { path: "/?variant=article", selector: "#window-chart", out: "window_explorer_article.png" },
   { path: "/?variant=article", selector: "#evergreen-chart", out: "evergreen_curves_article.png" },
   { path: "/?variant=article", selector: "#cadence-chart", out: "cadence_timeline_article.png" },
+  { path: "/mkal/?variant=article", selector: "#mkal-participation", out: "mkal_participation_article.png" },
+  { path: "/mkal/?variant=article", selector: "#mkal-outcomes-bars", out: "mkal_outcomes_article.png" },
+  { path: "/mkal/?variant=article&year=2014", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2014_article.png" },
+  { path: "/mkal/?variant=article&year=2021", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2021_article.png" },
+  { path: "/mkal/?variant=article&year=2025", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2025_article.png" },
 ];
 
 const preview = spawn("npx", ["astro", "preview", "--port", String(PORT)], {

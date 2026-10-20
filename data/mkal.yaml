@@ -1,0 +1,99 @@
+# Westknits Mystery Knit-Along roster: one entry per annual MKAL shawl
+# (plus the 2017 bonus mystery). Pattern IDs confirmed against
+# patterns/search.json?designer=Stephen West on 2026-10-13.
+#
+# clue1: hand-checked cast-on date (clue 1 release) where known from the
+# Westknits / Stephen & Penelope posts; left out where it is derived from
+# the data (mode of project start dates in the launch month). Clues come
+# weekly, four in total: Fridays through 2021, Thursdays from 2022.
+# 2011-2013 ran in summer; October is the home month from 2014 on.
+# search: phrase for projects/search.json when the pattern name alone is
+# a poor query (names are searched as a quoted phrase).
+
+designer_id: 21485
+designer_name: Stephen West
+
+mkals:
+  - year: 2011
+    ordinal: 1
+    name: Earth & Sky
+    pattern_id: 254927
+    note: first MKAL; published 2011/08 (summer KAL)
+  - year: 2012
+    ordinal: 2
+    name: Rockefeller
+    pattern_id: 326820
+    note: published 2012/07
+  - year: 2013
+    ordinal: 3
+    name: Color Craving
+    pattern_id: 424786
+    note: published 2013/08; scarf-shaped
+  - year: 2014
+    ordinal: 4
+    name: Exploration Station
+    pattern_id: 526080
+    note: first October MKAL
+  - year: 2015
+    ordinal: 5
+    name: The Doodler
+    pattern_id: 615134
+  - year: 2016
+    ordinal: 6
+    name: Building Blocks Shawl
+    pattern_id: 688993
+  - year: 2017
+    ordinal: 7
+    name: Speckle & Pop Shawl
+    pattern_id: 769915
+  - year: 2017
+    ordinal: 7
+    name: Marled Magic Shawl
+    pattern_id: 728385
+    bonus: true
+    note: "bonus mystery (spring 2017), not the October MKAL"
+  - year: 2018
+    ordinal: 8
+    name: Texture Time
+    pattern_id: 859720
+  - year: 2019
+    ordinal: 9
+    name: Starflake
+    pattern_id: 956810
+    note: 10th-anniversary edition (West counts from 2009's non-mystery KAL)
+  - year: 2020
+    ordinal: 10
+    name: Slipstravaganza
+    pattern_id: 1067620
+    clue1: 2020-10-09
+  - year: 2021
+    ordinal: 11
+    name: Shawlography
+    pattern_id: 1168670
+    clue1: 2021-10-08
+  - year: 2022
+    ordinal: 12
+    name: Twists & Turns
+    pattern_id: 1267291
+    clue1: 2022-10-06
+    note: clues move to Thursdays
+  - year: 2023
+    ordinal: 13
+    name: Geogradient Shawl
+    pattern_id: 1359184
+    clue1: 2023-10-05
+  - year: 2024
+    ordinal: 14
+    name: Go Go Dynamo Shawl
+    pattern_id: 7365775
+  - year: 2025
+    ordinal: 15
+    name: Mystery MusiKAL
+    pattern_id: 7457148
+  - year: 2026
+    ordinal: 16
+    name: "MKAL 2026: Color Kaleidoscope Shawl"
+    pattern_id: 7552156
+    search: Color Kaleidoscope
+    clue1: 2026-10-01
+    note: in progress at collection time (clues Oct 1/8/15/22 2026)

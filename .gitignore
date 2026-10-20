@@ -12,6 +12,9 @@ data/full/
 data/pilot/
 data/ig_followers.parquet
 data/manifests/api_fetches.jsonl
+# MKAL study: per-project rows carry user IDs; only the aggregate CSV is tracked
+data/mkal/*
+!data/mkal/mkal_summary.csv
 notebooks/*-executed.ipynb
 reports/
 # personal notes: journal and observations about individual designers

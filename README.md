@@ -46,6 +46,11 @@ cp .env.example .env
 #   RAVELRY_API_PASSWORD=...
 ```
 
+`fetch_mkal.py` and the `--max-detail` path of `enrich_projects.py`
+call project-level endpoints that are not read-only API methods; they need
+a second app of type **basic auth: personal account** (`RAVELRY_PERSONAL_USERNAME`
+/ `RAVELRY_PERSONAL_API_KEY` in `.env`).
+
 The client rate-limits itself to ~1 request/second (`config.REQUEST_INTERVAL_S`)
 and retries on transient failures. The Instagram and Wayback scripts touch
 public pages only (no login) and back off politely.
@@ -91,6 +96,8 @@ uv run scripts/<name>.py [args]
 | `parse_wayback.py` | Parses archived designer-page captures in `data/raw/html/` into per-pattern favorite counts over time. | `data/full/wayback_favorites.parquet` |
 | `fetch_ig_followers.py [max]` | Instagram follower counts from public profile meta tags; re-runs skip handles already fetched. | `data/ig_followers.parquet` |
 | `fetch_ig_history.py [handle …]` | Follower/post history over time via Wayback captures. | `data/ig_history.parquet` |
+| `fetch_mkal.py [--year …] [--refresh]` | Westknits MKAL study: pattern detail, the full project roster (dates, status, happiness) and pattern comments for every MKAL in `data/mkal.yaml`. Needs the personal-scope key. `--refresh` bypasses the cache and saves a dated snapshot (for the live year). | `data/mkal/patterns.parquet`, `data/mkal/projects/`, `data/mkal/comments/` |
+| `enrich_projects.py --roster {mkal,yarn-brands} [--year …] [--only …] [--max-detail N]` | Adds project notes and yarn (packs) to every project on a roster pattern via `projects/search.json` (filtered locally by pattern id). For the MKAL roster, optional per-project fetches fill the residual; for the yarn-brand panel the search is the project list. | `data/mkal/notes/`, `data/yarn_brands/{notes,packs}/` |
 
 ### Export (write chart data for the site)
 
@@ -103,6 +110,8 @@ directly and `git diff astro/src/data` shows what moved.
 | `export_cadence.py` | Every pattern released by the rule-selected cast (2+ of: cohort champion, 20k+ fans, KnitStars roster, 3+ prestige-venue patterns), with favorites. | `astro/src/data/cadence.json` |
 | `export_evergreen.py` | Wayback accumulation curve (share of lifetime favorites by pattern age) and favorites gained per year by age and period. | `astro/src/data/evergreen.json` |
 | `export_conversion.py` | Projects per 100 favorites by publication year. | `astro/src/data/conversion.json` |
+| `export_mkal_site.py` | Per-MKAL participation (KAL-window knitters, first-timers vs returning), project outcomes (on time / within 90 days / later / open / abandoned) and finishing curves for the `/mkal/` page. | `astro/src/data/mkal.json` |
+| `export_mkal.py` | One aggregate row per Westknits MKAL: clue-1 date, projects, knitters, finish shares (ever / by clue 4 + 1 week / by month end), happiness, pattern-level demand. The only tracked file under `data/mkal/`. | `data/mkal/mkal_summary.csv` |
 
 ### Reconnaissance (probes, no datasets)
 
@@ -117,7 +126,7 @@ ignore for normal collection runs.
 - `probe_wayback_designer.py [permalink]` — looks for fan counts / join info in archived designer pages.
 - `frame_screenshot.py <in> <out> "<label>"` — wraps a screenshot in a browser-card frame for the essay.
 
-## The exploration notebook
+## The exploration notebooks
 
 `notebooks/explore.py` is the source of truth, paired to a notebook with
 [jupytext](https://jupytext.readthedocs.io/). It loads the full designer
@@ -137,6 +146,10 @@ uv run jupyter lab notebooks/explore.ipynb
 Generated `.ipynb` files are git-ignored (their saved outputs contain
 per-designer rows); edit the `.py` file and regenerate rather than
 editing a notebook by hand.
+
+`notebooks/mkal.py` is the companion notebook for the Westknits MKAL study
+(clue windows, cast-on timing, finish rates, happiness, repeat
+participation, yarn). Same jupytext workflow; it reads `data/mkal/`.
 
 ## The chart site
 

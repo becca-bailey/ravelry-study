@@ -133,6 +133,210 @@ plt.tight_layout()
 census
 
 # %% [markdown]
+# ## 0c. How many designers enter each year?
+#
+# The honest answer from the sample alone is "we can't count them":
+# `fetch_designers.py` fills a 50-per-year quota by probing random
+# pattern IDs, so (a) the per-cohort row counts are quota + overflow,
+# not a rate, (b) a designer's chance of being hit is proportional to
+# how many patterns they published (size-biased), and (c) anyone with
+# fewer than 5 lifetime patterns was skipped on sight. The first chart
+# below shows the raw counts anyway, so nobody reads them as a trend.
+#
+# What we CAN do: every random probe (hit or skipped) is in the API
+# cache, with the author's lifetime pattern count. That turns the probe
+# log into a pattern-weighted sample of each year's output, and a
+# Horvitz-Thompson estimator recovers headcounts: a designer hit via
+# a pattern created in year Y is weighted 1/k, k = patterns they
+# created in Y. Scaled by the ID-census patterns for Y (less the dead-ID
+# share), the sum over designers whose FIRST pattern is in Y estimates
+# the entering class. Years here are ID-based (year of the first pattern
+# ID), which agrees with `cohort_year` for ~88% of designers; the
+# disagreements are back-catalog imports and null published dates.
+
+# %%
+import gzip
+import re
+from collections import defaultdict
+
+RAW_API = DATA / "raw" / "api"
+MANIFEST = DATA / "manifests" / "api_fetches.jsonl"
+id_census = json.loads((DATA / "manifests" / "id_census.json").read_text())
+BOUNDS = sorted((int(y), b) for y, b in id_census["boundaries"].items())
+CENSUS = {int(y): n for y, n in id_census["per_year"].items()}
+CENSUS[2007] = BOUNDS[0][1]  # IDs below the 2008 boundary
+
+
+def id_year(pid: int) -> int:
+    year = 2007
+    for y, lo in BOUNDS:
+        if pid >= lo:
+            year = y
+    return year
+
+
+def cached(key: str) -> dict:
+    return json.loads(gzip.decompress((RAW_API / f"{key}.json.gz").read_bytes()))
+
+
+# 1. the naive picture: rows per cohort year in the sample
+fig, ax = plt.subplots(figsize=(12, 3.5))
+df["cohort_year"].value_counts().sort_index().plot(kind="bar", ax=ax, color="lightgrey")
+ax.axhline(50, ls="--", color="grey", lw=0.8)
+ax.text(0.5, 52, " 50/year quota", color="grey", fontsize=8)
+ax.set_ylabel("sampled designers")
+ax.set_title("Rows per cohort year — a quota plus overflow, NOT an entry rate")
+plt.tight_layout()
+
+# %%
+if not (RAW_API.exists() and MANIFEST.exists()):
+    print("raw API cache not present — skipping the entrant estimator")
+else:
+    man = pd.DataFrame([json.loads(l) for l in MANIFEST.read_text().splitlines()])
+    man["t"] = pd.to_datetime(man["fetched_at"])
+    # the full designer-collection run (random probes + enrichment)
+    run = man[(man["t"] > "2026-08-07 18:30") & (man["t"] < "2026-08-08 18:00")]
+
+    # dead-ID share: 404s raise before logging, so they show up only as
+    # ~1s holes in the 1 req/s stream. Extra seconds in a gap ~ unlogged
+    # requests (also catches retries, so treat as a rough upper bound).
+    gaps = run["t"].diff().dt.total_seconds().dropna()
+    unlogged = (gaps.round() - 1).clip(lower=0)
+    unlogged = unlogged[unlogged < 60].sum()  # ignore the overnight pause
+
+    # 2. every random probe, with its author's lifetime pattern count.
+    # Enrichment fetches (a sampled designer's own first/last patterns,
+    # requested right after /designers/<id>) are dropped.
+    probes, last_designer = [], None
+    for path, key in zip(run["path"], run["cache_key"]):
+        if m := re.match(r"/designers/(\d+)\.json", path):
+            last_designer = int(m.group(1))
+            continue
+        if not (m := re.match(r"/patterns/(\d+)\.json", path)):
+            continue
+        pat = cached(key).get("pattern") or {}
+        author = pat.get("pattern_author") or {}
+        if author.get("id") == last_designer:
+            continue
+        probes.append(dict(
+            pid=int(m.group(1)),
+            year=int(pat["created_at"][:4]) if pat.get("created_at") else id_year(int(m.group(1))),
+            author_id=author.get("id"), author_n=author.get("patterns_count") or 0))
+    pr = pd.DataFrame(probes)
+    pr = pr[pr["year"] <= 2025]
+    live_share = len(pr) / (len(pr) + unlogged)
+    pr["size"] = pd.cut(pr["author_n"], [-1, 4, 999, np.inf],
+                        labels=["1-4 (skipped)", "5-999 (eligible)", "1000+ (entity)"])
+    print(f"{len(pr)} random probes on live patterns, ~{unlogged:.0f} dead IDs "
+          f"-> live share ~{live_share:.2f}")
+    print(pd.crosstab(pr["year"], pr["size"], normalize="index").round(2).to_string())
+
+    # 3. each sampled designer's catalog from the cached date_asc searches
+    # -> ID-based entry year and per-year pattern counts
+    cat: dict[int, set[int]] = defaultdict(set)
+    for key, params in zip(man["cache_key"], man["params"]):
+        if not (isinstance(params, dict) and "designer" in params):
+            continue
+        for p in cached(key).get("patterns", []):
+            if did := (p.get("designer") or {}).get("id"):
+                cat[did].add(p["id"])
+    entry = {d: id_year(min(ids)) for d, ids in cat.items() if ids}
+    per_year = {d: pd.Series([id_year(i) for i in ids]).value_counts().to_dict()
+                for d, ids in cat.items()}
+    pr["entry"] = pr["author_id"].map(entry)
+    pr["k_year"] = [per_year.get(a, {}).get(y, np.nan) for a, y in zip(pr["author_id"], pr["year"])]
+    eligible = pr["size"] == "5-999 (eligible)"
+    print(f"eligible probes without a cached catalog: "
+          f"{(eligible & pr['entry'].isna()).sum()} of {eligible.sum()}")
+
+    # 4. Horvitz-Thompson: designers = (live patterns in Y / probes in Y) * sum(1/k)
+    rows = []
+    for y, g in pr.groupby("year"):
+        scale = CENSUS[y] * live_share / len(g)
+        el = g[eligible.loc[g.index]]
+        known = el["entry"].notna().mean()  # inverse-coverage for the unenriched few
+        newc = el[(el["entry"] == y) & (el["k_year"] > 0)]
+        small = g[g["size"] == "1-4 (skipped)"]
+        rows.append(dict(
+            year=y, probes=len(g), patterns=CENSUS[y],
+            newcomer_share_of_patterns=len(newc) / len(g),
+            new_eligible=scale * (1 / newc["k_year"]).sum() / known,
+            active_eligible=scale * (1 / el["k_year"].dropna()).sum() / known,
+            # sub-floor authors: entry year unknown. Bounds assume they are
+            # all first-year (hi: one pattern each; mid: whole catalog in year 1)
+            small_mid=scale * (1 / small["author_n"]).sum(),
+            small_hi=scale * len(small),
+        ))
+    ent = pd.DataFrame(rows).set_index("year")
+    ent["new_mid"] = ent["new_eligible"] + ent["small_mid"]
+    ent["new_hi"] = ent["new_eligible"] + ent["small_hi"]
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 4.5))
+    ax = axes[0]
+    yrs = ent.index[ent.index >= 2008]  # 2007 is the launch year: everyone is new
+    e = ent.loc[yrs]
+    ax.fill_between(yrs, e["new_eligible"], e["new_hi"], alpha=0.15, color="C1",
+                    label="+ designers with <5 patterns (bounds)")
+    ax.plot(yrs, e["new_mid"], color="C1", lw=1, ls=":", label="  mid estimate")
+    ax.plot(yrs, e["new_eligible"], marker="o", color="C0",
+            label="new designers with 5+ lifetime patterns")
+    ax.set_ylim(0)
+    ax.set_ylabel("estimated designers whose first pattern is in that year")
+    ax.set_title("Entering class per year (Horvitz-Thompson from the probe log)")
+    add_milestones(ax, labels=False)
+    ax.legend(fontsize=8, loc="upper left")
+    ax = axes[1]
+    ax.plot(yrs, e["active_eligible"], marker="o", color="C2",
+            label="designers (5+ patterns) publishing that year")
+    ax.plot(yrs, e["new_eligible"], marker="o", color="C0", label="of which new")
+    ax.set_ylim(0)
+    ax.set_title("Stock vs. flow: active designers vs. entrants")
+    add_milestones(ax, labels=False)
+    ax.legend(fontsize=8, loc="upper left")
+    plt.tight_layout()
+    show = ent.round(0)
+    show["newcomer_share_of_patterns"] = ent["newcomer_share_of_patterns"].round(3)
+    print(show.to_string())
+
+# %% [markdown]
+# **Reading it.** Entrants with 5+ lifetime patterns run roughly flat,
+# on the order of 1,000–2,000 a year from 2008 through 2025, while the
+# stock of such designers publishing in a given year roughly doubles
+# over the same span (~4,000 in 2008 to ~8,000–10,000 in the 2020s). The entering class is not shrinking; the crowd it
+# enters is growing. The sub-floor band (authors with 1–4 patterns, whom
+# the collector never enriched) is wide because we know only that they
+# are small, not when they started.
+#
+# **Limitations of this estimate**
+# - Probe-year ≠ entry year for the skipped: anyone with <5 patterns
+#   has no cached catalog, hence the bounds rather than a number.
+# - "5+ lifetime patterns" is measured TODAY, so recent cohorts are
+#   right-censored: a 2024 entrant with 3 patterns so far may yet cross
+#   the floor. The last 2–3 years are biased low for `new_eligible`.
+# - The dead-ID share is inferred from timing gaps (also catches
+#   retries), so the level is uncertain by maybe ±10%; the shape is not.
+# - Live-only: deleted designers and patterns are invisible, which
+#   understates early cohorts more than late ones (more time to delete).
+# - ~250 probes per year gives a newcomer sample of 25–55 per year;
+#   year-to-year wiggles are noise. Trust the level and the trend only.
+# - ID-based year = when the record was created on Ravelry, not when the
+#   designer first published anywhere (print-era imports land in
+#   2007–08).
+#
+# **Getting a fuller picture.** The cheap, decisive upgrade is a
+# dedicated census pass: sample ~500 random live pattern IDs per year,
+# and for EVERY author (no pattern floor), pull the designer's catalog
+# with `sort=date_asc` to get first-pattern ID and per-year counts.
+# That removes the floor and the bounds, cuts the standard error by
+# ~half, and costs ~20k requests (~6 hours at 1/s). To go from "first
+# pattern on Ravelry" to "started designing", add the designer page's
+# `pattern_sources` for the earliest patterns (print/blog dates), and
+# the Wayback captures already used in section 8 for designers whose
+# pages predate their Ravelry import. Deleted designers need a
+# different source: archived search-result pages, or Ravelry's own
+# yearly "designers who published" counts if the team will share them.
+
+# %% [markdown]
 # ## 1. The headline shape: fan distributions by cohort year
 # Log scale — the compression of the middle should be visible here
 # before any statistics. (This is the violin the research plan wanted.)
@@ -914,3 +1118,243 @@ print(_f.groupby("cohort_year")["n_patterns"].median().to_string())
 # is a sharper sentence — conversion per pattern held roughly flat through
 # 2018, and what changed across cohorts is how many patterns a cohort has
 # had time to publish. That's Secondary Question 1 from the research plan.
+
+# %% [markdown]
+# ## 10. Audience at launch — Instagram followers when pattern one went up
+#
+# Becca's observation (2026-10-07): Mowry and PetiteKnit built an
+# Instagram audience by modeling their knits BEFORE publishing
+# patterns, so pattern one launched into an existing audience and the
+# promo code on day one was a conversion step, not a pricing choice.
+# Blog-era winners built the audience FROM the patterns. If so, the
+# Instagram follower count at the date of a designer's first Ravelry
+# pattern should be ~0 for early cohorts and large for 2014+ winners.
+#
+# Data: Wayback captures of the cast's public Instagram profiles
+# (`scripts/fetch_ig_history.py` → `data/ig_history.parquet`, one
+# capture per month where the archive has one), first-pattern dates
+# from the cadence cast (`astro/src/data/cadence.json`). Instagram
+# launched late 2010, so for pre-2011 entrants "followers at launch" is
+# zero by construction; the useful comparison is the 2011+ cast, and
+# for the earlier cast, how long after pattern one the account appears.
+# Wayback coverage of Instagram is thin before ~2015 and many later
+# captures are login-walled renders with no counts; the table marks
+# both as "no capture" rather than guessing.
+
+# %%
+IG_HISTORY = DATA / "ig_history.parquet"
+cadence = json.loads((ROOT / "astro" / "src" / "data" / "cadence.json").read_text())
+cast = pd.DataFrame([{"name": d["name"],
+                      "first_pattern": min(p[0] for p in d["patterns"]),
+                      "n_patterns": len(d["patterns"])}
+                     for d in cadence["designers"]])
+cast["first_pattern"] = pd.to_datetime(cast["first_pattern"])
+cast["cohort_year"] = cast["first_pattern"].dt.year
+handles = pd.read_csv(DATA / "anchors_instagram.csv")[["designer", "handle"]]
+handles["name"] = handles["designer"].str.replace(r"/.*", "", regex=True).str.strip()
+handles.loc[handles["name"] == "Jared Flood", "name"] = "Jared Flood"
+extra = df.loc[df["designer_name"].isin(cast["name"]) & df["instagram"].notna(),
+               ["designer_name", "instagram"]]
+extra = extra.assign(name=extra["designer_name"],
+                     handle=extra["instagram"].str.rstrip("/").str.split("/").str[-1])
+handle_map = (pd.concat([handles[["name", "handle"]], extra[["name", "handle"]]])
+              .drop_duplicates("name").set_index("name")["handle"])
+cast["handle"] = cast["name"].map(handle_map)
+cast["fans_today"] = cast["name"].map(
+    pd.concat([df, anchors]).drop_duplicates("designer_name")
+    .set_index("designer_name")["fan_count"])
+
+if not IG_HISTORY.exists():
+    print("no Instagram history collected yet")
+else:
+    ig = pd.read_parquet(IG_HISTORY)
+    ig = ig[ig["captured"].notna()].copy()
+    ig["captured"] = pd.to_datetime(ig["captured"], format="%Y%m%d")
+    ig["handle_l"] = ig["handle"].str.lower()
+    rows = []
+    for r in cast.itertuples():
+        h = r.handle.lower() if isinstance(r.handle, str) else ""
+        series = ig[(ig["handle_l"] == h) & ig["followers"].notna()].sort_values("captured")
+        before = series[series["captured"] <= r.first_pattern].tail(1)
+        after = series[series["captured"] > r.first_pattern].head(1)
+        rows.append({
+            "name": r.name, "cohort_year": r.cohort_year, "handle": r.handle,
+            "first_pattern": r.first_pattern.date(),
+            "captures_with_counts": len(series),
+            "earliest_capture": series["captured"].min().date() if len(series) else None,
+            "followers_before_launch": int(before["followers"].iloc[0]) if len(before) else None,
+            "capture_before": before["captured"].iloc[0].date() if len(before) else None,
+            "followers_after_launch": int(after["followers"].iloc[0]) if len(after) else None,
+            "capture_after": after["captured"].iloc[0].date() if len(after) else None,
+            "followers_latest": int(series["followers"].iloc[-1]) if len(series) else None,
+            "fans_today": r.fans_today,
+        })
+    launch = pd.DataFrame(rows).sort_values("first_pattern")
+    print(launch.to_string(index=False))
+
+    # followers at (or nearest after) launch, by cohort year
+    fig, ax = plt.subplots(figsize=(11, 4.5))
+    pt = launch.copy()
+    pt["at_launch"] = pt["followers_before_launch"].fillna(pt["followers_after_launch"])
+    pt["kind"] = np.where(pt["followers_before_launch"].notna(), "capture before launch",
+                 np.where(pt["followers_after_launch"].notna(), "first capture after launch", "no capture"))
+    for kind, mk in [("capture before launch", "o"), ("first capture after launch", "^")]:
+        s = pt[pt["kind"] == kind]
+        ax.scatter(s["cohort_year"], s["at_launch"].clip(lower=1), marker=mk, s=60, label=kind)
+        for r in s.itertuples():
+            cap = r.capture_before if r.kind == "capture before launch" else r.capture_after
+            ax.annotate(f"{r.name} ({pd.Timestamp(cap).year})", (r.cohort_year, max(r.at_launch, 1)),
+                        fontsize=7, xytext=(4, 3), textcoords="offset points")
+    miss = pt[pt["kind"] == "no capture"]
+    ax.scatter(miss["cohort_year"], [1] * len(miss), marker="x", color="grey", label="no capture")
+    for r in miss.itertuples():
+        ax.annotate(r.name, (r.cohort_year, 1), fontsize=7, color="grey",
+                    xytext=(4, 3), textcoords="offset points")
+    ax.axvline(2010.8, ls="--", lw=0.8, color="grey")
+    ax.text(2010.9, ax.get_ylim()[1] if ax.get_ylim()[1] > 1 else 10, " Instagram launches",
+            fontsize=7, color="grey", va="top")
+    ax.set_yscale("log")
+    ax.set_xlabel("year of first Ravelry pattern")
+    ax.set_ylabel("Instagram followers at earliest archived capture (log)")
+    ax.set_title("Earliest archived Instagram follower count, by year of first pattern "
+             "(label gives capture year; no cast member has a capture before launch)")
+    ax.legend(fontsize=8, loc="upper left")
+    plt.tight_layout()
+
+    # full follower curves relative to first pattern, where a series exists
+    fig, ax = plt.subplots(figsize=(11, 4.5))
+    for r in launch[launch["captures_with_counts"] >= 3].itertuples():
+        s = ig[(ig["handle_l"] == r.handle.lower()) & ig["followers"].notna()].sort_values("captured")
+        yrs = (s["captured"] - pd.Timestamp(r.first_pattern)).dt.days / 365.25
+        ax.plot(yrs, s["followers"], marker=".", lw=1, label=f"{r.name} ({r.cohort_year})")
+    ax.axvline(0, color="grey", lw=0.8, ls="--")
+    ax.set_yscale("log")
+    ax.set_xlabel("years since first Ravelry pattern")
+    ax.set_ylabel("Instagram followers (log)")
+    ax.set_title("Instagram follower curves aligned on pattern one")
+    ax.legend(fontsize=7, ncol=2)
+    plt.tight_layout()
+
+# %% [markdown]
+# ## 11. Success markers by entry cohort — the dot-chart badges, counted
+#
+# Becca's question (2026-10-07): how many designers in each entry
+# cohort reach the markers that admit designers to the cadence dot
+# chart (section 4d)? Same four badges, same knitters-only filter:
+# C cohort champion (top fan count among non-print knitters in the
+# cohort — one per year by construction, so it is not plotted), F 20k+ fans, K on a KnitStars
+# season roster, E 3+ patterns in a prestige venue (Laine, Pom Pom,
+# Making, Vogue Knitting, Interweave, Knitscene, The Knitter, Knitter's
+# Magazine, Twist Collective, Knitty, Wool People, Rowan). E is
+# computed here for EVERY sampled designer from the cached catalogs'
+# `pattern_sources`, not just the hand-built `editorial_prestige.csv`.
+#
+# Read with three caveats: (1) the right-censoring becca named —
+# 2021+ cohorts have not had time; (2) the 2007 bar is mostly print-era
+# designers whose imported catalogs date to 2007 — that is the
+# institutional cohort, not a Ravelry-era entering class; (3) the
+# sample is size-biased toward prolific designers, so the shares are
+# upper bounds for the population, but the comparison across cohorts
+# is like-for-like.
+
+# %%
+import gzip
+import re
+from collections import Counter, defaultdict
+
+import yaml
+
+VENUE_RE = re.compile(
+    r"^(laine 52 weeks|laine|pom ?pom(?: quarterly)?|making(?: magazine)?"
+    r"|vogue knitting(?: international)?|interweave (?:knits|crochet)|knitscene"
+    r"|the knitter|knitter's magazine|twist collective|knitty|wool people"
+    r"|rowan(?: magazine)?)\b(?!.*(website|online store|on ravelry|on etsy"
+    r"|gritty|bible|stitch collection))", re.I)
+
+_man = pd.DataFrame([json.loads(l) for l in
+                     (DATA / "manifests" / "api_fetches.jsonl").read_text().splitlines()])
+_srch = _man[(_man["path"] == "/patterns/search.json")
+             & _man["params"].map(lambda p: isinstance(p, dict) and "designer" in p)]
+_venue_counts: dict[int, Counter] = defaultdict(Counter)
+for _ck in _srch["cache_key"]:
+    _page = json.loads(gzip.decompress((DATA / "raw" / "api" / f"{_ck}.json.gz").read_bytes()))
+    for _p in _page.get("patterns", []):
+        _did = (_p.get("designer") or {}).get("id")
+        for _s in _p.get("pattern_sources") or []:
+            if _m := VENUE_RE.match((_s.get("name") or "").strip()):
+                _venue_counts[_did][_m.group(1).lower()] += 1
+df["prestige_n"] = df["designer_id"].map(lambda i: sum(_venue_counts[i].values()))
+
+_ks = yaml.safe_load((DATA / "knitstars_roster.yaml").read_text())
+_stars = {s.lower() for sea in _ks["seasons"].values() for s in sea["stars"]}
+def _is_star(name) -> bool:
+    base = str(name).lower().split(" (")[0]
+    return any(base == s or (len(base) > 6 and base in s) for s in _stars)
+df["knitstars"] = df["designer_name"].map(_is_star)
+
+kn = df[(df["n_knitting"] >= df["n_crochet"]) & df["cohort_year"].between(2007, 2024)].copy()
+kn["cohort_year"] = kn["cohort_year"].astype(int)
+_champ = set(kn[kn["print_source_share"] <= 0.5].sort_values("fan_count", ascending=False)
+             .groupby("cohort_year").head(1)["designer_id"])
+kn["C"] = kn["designer_id"].isin(_champ)
+kn["F"] = kn["fan_count"] >= 20_000
+kn["K"] = kn["knitstars"]
+kn["E"] = kn["prestige_n"] >= 3
+kn["n_badges"] = kn[["C", "F", "K", "E"]].sum(axis=1)
+# C is one per cohort by construction, so it is left out of the stack; it
+# still counts toward the 2+-badge cast line, as in the dot-chart rule.
+BADGE_ORDER = [("E", "E: 3+ prestige-venue patterns"), ("K", "K: KnitStars roster"),
+               ("F", "F: 20k+ fans")]
+kn["tier"] = [next((b for b, _ in BADGE_ORDER if r[b]), None) for _, r in kn.iterrows()]
+
+n_cohort = kn.groupby("cohort_year").size()
+marker_counts = kn.groupby("cohort_year")[["C", "F", "K", "E"]].sum()
+marker_counts["any"] = kn.groupby("cohort_year")["n_badges"].apply(lambda s: (s >= 1).sum())
+marker_counts["cast_2plus"] = kn.groupby("cohort_year")["n_badges"].apply(lambda s: (s >= 2).sum())
+marker_counts["n_sampled"] = n_cohort
+print(marker_counts.to_string())
+
+stack = (pd.crosstab(kn["cohort_year"], kn["tier"])
+         .reindex(index=n_cohort.index, columns=[b for b, _ in BADGE_ORDER], fill_value=0))
+share = stack.div(n_cohort, axis=0) * 100
+fig, axes = plt.subplots(2, 1, figsize=(12, 8.5), sharex=True)
+ax = axes[0]
+stack.rename(columns=dict(BADGE_ORDER)).plot(kind="bar", stacked=True, ax=ax, width=0.8)
+ax.plot(range(len(n_cohort)), marker_counts["cast_2plus"].values, "k_", ms=14, mew=2,
+        label="dot-chart cast (2+ badges)")
+for i, (y, v) in enumerate(n_cohort.items()):
+    ax.text(i, stack.loc[y].sum() + 0.6, f"n={v}", ha="center", fontsize=7, color="grey")
+ax.set_ylabel("sampled designers")
+ax.legend(fontsize=8)
+ax.set_title("Dot-chart success markers by entry cohort — count "
+             "(each designer once, at the first badge in E>K>F order)")
+ax = axes[1]
+share.rename(columns=dict(BADGE_ORDER)).plot(kind="bar", stacked=True, ax=ax, width=0.8, legend=False)
+ax.set_ylabel("% of sampled knitting designers in cohort")
+ax.set_xlabel("entry cohort (year of first pattern)")
+ax.set_title("Same, as a share of the cohort sample (2007 is inflated by imported print catalogs)")
+plt.tight_layout()
+share.round(1)
+
+# %% [markdown]
+# **Reading it.** Every marker but the champion is dominated by E, the
+# prestige-venue route, and E has a clean staircase: 12–18% of the
+# 2008–2011 classes have 3+ prestige-venue patterns, 10–14% of
+# 2012–2014, 8–10% of 2015–2016, then 0–3% from 2017 on. The 2017
+# class is the first with no E designers at all, and it is also the
+# first class with no 2+-badge cast member. That break is a full three
+# to four years before the censoring window, so it is not a
+# too-soon-to-tell artifact. KnitStars and 20k fans are too rare in a
+# ~100-per-cohort sample to carry a trend on their own (0–5 per year);
+# they confirm the direction without adding resolution.
+#
+# Two readings compete. The "doors closed" reading: the editorial
+# route to recognition narrowed at the same moment the Instagram
+# algorithm took over discovery. The "pipeline lag" reading: Laine and
+# Pom Pom publish designers who already have a following, and a
+# following now takes longer to build, so the 2017–2020 classes may
+# still arrive. A test that separates them from data already in hand:
+# for the E designers in each cohort, years from first pattern to first
+# prestige-venue pattern. If that lag is stable (~2–4 years) across
+# 2008–2016, the 2017+ zeros are real; if it grew, pipeline lag is part
+# of the story.
