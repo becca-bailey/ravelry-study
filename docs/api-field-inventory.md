@@ -113,6 +113,30 @@ Replacement strategy, three layers:
    to get crawled, so the panel subsample is winner-biased — usable for
    case studies and trajectory-shape analysis, not population estimates.
 
+## projects/search: pattern filter and caps (2026-10-20)
+
+Probed while setting up the yarn-brand panel (`scripts/enrich_projects.py`):
+
+- `pattern=<permalink>` **works** as a pattern filter on `projects/search.json`
+  (e.g. `pattern=hitchhiker`: 33,884 finished results, 98% with the target
+  `pattern_id`; the rest are presumably multi-pattern projects). Hits are
+  still validated on `pattern_id` locally.
+- `pattern-id=`, `pattern_id=` and `pattern-permalink=` are ignored (the
+  earlier "pattern-id is ignored" note stands); `pattern=<numeric id>`
+  returns zero results. An ignored filter with no query returns the whole
+  project index, capped at `results: 100000`.
+- Quoted-name fulltext queries are a poor substitute for generic names:
+  `"Monkey"` returns 96k hits of which ~8% are Monkey Socks, `"Barley"` 61k
+  at ~1%. The MKAL enrichment now uses the permalink filter too.
+- Deep paging works: page 600 of a 658-page result returns a full page
+  (`page_size=100`). Result counts drift by a few dozen between requests,
+  so `last_page` can shrink mid-run; stop on `page >= last_page`.
+- `patterns/{id}/projects.json` ignores `include=packs`: no yarn there,
+  with or without the personal key. Yarn comes only from `projects/search`
+  with `include=packs` or from `projects/{user}/{id}`.
+- `pack.yarn` carries `yarn_company_id` and `yarn_company_name`; the pack
+  itself also has `yarn_weight.name`, `colorway`, `shop_name`, `stash_id`.
+
 ## Still open
 
 - Confirm `people/{username}.json` works with a personal-scope key, and

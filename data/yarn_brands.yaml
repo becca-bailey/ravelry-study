@@ -1,0 +1,237 @@
+# Yarn-brand panel: long-lived ("evergreen") patterns whose projects span
+# most of Ravelry's life, plus a few recent anchors so 2017-2026 is not
+# carried by aging patterns alone. Brand share is measured within each
+# pattern by project start year, then averaged across patterns.
+#
+# Pattern ids and publish years were confirmed against patterns/{id}.json
+# on 2026-10-20 (projects= is Ravelry's count that day). Check again with:
+#   uv run scripts/enrich_projects.py --roster yarn-brands --resolve
+#
+# stratum: shawl | sock | hat | cowl | garment     weight: Ravelry's label
+# role: evergreen (published <= 2013) | anchor (recent, 5+ years of data)
+
+patterns:
+  # --- shawls & scarves -------------------------------------------------
+  - key: clapotis
+    name: Clapotis
+    pattern_id: 29
+    designer: Kate Gilbert
+    published: 2004
+    weight: aran
+    stratum: shawl
+    note: pre-Ravelry Knitty classic; the earliest-era anchor (projects=23830)
+  - key: multnomah
+    name: Multnomah
+    pattern_id: 136019
+    designer: Kate Ray
+    published: 2009
+    weight: fingering
+    stratum: shawl
+    note: projects=11306
+  - key: age_of_brass_and_steam
+    name: The Age of Brass and Steam Kerchief
+    pattern_id: 181549
+    designer: Orange Flower Yarn
+    published: 2010
+    weight: dk
+    stratum: shawl
+    note: projects=16753
+  - key: hitchhiker
+    name: Hitchhiker
+    pattern_id: 211562
+    designer: Martina Behm
+    published: 2010
+    weight: fingering
+    stratum: shawl
+    note: projects=37358
+  - key: color_affection
+    name: Color Affection
+    pattern_id: 287723
+    designer: Veera Välimäki
+    published: 2011
+    weight: fingering
+    stratum: shawl
+    note: three-colour shawl, the 2012 craze (projects=16533)
+  - key: find_your_fade
+    name: Find Your Fade
+    pattern_id: 710601
+    designer: Andrea Mowry
+    published: 2016
+    weight: fingering
+    stratum: shawl
+    role: anchor
+    note: hand-dyed fade era (projects=12453)
+  - key: sophie_scarf
+    name: Sophie Scarf
+    pattern_id: 1258283
+    designer: PetiteKnit
+    published: 2022
+    weight: dk
+    stratum: shawl
+    role: anchor
+    note: projects=54542
+
+  # --- socks -------------------------------------------------------------
+  - key: jaywalker
+    name: Jaywalker
+    pattern_id: 40
+    designer: Grumperina
+    published: 2005
+    weight: fingering
+    stratum: sock
+    note: projects=12569
+  - key: monkey
+    name: Monkey Socks
+    pattern_id: 573
+    designer: Cookie A
+    published: 2006
+    weight: fingering
+    stratum: sock
+    note: projects=23792
+  - key: simple_skyp
+    name: Simple Skyp Socks
+    pattern_id: 111517
+    designer: Adrienne Ku
+    published: 2009
+    weight: sport
+    stratum: sock
+    note: projects=12762
+  - key: hermiones
+    name: Hermione's Everyday Socks
+    pattern_id: 130787
+    designer: Erica Lueder
+    published: 2009
+    weight: fingering
+    stratum: sock
+    note: projects=45983
+  - key: vanilla_latte
+    name: Vanilla Latte Socks
+    pattern_id: 315418
+    designer: Virginia Rose-Jeanes
+    published: 2012
+    weight: fingering
+    stratum: sock
+    note: publish year inferred from the pattern id (API gives none); projects=22109
+  - key: rose_city_rollers
+    name: Rose City Rollers
+    pattern_id: 580119
+    designer: Mara Catherine Bryner
+    published: 2015
+    weight: fingering
+    stratum: sock
+    role: anchor
+    note: projects=17507
+
+  # --- hats --------------------------------------------------------------
+  - key: turn_a_square
+    name: Turn A Square
+    pattern_id: 75857
+    designer: Jared Flood
+    published: 2008
+    weight: worsted
+    stratum: hat
+    note: projects=20552
+  - key: wurm
+    name: wurm
+    pattern_id: 124800
+    designer: katushika
+    published: 2009
+    weight: sport
+    stratum: hat
+    note: projects=18399
+  - key: sockhead
+    name: Sockhead Slouch Hat
+    pattern_id: 124400
+    designer: Kelly McClure
+    published: 2009
+    weight: fingering
+    stratum: hat
+    note: projects=31552
+  - key: barley
+    name: Barley worsted
+    pattern_id: 426231
+    designer: tincanknits
+    published: 2013
+    weight: worsted
+    stratum: hat
+    note: projects=30302
+  - key: musselburgh
+    name: Musselburgh
+    pattern_id: 990044
+    designer: Ysolda Teague
+    published: 2019
+    weight: fingering
+    stratum: hat
+    role: anchor
+    note: projects=48514
+
+  # --- cowls -------------------------------------------------------------
+  - key: honey_cowl
+    name: Honey Cowl
+    pattern_id: 169260
+    designer: Antonia Shankland
+    published: 2010
+    weight: dk
+    stratum: cowl
+    note: projects=28857
+  - key: shift
+    name: The Shift
+    pattern_id: 819716
+    designer: Andrea Mowry
+    published: 2018
+    weight: sport
+    stratum: cowl
+    role: anchor
+    note: projects=16562
+
+  # --- garments ----------------------------------------------------------
+  - key: baby_surprise_jacket
+    name: Baby Surprise Jacket
+    pattern_id: 605
+    designer: Elizabeth Zimmermann
+    published: 1968
+    weight: dk
+    stratum: garment
+    note: projects=32114
+  - key: february_lady
+    name: February Lady Sweater
+    pattern_id: 68527
+    designer: pamela wynne
+    published: 2008
+    weight: worsted
+    stratum: garment
+    note: projects=13864
+  - key: flax
+    name: Flax worsted
+    pattern_id: 443533
+    designer: tincanknits
+    published: 2013
+    weight: worsted
+    stratum: garment
+    note: projects=33590
+  - key: ranunculus
+    name: Ranunculus
+    pattern_id: 754478
+    designer: Midori Hirose
+    published: 2017
+    weight: fingering
+    stratum: garment
+    role: anchor
+    note: fingering + mohair held together (projects=39041)
+  - key: weekender
+    name: The Weekender
+    pattern_id: 788421
+    designer: Andrea Mowry
+    published: 2017
+    weight: worsted
+    stratum: garment
+    role: anchor
+    note: projects=15237
+
+# Fold renamed / sub-label companies into one brand key. Filled in from the
+# data (see notebooks/yarn_brands.py section 0, which lists near-duplicate
+# company names). ids are Ravelry yarn_company_id.
+company_aliases: []
+#  - id: 0            # canonical yarn_company_id
+#    name: Knit Picks
+#    aliases: [0]     # e.g. WeCrochet

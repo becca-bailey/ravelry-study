@@ -24,5 +24,6 @@ packages = ["src/closingwindow"]
 dev = [
     "jupyter>=1.1.1",
     "jupytext>=1.19.5",
+    "pytest>=9.1.1",
     "seaborn>=0.13.2",
 ]

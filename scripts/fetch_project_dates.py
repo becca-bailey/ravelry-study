@@ -7,7 +7,7 @@ projects' start dates yields two things at once:
   2. per-pattern usage curves (H6 durability: front-loading, half-life)
 
 Project lookup: /projects/search.json?query=<pattern name> (the
-pattern-id param is ignored — quirk), hits validated by pattern_id.
+pattern-id param is ignored — quirk; pattern=<permalink> does work, see enrich_projects.py), hits validated by pattern_id.
 Caps pages per pattern; politeness inherited from the client.
 
 Run:  uv run scripts/fetch_project_dates.py
