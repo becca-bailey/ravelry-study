@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import YarnBrandGrapher from "../components/YarnBrandGrapher";
+import YarnBrandStream from "../components/YarnBrandStream";
 ---
 
 <Layout
@@ -19,5 +20,9 @@ import YarnBrandGrapher from "../components/YarnBrandGrapher";
     </header>
 
     <YarnBrandGrapher client:load />
+
+    <div class="mt-16">
+      <YarnBrandStream client:load />
+    </div>
   </main>
 </Layout>

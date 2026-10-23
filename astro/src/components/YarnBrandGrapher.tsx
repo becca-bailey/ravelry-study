@@ -26,10 +26,14 @@ interface Point { year: number; index: number; pooled: number; n: number }
 export interface Company { id: number; name: string; total: number; series: Point[] }
 interface Coverage { year: number; projects: number; with_packs: number; with_brand: number; n_patterns: number }
 
-export const COMPANIES: Company[] = brandData.companies as Company[];
-const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
 const META = brandData.meta;
-const YEARS: number[] = COMPANIES[0].series.map((p) => p.year);
+const YEARS: number[] = META.years_list;
+/* the JSON stores each company's series as parallel arrays over META.years_list */
+export const COMPANIES: Company[] = brandData.companies.map((c) => ({
+  id: c.id, name: c.name, total: c.total,
+  series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled[i], n: c.n[i] })),
+}));
+const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
 const BY_ID = new Map(COMPANIES.map((c) => [c.id, c]));
 
 const MAX_SELECTED = 6;
@@ -253,7 +257,7 @@ function Picker({ slots, onChange }: PickerProps) {
       <div className="flex flex-wrap items-center gap-2">
         {slots.map((id, i) => id === null ? null : (
           <span key={id} className="inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-2 pr-1" style={chipStyle}>
-            <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: theme.resolve(SLOT_TOKENS[i]) }} />
+            <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: `var(${SLOT_TOKENS[i]})` }} />
             {BY_ID.get(id)!.name}
             <button type="button" onClick={() => remove(id)} aria-label={`Remove ${BY_ID.get(id)!.name}`}
               className="ml-0.5 rounded-full px-1 leading-none hover:bg-[color-mix(in_srgb,var(--muted)_25%,transparent)]"
