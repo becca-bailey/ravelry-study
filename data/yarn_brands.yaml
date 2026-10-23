@@ -493,6 +493,12 @@ company_events:
     kind: backed
     note: founders kept control; Verdane invested to fund expansion in Germany, the US and the Nordics
     source: https://verdane.com/verdane-partners-with-hobbii-to-build-global-d2c-platform-for-knitting-and-crocheting/
+  - company: Quince & Co.
+    date: 2023-06
+    buyer: Lion Brand Yarn
+    buyer_type: private
+    note: the online-first Maine brand sold to family-owned Lion Brand
+    source: https://www.textileworld.com/textile-world/knitting-apparel/2023/06/lion-brand-yarn-company-acquires-premium-hand-knitting-yarn-company-quince-co/
   - company: Knitting for Olive
     date: 2026
     buyer: Hawk Infinity

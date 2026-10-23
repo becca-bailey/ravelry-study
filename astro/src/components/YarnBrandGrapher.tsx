@@ -74,6 +74,10 @@ export const PRESETS: { key: string; label: string; names: string[]; roles?: Rec
      after 2015 and have grown fastest since 2022; Hobbii leads, and took
      growth-equity money from Verdane in 2022 */
   { key: "next", label: "the next big brand?", names: ["Hobbii", "Juniper Moon Farm", "Purl Soho", "Farmer's Daughter Fibers", "Cardiff Cashmere", "Laines du Nord"] },
+  /* direct to knitter: brands that sell mainly from their own site. Knit
+     Picks, the original online-only yarn brand, is left out so the others
+     stay readable at 0 to 1%; add it from the picker to compare */
+  { key: "online", label: "direct to knitter", names: ["Purl Soho", "Hobbii", "Quince & Co.", "Brooklyn Tweed", "Valley Yarns", "Kelbourne Woolens"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "the craft-store shelf", names: ["Lion Brand", "Patons North America", "Red Heart", "Caron", "Loops & Threads", "Yarn Bee"] },
 ];
