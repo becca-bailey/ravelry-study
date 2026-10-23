@@ -485,6 +485,12 @@ company_events:
     buyer_type: pe_backed
     note: family-owned Berroco sold to the group that owns Knit Picks
     source: https://merger.com/?p=3991
+  - company: Hobbii
+    date: 2022-06
+    buyer: Verdane (growth equity, minority stake)
+    buyer_type: pe
+    note: founders kept control; Verdane invested to fund expansion in Germany, the US and the Nordics
+    source: https://verdane.com/verdane-partners-with-hobbii-to-build-global-d2c-platform-for-knitting-and-crocheting/
   - company: Knitting for Olive
     date: 2026
     buyer: Hawk Infinity

@@ -69,6 +69,10 @@ export const PRESETS: { key: string; label: string; names: string[]; roles?: Rec
   { key: "nordic", label: "the Danish wave", names: ["Holst Garn", "Filcolana", "Knitting for Olive", "Hjertegarn", "CaMaRose", "Sandnes Garn"] },
   /* the 2008 sock-yarn crazes: all peaking as the panel starts, all gone within a few years */
   { key: "socks", label: "the 2008 sock-yarn crazes", names: ["Blue Moon Fiber Arts", "Lorna's Laces", "Dream in Color", "Rohrspatz & Wollmeise", "Koigu", "Handmaiden Fine Yarn"] },
+  /* the next big brand? the brands that first reached a tenth of a percent
+     after 2015 and have grown fastest since 2022; Hobbii leads, and took
+     growth-equity money from Verdane in 2022 */
+  { key: "next", label: "the next big brand?", names: ["Hobbii", "Knitting for Olive", "Purl Soho", "Cardiff Cashmere", "Farmer's Daughter Fibers", "Laines du Nord"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "the craft-store shelf", names: ["Lion Brand", "Patons North America", "Red Heart", "Caron", "Loops & Threads", "Yarn Bee"] },
 ];
