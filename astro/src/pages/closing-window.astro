@@ -1,0 +1,34 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WindowExplorer from "../components/WindowExplorer";
+import EvergreenCurves from "../components/EvergreenCurves";
+import ConversionChart from "../components/ConversionChart";
+import CadenceTimeline from "../components/CadenceTimeline";
+---
+
+<Layout>
+  <main class="mx-auto w-full max-w-4xl flex-1 px-6 py-12">
+    <nav class="mb-6 text-sm"><a href="/" style="color: var(--muted)">← Ravelry data studies</a></nav>
+    <header class="mb-10">
+      <h1 class="text-3xl font-semibold tracking-tight">The Closing Window</h1>
+      <p class="mt-2 max-w-2xl text-base" style="color: var(--muted)">
+        Twenty years of Ravelry data on what it took for a knitting designer to
+        find an audience, era by era. A data project by Becca Bailey.
+      </p>
+    </header>
+
+    <WindowExplorer client:load />
+
+    <div class="mt-16">
+      <EvergreenCurves client:load />
+    </div>
+
+    <div class="mt-16">
+      <ConversionChart client:load />
+    </div>
+
+    <div class="mt-16">
+      <CadenceTimeline client:load />
+    </div>
+  </main>
+</Layout>

@@ -15,18 +15,18 @@ const PORT = 4322; // off the dev-server port so the two never collide
 const OUT_DIR = new URL("../../reports/", import.meta.url).pathname;
 const PAD = 24; // whitespace around each captured element, in CSS px
 const TARGETS = [
-  { path: "/", selector: "#window-chart", out: "window_explorer.png" },
-  { path: "/", selector: "#evergreen-chart", out: "evergreen_curves_web.png" },
-  { path: "/", selector: "#conversion-chart", out: "conversion_web.png" },
-  { path: "/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
+  { path: "/closing-window/", selector: "#window-chart", out: "window_explorer.png" },
+  { path: "/closing-window/", selector: "#evergreen-chart", out: "evergreen_curves_web.png" },
+  { path: "/closing-window/", selector: "#conversion-chart", out: "conversion_web.png" },
+  { path: "/closing-window/", selector: "#cadence-chart", out: "cadence_timeline_web.png" },
   { path: "/mkal/", selector: "#mkal-participation", out: "mkal_participation_web.png" },
   { path: "/mkal/", selector: "#mkal-outcomes", out: "mkal_outcomes_web.png" },
   { path: "/yarn-brands/", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_web.png" },
   { path: "/yarn-brands/", selector: "#yarn-brand-eras", out: "yarn_brand_eras_web.png" },
   // stripped-down versions for the essay/interview (see src/lib/variant.ts)
-  { path: "/?variant=article", selector: "#window-chart", out: "window_explorer_article.png" },
-  { path: "/?variant=article", selector: "#evergreen-chart", out: "evergreen_curves_article.png" },
-  { path: "/?variant=article", selector: "#cadence-chart", out: "cadence_timeline_article.png" },
+  { path: "/closing-window/?variant=article", selector: "#window-chart", out: "window_explorer_article.png" },
+  { path: "/closing-window/?variant=article", selector: "#evergreen-chart", out: "evergreen_curves_article.png" },
+  { path: "/closing-window/?variant=article", selector: "#cadence-chart", out: "cadence_timeline_article.png" },
   { path: "/mkal/?variant=article", selector: "#mkal-participation", out: "mkal_participation_article.png" },
   { path: "/mkal/?variant=article", selector: "#mkal-outcomes-bars", out: "mkal_outcomes_article.png" },
   { path: "/mkal/?variant=article&year=2014", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2014_article.png" },

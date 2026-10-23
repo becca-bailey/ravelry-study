@@ -1,33 +1,58 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import WindowExplorer from "../components/WindowExplorer";
-import EvergreenCurves from "../components/EvergreenCurves";
-import ConversionChart from "../components/ConversionChart";
-import CadenceTimeline from "../components/CadenceTimeline";
+
+const studies = [
+  {
+    href: "/closing-window/",
+    title: "The Closing Window",
+    blurb:
+      "Twenty years of Ravelry data on what it took for a knitting designer to find an audience, era by era.",
+    note: "window of opportunity · evergreen curves · conversion · release cadence",
+  },
+  {
+    href: "/mkal/",
+    title: "Sixteen Mystery Knit-a-longs",
+    blurb:
+      "Stephen West's annual Mystery Knit-Along, 2011 to 2026: who cast on while the clues were dropping, and what became of their shawls.",
+    note: "participation · outcomes · finish curves",
+  },
+  {
+    href: "/yarn-brands/",
+    title: "Yarn brands over time",
+    blurb:
+      "Which yarns knitters reached for, 2008 to 2025, measured on 25 patterns that have been knit continuously since Ravelry's early days.",
+    note: "brand grapher · every brand at once · variety",
+  },
+];
 ---
 
-<Layout>
+<Layout
+  title="Ravelry data studies"
+  description="Data projects on twenty years of Ravelry: designers, knit-alongs and yarn brands. By Becca Bailey."
+>
   <main class="mx-auto w-full max-w-4xl flex-1 px-6 py-12">
     <header class="mb-10">
-      <h1 class="text-3xl font-semibold tracking-tight">The Closing Window</h1>
+      <h1 class="text-3xl font-semibold tracking-tight">Ravelry data studies</h1>
       <p class="mt-2 max-w-2xl text-base" style="color: var(--muted)">
-        Twenty years of Ravelry data on what it took for a knitting designer to
-        find an audience, era by era. A data project by Becca Bailey.
+        What twenty years of knitters' project records can say about designers,
+        knit-alongs and yarn. Data projects by Becca Bailey.
       </p>
     </header>
 
-    <WindowExplorer client:load />
-
-    <div class="mt-16">
-      <EvergreenCurves client:load />
-    </div>
-
-    <div class="mt-16">
-      <ConversionChart client:load />
-    </div>
-
-    <div class="mt-16">
-      <CadenceTimeline client:load />
-    </div>
+    <ul class="grid gap-4 sm:grid-cols-1">
+      {studies.map((s) => (
+        <li>
+          <a
+            href={s.href}
+            class="block rounded-lg border px-5 py-4 transition-colors hover:border-[var(--origin)]"
+            style="border-color: color-mix(in srgb, var(--muted) 35%, transparent)"
+          >
+            <h2 class="text-lg font-semibold">{s.title}</h2>
+            <p class="mt-1 max-w-2xl text-sm" style="color: var(--muted)">{s.blurb}</p>
+            <p class="mt-2 text-xs" style="color: var(--muted)">{s.note}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
   </main>
 </Layout>
