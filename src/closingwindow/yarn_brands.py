@@ -85,6 +85,7 @@ def load_events(path: Path = ROSTER_PATH) -> list[dict]:
     out = []
     for e in raw.get("company_events", []) or []:
         out.append({"company": e["company"], "date": str(e["date"]), "buyer": e.get("buyer", ""),
+                    "buyer_type": e.get("buyer_type", "private"),
                     "note": e.get("note", ""), "source": e.get("source", ""),
                     "confirmed": bool(e.get("confirmed", True))})
     return out

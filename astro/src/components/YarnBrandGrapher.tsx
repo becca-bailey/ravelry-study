@@ -34,12 +34,13 @@ export const COMPANIES: Company[] = brandData.companies.map((c) => ({
   series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled[i], n: c.n[i] })),
 }));
 const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
-export interface OwnerEvent { id: number; name: string; date: string; t: number; buyer: string; note: string; source: string; confirmed: boolean }
+export interface OwnerEvent { id: number; name: string; date: string; t: number; buyer: string; buyer_type: "pe" | "pe_backed" | "private"; note: string; source: string; confirmed: boolean; first_pe: boolean }
 /* ownership changes with dated press coverage; unconfirmed ones stay in
-   the data but off the chart */
+   the data but off the chart. The chart marks one event per brand: its
+   first sale to a private-equity firm or to a company one owned. */
 export const EVENTS: OwnerEvent[] = (brandData.events as OwnerEvent[]).filter((e) => e.confirmed);
-const EVENTS_BY_ID = new Map<number, OwnerEvent[]>();
-for (const e of EVENTS) EVENTS_BY_ID.set(e.id, [...(EVENTS_BY_ID.get(e.id) ?? []), e]);
+const PE_EVENT = new Map<number, OwnerEvent>(EVENTS.filter((e) => e.first_pe && e.t >= YEARS[0]).map((e) => [e.id, e]));
+const BUYER_TYPE = { pe: "private-equity firm", pe_backed: "private-equity-owned company", private: "private owner" };
 const BY_ID = new Map(COMPANIES.map((c) => [c.id, c]));
 
 const MAX_SELECTED = 6;
@@ -58,7 +59,7 @@ const idsOf = (names: string[]) => names
    question is visible before the labels are read. */
 export const PRESETS: { key: string; label: string; names: string[]; roles?: Record<string, string> }[] = [
   /* the six biggest panel brands that changed owners; each gets a marker per sale */
-  { key: "sold", label: "sold to new owners", names: ["Knit Picks", "madelinetosh", "Berroco", "Patons North America", "Regia", "Rowan"] },
+  { key: "sold", label: "sold to private equity", names: ["Knit Picks", "madelinetosh", "Berroco", "Regia", "Rowan", "Red Heart"] },
   { key: "default", label: "one of each", names: ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"] },
   { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"],
     roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Berroco": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
@@ -134,12 +135,11 @@ function Chart({ width, slots, roles, article }: ChartProps) {
     [innerW],
   );
 
-  /* ownership markers for the selected brands: one dot per sale on the
-     brand's own line, tagged "sold <year>"; tags alternate above and below
-     when two sales sit close together */
+  /* one marker per selected brand, at its first private-equity sale, on
+     the brand's own line and tagged with its name and the year */
   type Marker = { e: OwnerEvent; line: typeof lines[number]; x: number };
   const markers: Marker[] = lines
-    .flatMap((l) => (EVENTS_BY_ID.get(l.company.id) ?? []).map((e) => ({ e, line: l, x: xScale(e.t) })))
+    .flatMap((l) => { const e = PE_EVENT.get(l.company.id); return e ? [{ e, line: l, x: xScale(e.t) }] : []; })
     .sort((a, b) => a.e.t - b.e.t);
   const top = MARGIN.top;
   const innerH = CHART_H - top - MARGIN.bottom;
@@ -154,6 +154,8 @@ function Chart({ width, slots, roles, article }: ChartProps) {
   if (width < 10) return null;
   const colour = (slot: number, id?: number) => theme.resolve((id !== undefined && roles.get(id)) || SLOT_TOKENS[slot]);
   const isContext = (id: number) => roles.get(id) === "--series-context";
+  const shownEventsAt = (year: number) =>
+    EVENTS.filter((e) => Math.floor(e.t) === year && lines.some((l) => l.company.id === e.id));
   const last = YEARS[YEARS.length - 1];
 
   const labelY = spreadLabels(
@@ -186,21 +188,25 @@ function Chart({ width, slots, roles, article }: ChartProps) {
               with the year; each tag takes the first of above / below / further
               out that does not overlap a tag already placed */}
           {(() => {
-            const placed: { x: number; y: number }[] = [];
-            const TAG_W = 52, TAG_H = 11;
+            const placed: { x: number; y: number; w: number }[] = [];
+            const TAG_H = 11;
             return markers.map((m) => {
               const c = colour(m.line.slot, m.line.company.id);
               const cy = yScale(indexAt(m.line.company, m.e.t));
+              const tag = `${m.e.name} sold ${Math.floor(m.e.t)}`;
+              const w = tag.length * 5.6;
               const options = [cy - 10, cy + 17, cy - 22, cy + 29, cy - 34];
-              const ty = options.find((y) => !placed.some((p) => Math.abs(p.x - m.x) < TAG_W && Math.abs(p.y - y) < TAG_H)) ?? options[0];
-              placed.push({ x: m.x, y: ty });
+              const ty = options.find((y) => !placed.some((p) => Math.abs(p.x - m.x) < (p.w + w) / 2 && Math.abs(p.y - y) < TAG_H)) ?? options[0];
+              placed.push({ x: m.x, y: ty, w });
+              /* keep the tag inside the plot */
+              const tx = Math.min(innerW - w / 2, Math.max(w / 2, m.x));
               return (
               <Group key={`${m.e.id}-${m.e.date}`}>
                 <circle cx={m.x} cy={cy} r={6.5} fill="var(--background)" stroke={c} strokeWidth={1.5} />
                 <circle cx={m.x} cy={cy} r={3} fill={c} />
-                <text x={m.x} y={ty} fontSize={10} fontWeight={600} textAnchor="middle" fill="var(--foreground)"
+                <text x={tx} y={ty} fontSize={10} fontWeight={600} textAnchor="middle" fill="var(--foreground)"
                   style={{ paintOrder: "stroke", stroke: "var(--background)", strokeWidth: 3, strokeLinejoin: "round" }}>
-                  sold {Math.floor(m.e.t)}
+                  {tag}
                 </text>
               </Group>
               );
@@ -270,9 +276,9 @@ function Chart({ width, slots, roles, article }: ChartProps) {
               <span className="ml-auto">{pct(r.point.index)}</span>
             </div>
           ))}
-          {markers.filter((m) => Math.floor(m.e.t) === tooltipData).map((m) => (
-            <div key={`${m.e.id}-${m.e.date}`} className="mt-1" style={{ color: theme.role.muted }}>
-              {m.e.name} sold to {m.e.buyer}
+          {shownEventsAt(tooltipData).map((e) => (
+            <div key={`${e.id}-${e.date}`} className="mt-1" style={{ color: theme.role.muted }}>
+              {e.name} sold to {e.buyer}
             </div>
           ))}
         </TooltipWithBounds>
@@ -418,7 +424,7 @@ export default function YarnBrandGrapher() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Share of projects on 25 long-lived patterns that used each brand, by
           the year the project was started, {YEARS[0]} to {YEARS[YEARS.length - 1]}.
-          A ringed dot marks the month a brand changed owners.
+          A ringed dot marks the month a brand was first sold to a private-equity owner.
           {!article && " Pick up to six brands; hover for the numbers."}
         </p>
       </figcaption>
@@ -443,7 +449,7 @@ export default function YarnBrandGrapher() {
             <circle cx={7} cy={7} r={5.5} fill="var(--background)" stroke="currentColor" strokeWidth={1.5} />
             <circle cx={7} cy={7} r={2.5} fill="currentColor" />
           </svg>
-          the month the brand changed owners
+          the month of the brand's first sale to a private-equity owner
         </div>
       )}
 
@@ -479,6 +485,7 @@ export default function YarnBrandGrapher() {
               <th className="py-1 text-left font-medium">brand</th>
               <th className="py-1 text-left font-medium">when</th>
               <th className="py-1 text-left font-medium">to</th>
+              <th className="py-1 text-left font-medium">buyer</th>
               <th className="py-1 text-left font-medium">what happened</th>
             </tr>
           </thead>
@@ -488,6 +495,7 @@ export default function YarnBrandGrapher() {
                 <td className="py-1 pr-3">{e.name}</td>
                 <td className="py-1 pr-3 whitespace-nowrap">{e.date}</td>
                 <td className="py-1 pr-3">{e.buyer}</td>
+                <td className="py-1 pr-3 whitespace-nowrap">{BUYER_TYPE[e.buyer_type]}{e.first_pe ? " ●" : ""}</td>
                 <td className="py-1">{e.note}{e.source && <> <a href={e.source} style={{ color: "var(--muted)" }}>source</a></>}</td>
               </tr>
             ))}
@@ -505,8 +513,11 @@ export default function YarnBrandGrapher() {
           so one popular pattern cannot carry a line. Only projects whose yarn is linked
           to Ravelry's yarn database count: {pct(first.with_brand, 0)} of {first.year} projects,
           {" "}{pct(latest.with_brand, 0)} of {latest.year}.
-          Ownership markers sit at the announced month of each sale; the table above
-          lists them with sources for the brands shown. Sales resting on a single secondary report are
+          Each marker sits at the announced month of the brand's first sale to a
+          private-equity firm, or to a company one owned; later sales and sales to
+          private owners are in the table above (● marks the one drawn). Patons North
+          America, Bernat and Caron have no marker because their parent, Spinrite, was
+          already private-equity-owned before {YEARS[0]}. Sales resting on a single secondary report are
           left off the chart.
         </p>
       )}

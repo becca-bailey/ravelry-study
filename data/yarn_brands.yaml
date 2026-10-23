@@ -250,94 +250,127 @@ company_aliases:
 # chart. Dates are the announced completion month. Only events with dated
 # press coverage are listed as confirmed; `confirmed: false` entries rest
 # on a single secondary page and are kept out of the chart.
+# buyer_type: pe (a private-equity firm), pe_backed (a company owned by
+# one at the time), private (an individual or an independent company).
+# The chart marks each brand's first pe or pe_backed sale.
 company_events:
+  - company: Patons North America
+    date: 2007-11
+    buyer: Sentinel Capital Partners
+    buyer_type: pe
+    note: parent Spinrite taken private by Sentinel, before the panel's first year
+    source: https://www.privatedebtinvestor.com/sentinel-to-reacquire-canadian-yarn-company-for-57m/
+  - company: Bernat
+    date: 2007-11
+    buyer: Sentinel Capital Partners
+    buyer_type: pe
+    note: parent Spinrite taken private by Sentinel, before the panel's first year
+    source: https://www.privatedebtinvestor.com/sentinel-to-reacquire-canadian-yarn-company-for-57m/
   - company: Knit Picks
     date: 2017-02
     buyer: Premier Needle Arts (Blue Point Capital)
+    buyer_type: pe
     note: parent Crafts Americana Group sold to a private-equity-backed group
     source: https://peprofessional.com/2017/02/blue-point-adds-premier-needle-arts/
   - company: Rowan
     date: 2015-07
     buyer: Aurelius (MEZ)
+    buyer_type: pe
     note: Coats sold its European crafts business, Rowan and Regia with it
     source: https://apparelresources.com/business-news/trade/emea-crafts-business-coats-acquired-aurelius
   - company: Regia
     date: 2015-07
     buyer: Aurelius (MEZ)
+    buyer_type: pe
     note: Coats sold its European crafts business, Rowan and Regia with it
     source: https://apparelresources.com/business-news/trade/emea-crafts-business-coats-acquired-aurelius
   - company: Rowan
     date: 2020-04
     buyer: DMC Group (Lion Capital)
+    buyer_type: pe
     note: MEZ sold the Rowan and Patons UK hand-knitting business
     source: https://www.marketscreener.com/quote/stock/AURELIUS-EQUITY-OPPORTUNI-494695/news/AURELIUS-Equity-Opportunities-subsidiary-MEZ-sells-hand-knitting-yarn-segment-of-the-Rowan-and-Pat-30501153/
   - company: Patons North America
     date: 2015-10
     buyer: TorQuest Partners
+    buyer_type: pe
     note: parent Spinrite sold by Sentinel Capital to TorQuest
     source: https://www.rwbaird.com/transactions/investment-banking/dealcard/4829
   - company: Patons North America
     date: 2018-07
     buyer: Comvest Partners
+    buyer_type: pe
     note: Spinrite sold on to Comvest
     source: https://peprofessional.com/2018/07/comvest-acquires-spinrite/
   - company: Bernat
     date: 2015-10
     buyer: TorQuest Partners
+    buyer_type: pe
     note: parent Spinrite sold by Sentinel Capital to TorQuest
     source: https://www.rwbaird.com/transactions/investment-banking/dealcard/4829
   - company: Bernat
     date: 2018-07
     buyer: Comvest Partners
+    buyer_type: pe
     note: Spinrite sold on to Comvest
     source: https://peprofessional.com/2018/07/comvest-acquires-spinrite/
   - company: Caron
     date: 2011-12
     buyer: Spinrite
+    buyer_type: pe_backed
     note: National Spinning sold the Caron yarn lines to Spinrite
     source: https://www.textileworld.com/textile-world/textile-news/2011/12/national-spinning-sells-caron-international-to-spinrite/
   - company: Caron
     date: 2015-10
     buyer: TorQuest Partners
+    buyer_type: pe
     note: parent Spinrite sold by Sentinel Capital to TorQuest
     source: https://www.rwbaird.com/transactions/investment-banking/dealcard/4829
   - company: Caron
     date: 2018-07
     buyer: Comvest Partners
+    buyer_type: pe
     note: Spinrite sold on to Comvest
     source: https://peprofessional.com/2018/07/comvest-acquires-spinrite/
   - company: Sirdar
     date: 2017-04
     buyer: BlueGem Capital (DMC Group)
+    buyer_type: pe
     note: sold by the founding family to a private-equity firm
     source: https://bluegemcp.com/news/bluegem-ii-lp-acquires-uk-based-needlecraft-company-sidar
   - company: Red Heart
     date: 2019-01
     buyer: Spinrite (Comvest)
+    buyer_type: pe_backed
     note: Coats sold its North American crafts business
     source: https://www.globenewswire.com/news-release/2019/01/22/1703210/0/en/Spinrite-Acquires-Coats-Clark-Inc.html
   - company: madelinetosh
     date: 2019-11
     buyer: Jimmy Beans Wool
+    buyer_type: private
     note: founder sold to the Reno retailer
     source: https://www.cbinsights.com/company/madelinetosh
   - company: madelinetosh
     date: 2025-04
     buyer: Local Crafts (Blue Point Capital)
+    buyer_type: pe_backed
     note: Jimmy Beans Wool bought by the group that owns Knit Picks and Berroco
     source: https://secure.businesswire.com/news/home/20250416345543/en/Blue-Point-Backed-Local-Crafts-Acquires-Jimmy-Beans-Wool-Weaving-a-Stronger-Future-for-Crafters
   - company: Berroco
     date: 2021-10
     buyer: Premier Needle Arts (Blue Point Capital)
+    buyer_type: pe_backed
     note: family-owned Berroco sold to the group that owns Knit Picks
     source: https://merger.com/?p=3991
   - company: Debbie Bliss
     date: 2018-04
     buyer: LoveCrafts
+    buyer_type: private
     note: single secondary source; distributor Designer Yarns went into administration Dec 2017
     confirmed: false
   - company: Premier Yarns
     date: 2018
     buyer: Universal Yarn
+    buyer_type: private
     note: single secondary source
     confirmed: false
