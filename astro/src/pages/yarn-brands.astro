@@ -9,7 +9,7 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 const pct = (v: number) => `${Math.round(100 * v)}%`;
 const first = coverage[0];
 const last = coverage[coverage.length - 1];
-const strata = ["shawl", "sock", "hat", "cowl", "garment"];
+const strata = ["shawl", "sock", "hat", "cowl", "accessory", "garment"];
 const byStratum = strata.map((s) => ({
   stratum: s,
   rows: patterns.filter((p) => p.stratum === s).sort((a, b) => (a.published ?? 0) - (b.published ?? 0)),
@@ -42,8 +42,8 @@ const anchors = patterns.filter((p) => p.role === "anchor").length;
           Every Ravelry project on {patterns.length} patterns, {fmt(meta.projects)} in all.
           {patterns.length - anchors} of the patterns were published by 2013 and are still
           being knit; {anchors} newer ones keep the recent years from resting on aging designs
-          alone. Together they cover shawls, socks, hats, cowls and garments in
-          weights from fingering to aran.
+          alone. Together they cover shawls, socks, hats, cowls, small accessories and
+          garments in weights from lace to aran.
         </li>
         <li>
           <strong style="color: var(--foreground)">Why a fixed set of patterns.</strong>

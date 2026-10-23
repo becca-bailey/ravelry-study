@@ -228,6 +228,129 @@ patterns:
     role: anchor
     note: projects=15237
 
+  # --- added 2026-10-22: more evergreens for the thin 2008-2011 years, and
+  # recent broad-yarn patterns with no house yarn, after a leave-one-out
+  # check showed single patterns moving early-year and indie-brand shares
+  # (docs/essay-notes.md). Ids resolved against patterns/search that day.
+  - key: calorimetry
+    name: Calorimetry
+    pattern_id: 88
+    designer: Kathryn Schoendorf
+    published: 2006
+    weight: aran
+    stratum: accessory
+    note: Knitty headband, leftover-yarn classic (projects=20032)
+  - key: fetching
+    name: Fetching
+    pattern_id: 195
+    designer: Cheryl Niamath
+    published: 2006
+    weight: aran
+    stratum: accessory
+    note: Knitty mitts (projects=21495)
+  - key: ishbel
+    name: Ishbel
+    pattern_id: 103556
+    designer: Ysolda Teague
+    published: 2009
+    weight: fingering
+    stratum: shawl
+    note: projects=14545
+  - key: swallowtail
+    name: Swallowtail Shawl
+    pattern_id: 683
+    designer: Evelyn A. Clark
+    published: 2006
+    weight: lace
+    stratum: shawl
+    note: projects=12475
+  - key: koolhaas
+    name: Koolhaas
+    pattern_id: 25038
+    designer: Jared Flood
+    published: 2007
+    weight: worsted
+    stratum: hat
+    note: projects=9826
+  - key: citron
+    name: Citron
+    pattern_id: 154236
+    designer: Hilary Smith Callis
+    published: 2009
+    weight: lace
+    stratum: shawl
+    note: projects=13066
+  - key: haruni
+    name: Haruni
+    pattern_id: 156437
+    designer: Emily Ross
+    published: 2009
+    weight: fingering
+    stratum: shawl
+    note: projects=11446
+  - key: boneyard
+    name: Boneyard Shawl
+    pattern_id: 119278
+    designer: Stephen West
+    published: 2009
+    weight: dk
+    stratum: shawl
+    note: projects=12305
+  - key: nurmilintu
+    name: Nurmilintu
+    pattern_id: 506340
+    designer: Heidi Alander
+    published: 2014
+    weight: fingering
+    stratum: shawl
+    role: anchor
+    note: projects=9840
+  - key: reyna
+    name: Reyna
+    pattern_id: 588220
+    designer: Noora Laivola
+    published: 2015
+    weight: fingering
+    stratum: shawl
+    role: anchor
+    note: projects=16868
+  - key: close_to_you
+    name: Close To You
+    pattern_id: 672420
+    designer: Justyna Lorkowska
+    published: 2016
+    weight: fingering
+    stratum: shawl
+    role: anchor
+    note: projects=10309
+  - key: baable_hat
+    name: Baa-ble Hat
+    pattern_id: 566285
+    designer: Donna Smith
+    published: 2015
+    weight: aran
+    stratum: hat
+    role: anchor
+    note: projects=12863
+  - key: rye_sock
+    name: Rye sock
+    pattern_id: 891114
+    designer: tincanknits
+    published: 2018
+    weight: fingering
+    stratum: sock
+    role: anchor
+    note: projects=9950
+  - key: love_note
+    name: Love Note
+    pattern_id: 927223
+    designer: tincanknits
+    published: 2019
+    weight: dk
+    stratum: garment
+    role: anchor
+    note: projects=15750
+
 # Fold renamed / sub-label companies into one brand key (ids are Ravelry
 # yarn_company_id, found from the near-duplicate list in notebook section 0).
 # Knit Picks has no second id in the panel: WeCrochet yarns are linked
