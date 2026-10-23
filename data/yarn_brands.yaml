@@ -485,6 +485,12 @@ company_events:
     buyer_type: pe_backed
     note: family-owned Berroco sold to the group that owns Knit Picks
     source: https://merger.com/?p=3991
+  - company: Knitting for Olive
+    date: 2026
+    buyer: Hawk Infinity
+    buyer_type: private
+    note: founding family sold to a Norwegian founder-owned holding company, after the panel's last full year; two secondary sources, no press release found
+    source: https://madegooddesigns.com/?p=94737
   - company: Debbie Bliss
     date: 2018-04
     buyer: LoveCrafts
