@@ -21,7 +21,7 @@ import brandData from "@/data/yarn_brands.json";
    and under 100) so its growth reads against a flat edge. Shares are the
    panel index normalised to each year's sum over all brands. Hover a band
    for its numbers and the year's five biggest; click, or search, to see one
-   brand alone, with a ghost of where it sat in the stack. */
+   brand alone. */
 
 interface Band { id: number; name: string; total: number; v: number[]; peakYear: number; era: number }
 
@@ -90,7 +90,7 @@ const Bands = memo(function Bands({ scales, fills, interactive }: { scales: Scal
   );
 });
 
-interface Solo { name: string; v: number[]; total: number; peakYear: number; stackIdx: number | null }
+interface Solo { name: string; v: number[]; total: number; peakYear: number }
 
 interface ChartProps { width: number; solo: Solo | null; onPick: (id: number | null) => void; article: boolean }
 
@@ -186,28 +186,6 @@ function Chart({ width, solo, onPick, article }: ChartProps) {
               <Area<number> data={YEARS.map((_, i) => i)} curve={curveMonotoneX}
                 x={(i) => xScale(YEARS[i])} y0={innerH} y1={(i) => yScale(solo.v[i])}
                 style={{ fill: theme.shade(theme.chart[0], 0.45, "white") }} stroke={theme.chart[0]} strokeWidth={1.5} />
-              {solo.stackIdx !== null && (() => {
-                /* "you are here": a small inset of the full stack with this band
-                   picked out, on its own 0 to 100% frame rather than the solo axis */
-                const iw = Math.min(150, innerW / 4), ih = iw / 2, ix = innerW - iw - 4, iy = 4;
-                const sx = (yi: number) => ix + (yi / LAST) * iw;
-                const sy = (v: number) => iy + ih * (1 - v);
-                const k = solo.stackIdx;
-                return (
-                  <Group style={{ pointerEvents: "none" }}>
-                    <rect x={ix} y={iy} width={iw} height={ih} fill="var(--background)" stroke={grey} strokeOpacity={0.5} />
-                    <Area<number> data={YEARS.map((_, i) => i)} curve={curveMonotoneX}
-                      x={sx} y0={(i) => sy(Y0[1][i] + BANDS[1].v[i])} y1={(i) => sy(0)}
-                      fill={grey} fillOpacity={0.25} />
-                    <Area<number> data={YEARS.map((_, i) => i)} curve={curveMonotoneX}
-                      x={sx} y0={(i) => sy(Y0[k][i])} y1={(i) => sy(Y0[k][i] + BANDS[k].v[i])}
-                      fill={theme.chartContrast[0]} />
-                    <text x={ix + iw / 2} y={iy + ih + 12} textAnchor="middle" fontSize={10} fill={grey}>
-                      in the full stack
-                    </text>
-                  </Group>
-                );
-              })()}
               <text x={innerW / 2} y={innerH * 0.42} textAnchor="middle" fontSize={Math.min(40, innerW / 12)}
                 fontWeight={600} fill="var(--foreground)" style={{ paintOrder: "stroke", stroke: "var(--background)", strokeWidth: 6, strokeLinejoin: "round" }}>
                 {solo.name}
@@ -342,11 +320,11 @@ export default function YarnBrandEras() {
   const solo = useMemo<Solo | null>(() => {
     if (focus === null) return null;
     const idx = BY_ID.get(focus);
-    if (idx !== undefined) { const b = BANDS[idx]; return { name: b.name, v: b.v, total: b.total, peakYear: b.peakYear, stackIdx: idx }; }
+    if (idx !== undefined) { const b = BANDS[idx]; return { name: b.name, v: b.v, total: b.total, peakYear: b.peakYear }; }
     const c = SEARCHABLE.find((s) => s.id === focus);
     if (!c) return null;
     const v = c.index.map((x, i) => x / YEAR_TOTAL[i]);
-    return { name: c.name, v, total: c.total, peakYear: YEARS[v.indexOf(Math.max(...v))], stackIdx: null };
+    return { name: c.name, v, total: c.total, peakYear: YEARS[v.indexOf(Math.max(...v))] };
   }, [focus]);
   const v0 = VARIETY[0], v1 = VARIETY[VARIETY.length - 1];
   const peakEff = VARIETY.reduce((a, b) => ((b.eff_brands ?? 0) > (a.eff_brands ?? 0) ? b : a));
