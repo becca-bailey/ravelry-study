@@ -370,7 +370,42 @@ fig.suptitle("Share of evergreen-panel projects by brand (each panel on its own 
 fig.tight_layout(); fig.savefig(REPORTS / "small_multiples.png", dpi=150)
 
 # %% [markdown]
-# ## 5. Appendix: per-pattern top brands by year
+# ## 5. Coming back: which brands knitters use again
+#
+# For every panel project that used a brand, the same knitter's next panel
+# project with a linked yarn: did it use the brand again? The return rate is
+# that share, counting only next projects on a *different* pattern (a second
+# pair of the same socks says less). The base rate is how often any next
+# project uses the brand, so the gap between the two is loyalty beyond
+# availability. Each knitter is weighted once. Caveat: only panel projects are
+# seen, so "next" means next *panel* project.
+
+# %%
+trans = B.transitions(frame, brands)
+print(f"{len(trans):,} transitions from {trans['user_id'].nunique():,} knitters; "
+      f"{trans['same_pattern'].mean():.0%} of next projects are the same pattern")
+ret = B.return_rate(frame, brands, min_users=1000, trans=trans)
+display(ret[["company_name", "users", "return_diff", "base_rate", "lift_diff"]].round(3).head(30))
+
+fig, ax = plt.subplots(figsize=(7, 9))
+top = ret.sort_values("return_diff", ascending=True).tail(30)
+ax.hlines(top["company_name"], top["base_rate"], top["return_diff"], color="#bbb", lw=2)
+ax.plot(top["base_rate"], top["company_name"], "o", color="#bbb", label="any next project")
+ax.plot(top["return_diff"], top["company_name"], "o", color=CAT[0], label="next project after using the brand")
+ax.xaxis.set_major_formatter(PCT); ax.set_xlabel("share of next projects (different pattern) using the brand")
+ax.legend(loc="lower right", frameon=False); ax.set_title("Who comes back: return rate vs base rate, brands with 1,000+ knitters")
+fig.tight_layout(); fig.savefig(REPORTS / "return_rate.png", dpi=150)
+
+# by period of the originating project: did loyalty move?
+trans["period"] = pd.cut(trans["year"], [2007, 2012, 2016, 2021, LAST_FULL_YEAR],
+                         labels=["2008-12", "2013-16", "2017-21", f"2022-{LAST_FULL_YEAR}"]).astype(str)
+retp = B.return_rate(frame, brands, min_users=500, by="period", trans=trans)
+watch = ["Knit Picks", "Cascade Yarns ®", "Malabrigo Yarn", "madelinetosh", "Berroco", "Lion Brand"]
+display(retp[retp["company_name"].isin(watch)].pivot(index="company_name", columns="period",
+        values="return_diff").round(3))
+
+# %% [markdown]
+# ## 6. Appendix: per-pattern top brands by year
 
 # %%
 for key in order:

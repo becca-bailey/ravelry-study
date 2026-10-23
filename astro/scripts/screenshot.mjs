@@ -23,6 +23,7 @@ const TARGETS = [
   { path: "/mkal/", selector: "#mkal-outcomes", out: "mkal_outcomes_web.png" },
   { path: "/yarn-brands/", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_web.png" },
   { path: "/yarn-brands/", selector: "#yarn-brand-eras", out: "yarn_brand_eras_web.png" },
+  { path: "/yarn-brands/", selector: "#yarn-brand-loyalty", out: "yarn_brand_loyalty_web.png" },
   // stripped-down versions for the essay/interview (see src/lib/variant.ts)
   { path: "/closing-window/?variant=article", selector: "#window-chart", out: "window_explorer_article.png" },
   { path: "/closing-window/?variant=article", selector: "#evergreen-chart", out: "evergreen_curves_article.png" },
@@ -41,6 +42,7 @@ const TARGETS = [
   { path: "/yarn-brands/?variant=article&preset=socks", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_socks_article.png" },
   { path: "/yarn-brands/?variant=article&preset=bigbox", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_bigbox_article.png" },
   { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-eras", out: "yarn_brand_eras_article.png" },
+  { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-loyalty", out: "yarn_brand_loyalty_article.png" },
 ];
 
 const preview = spawn("npx", ["astro", "preview", "--port", String(PORT)], {

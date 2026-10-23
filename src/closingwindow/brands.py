@@ -239,6 +239,87 @@ def stayers(frame: pd.DataFrame, pre: tuple[int, int], post: tuple[int, int]) ->
     return pd.Index(sorted(a & b))
 
 
+# --- coming back to a brand ----------------------------------------------------------
+
+def transitions(frame: pd.DataFrame, brands: pd.DataFrame) -> pd.DataFrame:
+    """One row per (project, brand used) that has a later panel project by
+    the same knitter with a linked brand: the knitter's next project, and
+    whether it used the same brand.
+
+    Columns: project_id, user_id, key, year, company_id, company_name,
+    next_id, next_key, next_year, returned (next used the brand),
+    same_pattern (next is the same pattern). Projects are ordered by start
+    date, falling back to the record's creation date. Only linked-brand
+    projects take part, so a project with free-text yarn is skipped when
+    finding the next one."""
+    f = frame.loc[frame["has_brand"], ["id", "user_id", "key", "year", "started", "created_at"]].copy()
+    when = pd.to_datetime(f["started"], errors="coerce")
+    created = pd.to_datetime(f["created_at"], errors="coerce", utc=True).dt.tz_localize(None)
+    f["when"] = when.fillna(created)
+    f = f.sort_values(["user_id", "when", "id"])
+    g = f.groupby("user_id")
+    f["next_id"] = g["id"].shift(-1)
+    f["next_key"] = g["key"].shift(-1)
+    f["next_year"] = g["year"].shift(-1)
+    f = f[f["next_id"].notna()].copy()
+    f["next_id"] = f["next_id"].astype(int)
+    linked = brands[brands["company_id"] != UNLINKED_ID][["project_id", "company_id", "company_name"]]
+    cur = f.merge(linked, left_on="id", right_on="project_id")
+    nxt = linked[["project_id", "company_id"]].rename(columns={"project_id": "next_id"}).assign(returned=True)
+    out = cur.merge(nxt, on=["next_id", "company_id"], how="left")
+    out["returned"] = out["returned"].fillna(False).astype(bool)
+    out["same_pattern"] = out["key"] == out["next_key"]
+    return out[["project_id", "user_id", "key", "year", "company_id", "company_name",
+                "next_id", "next_key", "next_year", "returned", "same_pattern"]].reset_index(drop=True)
+
+
+def return_rate(frame: pd.DataFrame, brands: pd.DataFrame, min_users: int = 300,
+                by: str | None = None, trans: pd.DataFrame | None = None) -> pd.DataFrame:
+    """How likely a knitter who used a brand is to use it on their next panel
+    project, against how likely any next project is to use it.
+
+    Each knitter counts once: a knitter's transitions are weighted 1/n so
+    prolific knitters do not dominate. Per brand (and per `by` column of the
+    originating project, e.g. a period, if given):
+
+      users          distinct knitters with a next project
+      transitions    (project, brand) pairs with a next project, unweighted
+      return_rate    weighted share of transitions whose next project used
+                     the brand
+      return_diff    the same, counting only next projects on a different
+                     pattern (a second pair of the same socks says less)
+      base_rate      weighted share of all next projects that used the brand
+      lift           return_rate / base_rate
+      lift_diff      return_diff / base_rate (the headline)
+
+    Brands with fewer than `min_users` are dropped."""
+    t = transitions(frame, brands) if trans is None else trans
+    t = t.copy()
+    t["w"] = 1.0 / t.groupby("user_id")["project_id"].transform("size")
+    keys = ["company_id", "company_name"] + ([by] if by else [])
+    # base: over the universe of next projects (one row per next project per user-transition)
+    nexts = t.drop_duplicates(["project_id", "next_id"])[["user_id", "project_id", "next_id", "w"] + ([by] if by else [])]
+    linked = brands[brands["company_id"] != UNLINKED_ID][["project_id", "company_id"]]
+    nb = nexts.merge(linked.rename(columns={"project_id": "next_id"}), on="next_id")
+    base = (nb.groupby(["company_id"] + ([by] if by else []))["w"].sum()
+            / nexts.groupby([by])["w"].sum() if by else
+            nb.groupby("company_id")["w"].sum() / nexts["w"].sum()).rename("base_rate")
+    rows = []
+    for k, g in t.groupby(keys):
+        diff = g[~g["same_pattern"]]
+        rows.append({**dict(zip(keys, k if isinstance(k, tuple) else (k,))),
+                     "users": int(g["user_id"].nunique()), "transitions": int(len(g)),
+                     "return_rate": float((g["w"] * g["returned"]).sum() / g["w"].sum()),
+                     "return_diff": float((diff["w"] * diff["returned"]).sum() / diff["w"].sum()) if len(diff) else np.nan,
+                     "same_pattern_share": float((g["w"] * g["same_pattern"]).sum() / g["w"].sum())})
+    out = pd.DataFrame(rows)
+    out = out[out["users"] >= min_users]
+    out = out.merge(base.reset_index(), on=["company_id"] + ([by] if by else []), how="left")
+    out["lift"] = out["return_rate"] / out["base_rate"]
+    out["lift_diff"] = out["return_diff"] / out["base_rate"]
+    return out.sort_values("lift_diff", ascending=False).reset_index(drop=True)
+
+
 # --- notes as a check on logging bias ---------------------------------------------
 
 def notes_mentions(frame: pd.DataFrame, patterns: dict[str, str]) -> pd.DataFrame:

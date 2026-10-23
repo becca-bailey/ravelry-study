@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import YarnBrandGrapher from "../components/YarnBrandGrapher";
 import YarnBrandEras from "../components/YarnBrandEras";
+import YarnBrandLoyalty from "../components/YarnBrandLoyalty";
 import data from "../data/yarn_brands.json";
 
 const { meta, patterns, coverage } = data;
@@ -110,6 +111,10 @@ const anchors = patterns.filter((p) => p.role === "anchor").length;
 
     <div class="mt-16">
       <YarnBrandEras client:load />
+    </div>
+
+    <div class="mt-16">
+      <YarnBrandLoyalty client:load />
     </div>
   </main>
 </Layout>

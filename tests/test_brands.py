@@ -107,3 +107,36 @@ def test_stayers_and_notes():
     assert list(B.stayers(f, (2015, 2015), (2016, 2016))) == []
     m = B.notes_mentions(f, {"knit_picks": r"knit ?picks"})
     assert m["knit_picks"].tolist() == [True, False, False, False, True]
+
+
+def test_return_rate_counts_next_project_only():
+    # knitter 1: brand A on pattern a, then A on pattern b (returned, different
+    #            pattern), then B on a (A not returned; B has no next)
+    # knitter 2: brand A on a, then B on b (not returned; B has no next)
+    # knitter 3: A once (no next)
+    projects = pd.DataFrame({
+        "id": [1, 2, 3, 4, 5, 6],
+        "key": ["a", "b", "a", "a", "b", "a"],
+        "user_id": [1, 1, 1, 2, 2, 3],
+        "started": ["2015/01/01", "2015/02/01", "2015/03/01", "2016/01/01", "2016/02/01", "2017/01/01"],
+        "created_at": ["2015/01/01 00:00:00 -0400"] * 6,
+        "n_packs": [1] * 6,
+        "notes": [""] * 6,
+    })
+    packs = pd.DataFrame({
+        "project_id": [1, 2, 3, 4, 5, 6], "key": projects["key"],
+        "yarn_company_id": [100, 100, 200, 100, 200, 100],
+        "yarn_company_name": ["A", "A", "B", "A", "B", "A"],
+    })
+    brands = B.project_brands(packs)
+    frame = B.panel_frame(projects, brands)
+    t = B.transitions(frame, brands)
+    assert len(t) == 3                       # projects 1, 2 and 4 have a next
+    a = t[t["company_id"] == 100]
+    assert list(a["returned"]) == [True, False, False]
+    r = B.return_rate(frame, brands, min_users=1).set_index("company_name")
+    # knitter 1 has 2 transitions (w=1/2 each), knitter 2 has 1 (w=1):
+    # A's transitions are 1 (returned), 2 and 4; returned weight 1/2 of 2
+    assert r.loc["A", "return_rate"] == pytest.approx(0.25)
+    assert r.loc["A", "users"] == 2
+    assert "B" not in r.index                # B never has a next project
