@@ -184,6 +184,26 @@ function Chart({ width, slots, roles, article }: ChartProps) {
         <Group left={MARGIN.left} top={top}>
           <GridRows scale={yScale} width={innerW} stroke={theme.role.muted} strokeOpacity={0.18} />
 
+          {lines.map((l) => {
+            const c = colour(l.slot, l.company.id);
+            const quiet = isContext(l.company.id);
+            const ly = labelY.get(l.company.id) ?? 0;
+            return (
+              <Group key={l.company.id}>
+                <LinePath<Point> data={l.company.series} curve={curveMonotoneX}
+                  x={(p) => xScale(p.year)} y={(p) => yScale(p.index)}
+                  stroke={c} strokeWidth={quiet ? 1.5 : 2.25}
+                  strokeLinejoin="round" strokeLinecap="round" />
+                {/* end label in ink; the dot carries identity */}
+                <circle cx={innerW + 10} cy={ly} r={3.5} fill={c} />
+                <text x={innerW + 18} y={ly + 4} fontSize={11.5} fontWeight={quiet ? 500 : 600}
+                  fill={quiet ? theme.role.muted : "var(--foreground)"}>
+                  {l.company.name}
+                </text>
+              </Group>
+            );
+          })}
+
           {/* ownership changes: a ringed dot on the line at the sale month with a
               dotted drop line to the axis, tagged with brand and year; each tag
               takes the first of above / below / further out that does not
@@ -215,26 +235,6 @@ function Chart({ width, slots, roles, article }: ChartProps) {
               );
             });
           })()}
-
-          {lines.map((l) => {
-            const c = colour(l.slot, l.company.id);
-            const quiet = isContext(l.company.id);
-            const ly = labelY.get(l.company.id) ?? 0;
-            return (
-              <Group key={l.company.id}>
-                <LinePath<Point> data={l.company.series} curve={curveMonotoneX}
-                  x={(p) => xScale(p.year)} y={(p) => yScale(p.index)}
-                  stroke={c} strokeWidth={quiet ? 1.5 : 2.25}
-                  strokeLinejoin="round" strokeLinecap="round" />
-                {/* end label in ink; the dot carries identity */}
-                <circle cx={innerW + 10} cy={ly} r={3.5} fill={c} />
-                <text x={innerW + 18} y={ly + 4} fontSize={11.5} fontWeight={quiet ? 500 : 600}
-                  fill={quiet ? theme.role.muted : "var(--foreground)"}>
-                  {l.company.name}
-                </text>
-              </Group>
-            );
-          })}
 
           {/* crosshair */}
           {tooltipData !== undefined && (
