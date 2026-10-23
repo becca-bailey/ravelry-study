@@ -48,20 +48,20 @@ const idsOf = (names: string[]) => names
    from the notes; "dyers" the hand-dyed cycles; "risers" the brands still
    climbing after a decade and more. */
 /* A preset may give brands a role instead of a slot colour: the brand the
-   story is about takes --role-focus and its peers --role-context, so the
+   story is about takes --series-focus and its peers --series-context, so the
    question is visible before the labels are read. */
 export const PRESETS: { key: string; label: string; names: string[]; roles?: Record<string, string> }[] = [
   { key: "default", label: "one of each", names: ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"] },
   { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"],
-    roles: { "Knit Picks": "--role-focus", "Cascade Yarns": "--role-context", "Garnstudio": "--role-context", "Berroco": "--role-context", "Lion Brand": "--role-context", "Patons North America": "--role-context" } },
+    roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Berroco": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
   { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres"] },
   { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Schoppel-Wolle", "Lang Yarns", "West Yorkshire Spinners"] },
 ];
 const DEFAULT_IDS = idsOf(PRESETS[0].names);
 
-/* Six categorical line colours, one per picker slot (see --brand-line-* in
+/* Six categorical line colours, one per picker slot (see --series-* in
    globals.css). A brand keeps its slot, and so its colour, until removed. */
-const SLOT_TOKENS = [1, 2, 3, 4, 5, 6].map((i) => `--brand-line-${i}`);
+const SLOT_TOKENS = [1, 2, 3, 4, 5, 6].map((i) => `--series-${i}`);
 
 type Roles = Map<number, string>;
 const rolesOf = (p: { names: string[]; roles?: Record<string, string> }): Roles =>
@@ -129,7 +129,7 @@ function Chart({ width, slots, roles, article }: ChartProps) {
 
   if (width < 10) return null;
   const colour = (slot: number, id?: number) => theme.resolve((id !== undefined && roles.get(id)) || SLOT_TOKENS[slot]);
-  const isContext = (id: number) => roles.get(id) === "--role-context";
+  const isContext = (id: number) => roles.get(id) === "--series-context";
   const marker = theme.resolve("--annotation");
   const last = YEARS[YEARS.length - 1];
   const labelY = spreadLabels(
@@ -277,7 +277,7 @@ function Picker({ slots, roles, onChange }: PickerProps) {
     else if (e.key === "Backspace" && query === "" && selected.length) remove(selected[selected.length - 1]);
   };
 
-  const chipStyle = { borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", background: "var(--chip-bg, transparent)" };
+  const chipStyle = { borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", background: "var(--surface-chip)" };
 
   return (
     <div ref={wrap} className="mb-3 text-sm">
@@ -296,7 +296,7 @@ function Picker({ slots, roles, onChange }: PickerProps) {
             disabled={full} aria-label="Search brands"
             onChange={(e) => { setQuery(e.target.value); setOpen(true); setCursor(0); }}
             onFocus={() => setOpen(true)} onKeyDown={onKey}
-            className="w-full rounded-md border bg-transparent px-2.5 py-1 outline-none focus:border-[var(--origin)] disabled:opacity-60"
+            className="w-full rounded-md border bg-transparent px-2.5 py-1 outline-none focus:border-[var(--primary)] disabled:opacity-60"
             style={chipStyle} />
           {open && !full && matches.length > 0 && (
             <ul role="listbox" className="absolute left-0 z-10 mt-1 w-full overflow-hidden rounded-md border shadow-sm"
@@ -363,7 +363,8 @@ export default function YarnBrandGrapher() {
   const latest = COVERAGE[COVERAGE.length - 1];
 
   return (
-    <figure id="yarn-brand-grapher" className="w-full rounded-lg p-4" style={{ background: "var(--figure-bg, transparent)" }}>
+    <figure id="yarn-brand-grapher" className={article ? "w-full" : "w-full rounded-lg p-4"}
+      style={article ? undefined : { background: "var(--surface-figure)" }}>
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">Which yarn brands knitters chose</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
@@ -379,7 +380,7 @@ export default function YarnBrandGrapher() {
           {PRESETS.map((p) => (
             <button key={p.key} type="button"
               onClick={() => loadPreset(p)}
-              className="rounded-full border px-2.5 py-0.5 hover:border-[var(--origin)]"
+              className="rounded-full border px-2.5 py-0.5 hover:border-[var(--primary)]"
               style={{ borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", color: "var(--foreground)" }}>
               {p.label}
             </button>

@@ -55,8 +55,8 @@ function Chart({ width }: { width: number }) {
 
   if (width < 10) return null;
   // two-step ordinal pair of the arcade hue: first MKAL dark, returning light
-  const cFirst = theme.resolve("--mkal-finish-2");
-  const cReturn = theme.resolve("--mkal-finish-3");
+  const cFirst = theme.resolve("--ramp-2");
+  const cReturn = theme.resolve("--ramp-3");
   const bw = Math.min(24, xScale.bandwidth());
   const pad = (xScale.bandwidth() - bw) / 2;
   const peak = ROWS.reduce((a, b) => (b.knitters > a.knitters ? b : a));
@@ -119,10 +119,10 @@ function Chart({ width }: { width: number }) {
 
       <div className="mt-1 flex flex-wrap gap-x-5 gap-y-1 text-xs" style={{ color: "var(--muted)" }}>
         <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "var(--mkal-finish-2)" }} /> first MKAL
+          <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "var(--ramp-2)" }} /> first MKAL
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "var(--mkal-finish-3)" }} /> returning
+          <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "var(--ramp-3)" }} /> returning
         </span>
         <span className="inline-flex items-center gap-1.5">
           <i className="inline-block h-2.5 w-2.5 rounded-sm border border-dashed" style={{ borderColor: theme.role.muted }} /> in progress at collection

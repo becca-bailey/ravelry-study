@@ -20,6 +20,26 @@
    - Tailwind utilities (bg-info, text-alert, bg-chart-1, …) via @theme inline.
    - visx charts read resolved hex at runtime — see src/lib/themeColors.ts.
    - Derived shades use color-mix(), so no new hexes are ever introduced.
+
+   PAGE PALETTES. Components and pages reference only the shared vocabulary
+   below; a page opts into a palette with <Layout palette="…">, which sets
+   data-palette on <html>, and the matching :root[data-palette] block near
+   the end of this file remaps whichever tokens it changes. Light and dark
+   are separate picks in every block. Tokens, by job:
+
+     text & chrome   --background --foreground --muted
+                     --primary (headings, the brand) --accent (rules, bars)
+                     --info --positive --negative --warning --alert (status)
+     surfaces        --surface-figure (wash under a chart) --surface-tile
+                     --surface-chip
+     series          --series-1..6 (categorical slots, assigned in order,
+                     never cycled) --series-focus / --series-context (the
+                     one a story is about, and its quiet peers)
+     ordinal         --ramp-1..6 (most ink first) --ramp-tail-1/-2 (the
+                     remainder a ramp leaves out)
+     pointers        --highlight (hover, selection, the one warm slot)
+                     --annotation (markers and their labels)
+     closing window  --chart-1..5 --chart-contrast-1..3 (its own series pool)
    ───────────────────────────────────────────────────────────────────────── */
 :root {
   --font-geist-sans: "Geist Sans", Arial, Helvetica, sans-serif;
@@ -44,7 +64,7 @@
   --alert: var(--palette-halt); /* reserved — never a chart series */
   --accent: var(--palette-petunia);
   --warning: var(--palette-peach);
-  --origin: var(--palette-arcade); /* primary brand — also headings */
+  --primary: var(--palette-arcade); /* primary brand — also headings */
   --muted: var(--palette-slate); /* control lines, de-emphasized series */
 
   /* Text-legible variants of the light roles: darkened for light-mode text, and
@@ -65,40 +85,29 @@
   --chart-contrast-2: var(--palette-peach);
   --chart-contrast-3: color-mix(in srgb, var(--palette-slate-blue) 48%, white); /* periwinkle */
 
-  /* MKAL outcome scale (src/components/Mkal*.tsx). The three finished tiers are
-     an ORDINAL ramp of the arcade hue (fast -> slow = dark -> light), "still
-     open" is the de-emphasis grey, "abandoned" the one warm slot. Validated
-     with the dataviz palette checker in both modes; the dark steps below are
-     their own picks, not a flip. */
-  --mkal-finish-1: var(--palette-arcade-deep); /* on time */
-  --mkal-finish-2: var(--palette-arcade); /* within 90 days */
-  --mkal-finish-3: var(--palette-plasma); /* later */
-  --mkal-open: var(--palette-slate);
-  --mkal-abandoned: #e8955e; /* peach fuzz, deepened to clear the chroma floor */
-
-  /* Yarn-brand grapher (src/components/YarnBrandGrapher.tsx): six categorical
-     line colours, one per picker slot. Lines on a white page need more
-     contrast than fills, so the pale palette steps are swapped for darker
-     hues of the same family; the dark-mode set below is its own pick. */
-  --brand-line-1: var(--palette-arcade);
-  --brand-line-2: var(--palette-halt);
-  --brand-line-3: #1f7a73; /* teal */
-  --brand-line-4: #d63384; /* magenta */
-  --brand-line-5: #9a7b00; /* ochre */
-  --brand-line-6: #0072b2; /* blue */
-
-  /* Era ramp for the stacked brand view (src/components/YarnBrandEras.tsx):
-     an ordinal one-hue ramp keyed to the year a brand peaked, earliest
-     with the most ink. Passed the dataviz validator (--ordinal) on both
-     surfaces; the dark set is its own pick, not a flip. */
-  --era-1: #3a1097;
-  --era-2: #5631a6;
-  --era-3: #6f51b3;
-  --era-4: #876dc0;
-  --era-5: #9d88cb;
-  --era-6: #b09fd5;
-  --era-tail-small: #a9a9a9; /* brands under 100 panel projects */
-  --era-tail-mid: #cfcfcf;   /* 100 to 500 */
+  /* --- shared chart vocabulary (see the header comment) ------------------
+     Default values; a page palette block below remaps any of them. */
+  --series-1: var(--palette-arcade);
+  --series-2: var(--palette-halt);
+  --series-3: #1f7a73; /* teal */
+  --series-4: #d63384; /* magenta */
+  --series-5: #9a7b00; /* ochre */
+  --series-6: #0072b2; /* blue */
+  --series-focus: var(--palette-arcade);
+  --series-context: var(--palette-slate);
+  --ramp-1: var(--palette-arcade-deep); /* most ink: the first tier, the oldest cohort */
+  --ramp-2: #5631a6;
+  --ramp-3: #6f51b3;
+  --ramp-4: #876dc0;
+  --ramp-5: #9d88cb;
+  --ramp-6: #b09fd5;
+  --ramp-tail-1: var(--palette-slate); /* the remainder a ramp does not cover */
+  --ramp-tail-2: #cfcfcf;
+  --highlight: #e8955e; /* the pointer: hover, selection, the one warm slot */
+  --annotation: var(--palette-slate); /* markers and their labels */
+  --surface-figure: transparent;
+  --surface-tile: transparent;
+  --surface-chip: transparent;
 }
 
 @theme inline {
@@ -114,7 +123,7 @@
   --color-alert: var(--alert);
   --color-accent: var(--accent);
   --color-warning: var(--warning);
-  --color-origin: var(--origin);
+  --color-primary: var(--primary);
   --color-muted: var(--muted);
   --color-accent-text: var(--accent-text);
   --color-warning-text: var(--warning-text);
@@ -135,36 +144,33 @@
     --background: #0a0a0a;
     --foreground: #ededed;
     /* Lift the deep arcade purple so origin/positive/headings stay vivid on dark. */
-    --origin: #8b6dff;
+    --primary: #8b6dff;
     --positive: #8b6dff;
     /* On dark, the light roles read fine as text — use them directly. */
     --accent-text: var(--accent);
     --warning-text: var(--warning);
-    /* MKAL ramp: lifted so the dark end clears the dark surface (4.75:1). */
-    --mkal-finish-1: #8b6dff;
-    --mkal-finish-2: #a98cff;
-    --mkal-finish-3: var(--palette-plasma);
-    --brand-line-1: #a98cff;
-    --brand-line-2: var(--palette-halt);
-    --brand-line-3: #5fbfb2;
-    --brand-line-4: #f277b5;
-    --brand-line-5: #e6c04a;
-    --brand-line-6: #56b4e9;
-    --era-1: #dcd0ff;
-    --era-2: #bfb3e5;
-    --era-3: #a296cc;
-    --era-4: #887cb5;
-    --era-5: #7266a1;
-    --era-6: #5e528f;
-    --era-tail-small: #4a4a4a;
-    --era-tail-mid: #333333;
+    --series-1: #a98cff;
+    --series-2: var(--palette-halt);
+    --series-3: #5fbfb2;
+    --series-4: #f277b5;
+    --series-5: #e6c04a;
+    --series-6: #56b4e9;
+    --ramp-1: #dcd0ff;
+    --ramp-2: #bfb3e5;
+    --ramp-3: #a296cc;
+    --ramp-4: #887cb5;
+    --ramp-5: #7266a1;
+    --ramp-6: #5e528f;
+    --ramp-tail-1: #4a4a4a;
+    --ramp-tail-2: #333333;
+    --highlight: #e8955e;
   }
 }
 
 /* stacked brand view: hover highlight driven by a class, not React state,
    so the 150-odd paths do not re-render on every pointer move */
 .brand-eras[data-hover] .band { opacity: 0.4; transition: opacity 120ms; }
-.brand-eras[data-hover] .band.is-hover { opacity: 1; fill: var(--chart-contrast-1); }
+.brand-eras[data-hover] .band.is-hover { opacity: 1; fill: var(--highlight); }
 
 body {
   background: var(--background);
@@ -176,11 +182,12 @@ body {
    utilities on a heading still win, so components can opt out where needed. */
 h1,
 h2 {
-  color: var(--origin);
+  color: var(--primary);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   PAGE PALETTE: "west" (the MKAL page). Stephen West's book-cover set:
+   PAGE PALETTE: "west" (the MKAL page). Maps --ramp-1..3 (finished tiers),
+   --ramp-tail-1 (still open) and --highlight (abandoned). Stephen West's book-cover set:
    deep teal, chartreuse, saffron, bubblegum pink, sky blue. Chart jobs keep
    the same encoding as the default palette (one-hue ramp for the finished
    tiers, grey for still open, one warm slot for abandoned) and every pair
@@ -199,22 +206,22 @@ h2 {
   --west-pink: #e2458f;
   --west-grey: #7d786f;
 
-  --origin: var(--west-teal-deep);
-  --mkal-finish-1: var(--west-teal-deep); /* on time */
-  --mkal-finish-2: var(--west-teal); /* within 90 days */
-  --mkal-finish-3: var(--west-teal-light); /* later */
-  --mkal-abandoned: var(--west-saffron);
-  --mkal-open: var(--west-grey);
+  --primary: var(--west-teal-deep);
+  --ramp-1: var(--west-teal-deep); /* on time */
+  --ramp-2: var(--west-teal); /* within 90 days */
+  --ramp-3: var(--west-teal-light); /* later */
+  --highlight: var(--west-saffron);
+  --ramp-tail-1: var(--west-grey);
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-palette="west"] {
-    --origin: var(--west-chartreuse);
+    --primary: var(--west-chartreuse);
     /* ramp lifted one step so the dark end clears the dark surface (3.4:1) */
-    --mkal-finish-1: var(--west-teal);
-    --mkal-finish-2: var(--west-teal-light);
-    --mkal-finish-3: var(--west-teal-pale);
-    --mkal-open: #8a857c;
+    --ramp-1: var(--west-teal);
+    --ramp-2: var(--west-teal-light);
+    --ramp-3: var(--west-teal-pale);
+    --ramp-tail-1: #8a857c;
   }
 }
 
@@ -239,60 +246,58 @@ h2 {
   --fn-wine: #854273;
 
   /* roles: wine is the ink, tangerine the pointer, the tints are surfaces */
-  --origin: var(--fn-wine);
+  --primary: var(--fn-wine);
   --accent: var(--fn-tangerine);
-  --chart-1: var(--fn-wine); /* solo-brand area in the stacked view */
-  --chart-contrast-1: var(--fn-tangerine); /* hover highlight on the stack */
+  --highlight: var(--fn-tangerine); /* hover band on the stack */
   --annotation: #c4622f; /* tangerine deepened to text contrast: the sale marker */
-  --role-focus: var(--fn-wine); /* the brand a story is about */
-  --role-context: var(--fn-aloe); /* its peers, present but quiet */
-  --figure-bg: #fdf5f6; /* vanilla wash under each chart */
-  --tile-bg: var(--background); /* tiles sit white on the wash */
-  --chip-bg: var(--fn-vanilla);
+  --series-focus: var(--fn-wine); /* the brand a story is about */
+  --series-context: var(--fn-aloe); /* its peers, present but quiet */
+  --surface-figure: #fdf5f6; /* vanilla wash under each chart */
+  --surface-tile: var(--background); /* tiles sit white on the wash */
+  --surface-chip: var(--fn-vanilla);
 
-  --brand-line-1: var(--fn-wine);
-  --brand-line-2: #4a6fc4; /* coordinating blue */
-  --brand-line-3: #b5452a; /* rust, so no resting line reads as the tangerine pointer */
-  --brand-line-4: #0f9b9b; /* coordinating teal */
-  --brand-line-5: #9a8a1f; /* brass, deepened */
-  --brand-line-6: #b3689c; /* pink pearl, deepened */
-  --era-tail-small: #c6bcb0; /* warm greys from aloe and vanilla */
-  --era-tail-mid: #e2dad1;
+  --series-1: var(--fn-wine);
+  --series-2: #4a6fc4; /* coordinating blue */
+  --series-3: #b5452a; /* rust, so no resting line reads as the tangerine pointer */
+  --series-4: #0f9b9b; /* coordinating teal */
+  --series-5: #9a8a1f; /* brass, deepened */
+  --series-6: #b3689c; /* pink pearl, deepened */
+  --ramp-tail-1: #c6bcb0; /* warm greys from aloe and vanilla */
+  --ramp-tail-2: #e2dad1;
 
-  --era-1: #6e3560;
-  --era-2: #814a74;
-  --era-3: #955f88;
-  --era-4: #a8759c;
-  --era-5: #bc8ab0;
-  --era-6: #cf9fc4;
+  --ramp-1: #6e3560;
+  --ramp-2: #814a74;
+  --ramp-3: #955f88;
+  --ramp-4: #a8759c;
+  --ramp-5: #bc8ab0;
+  --ramp-6: #cf9fc4;
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-palette="dyed"] {
-    --origin: var(--fn-pearl);
-    --chart-1: var(--fn-pearl);
-    --chart-contrast-1: var(--fn-tangerine);
+    --primary: var(--fn-pearl);
+    --highlight: var(--fn-tangerine);
     --annotation: var(--fn-tangerine);
-    --role-focus: var(--fn-pearl);
-    --role-context: #8d8560;
-    --figure-bg: #1f191d;
-    --tile-bg: #2a1a26;
-    --chip-bg: #3a2535;
-    --era-tail-small: #3d3730;
-    --era-tail-mid: #2d2925;
+    --series-focus: var(--fn-pearl);
+    --series-context: #8d8560;
+    --surface-figure: #1f191d;
+    --surface-tile: #2a1a26;
+    --surface-chip: #3a2535;
+    --ramp-tail-1: #3d3730;
+    --ramp-tail-2: #2d2925;
 
-    --brand-line-1: #b86aa3;
-    --brand-line-2: #6b8fe0;
-    --brand-line-3: #cf6a48;
-    --brand-line-4: #1aa39a;
-    --brand-line-5: #a8921f;
-    --brand-line-6: #c06da8;
+    --series-1: #b86aa3;
+    --series-2: #6b8fe0;
+    --series-3: #cf6a48;
+    --series-4: #1aa39a;
+    --series-5: #a8921f;
+    --series-6: #c06da8;
 
-    --era-1: #e9c3df;
-    --era-2: #d5a9c9;
-    --era-3: #c18fb4;
-    --era-4: #ad769e;
-    --era-5: #995c89;
-    --era-6: var(--fn-wine);
+    --ramp-1: #e9c3df;
+    --ramp-2: #d5a9c9;
+    --ramp-3: #c18fb4;
+    --ramp-4: #ad769e;
+    --ramp-5: #995c89;
+    --ramp-6: var(--fn-wine);
   }
 }

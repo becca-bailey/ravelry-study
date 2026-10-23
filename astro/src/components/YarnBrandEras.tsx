@@ -32,7 +32,7 @@ const NAMED_MIN = 500;
 const TAIL_SMALL = -2;
 const TAIL_MID = -1;
 const ERAS = [2011, 2014, 2017, 2020, 2023]; // cohort upper bounds; the sixth is open
-const ERA_TOKENS = [1, 2, 3, 4, 5, 6].map((i) => `--era-${i}`);
+const ERA_TOKENS = [1, 2, 3, 4, 5, 6].map((i) => `--ramp-${i}`);
 
 const sum = (a: number[], b: number[]) => a.map((x, i) => x + b[i]);
 const zeros = () => YEARS.map(() => 0);
@@ -113,8 +113,8 @@ function Chart({ width, solo, onPick, article }: ChartProps) {
   const yScale = useMemo(() => scaleLinear({ domain: [0, yMax], range: [innerH, 0] }), [innerH, yMax]);
   const scales = useMemo<Scales>(() => ({ x: (y) => xScale(y), y: (v) => yScale(v) }), [xScale, yScale]);
   const fills = useMemo(() => BANDS.map((b) =>
-    b.id === TAIL_SMALL ? theme.resolve("--era-tail-small")
-      : b.id === TAIL_MID ? theme.resolve("--era-tail-mid")
+    b.id === TAIL_SMALL ? theme.resolve("--ramp-tail-1")
+      : b.id === TAIL_MID ? theme.resolve("--ramp-tail-2")
       : theme.resolve(ERA_TOKENS[b.era])), [theme]);
 
   const yiMemo = tooltipData?.yi ?? LAST;
@@ -185,7 +185,7 @@ function Chart({ width, solo, onPick, article }: ChartProps) {
             <>
               <Area<number> data={YEARS.map((_, i) => i)} curve={curveMonotoneX}
                 x={(i) => xScale(YEARS[i])} y0={innerH} y1={(i) => yScale(solo.v[i])}
-                style={{ fill: theme.shade(theme.chart[0], 0.45, "white") }} stroke={theme.chart[0]} strokeWidth={1.5} />
+                style={{ fill: theme.shade(theme.resolve("--primary"), 0.45, "white") }} stroke={theme.resolve("--primary")} strokeWidth={1.5} />
               <text x={innerW / 2} y={innerH * 0.42} textAnchor="middle" fontSize={Math.min(40, innerW / 12)}
                 fontWeight={600} fill="var(--foreground)" style={{ paintOrder: "stroke", stroke: "var(--background)", strokeWidth: 6, strokeLinejoin: "round" }}>
                 {solo.name}
@@ -268,7 +268,7 @@ function Search({ focus, setFocus }: { focus: number | null; setFocus: (id: numb
         <input type="text" value={query} placeholder="find a brand…" aria-label="Find a brand in the era view"
           onChange={(e) => { setQuery(e.target.value); setOpen(true); setCursor(0); }}
           onFocus={() => setOpen(true)} onKeyDown={onKey}
-          className="w-full rounded-md border bg-transparent px-2.5 py-1 outline-none focus:border-[var(--origin)]"
+          className="w-full rounded-md border bg-transparent px-2.5 py-1 outline-none focus:border-[var(--primary)]"
           style={border} />
         {open && matches.length > 0 && (
           <ul role="listbox" className="absolute left-0 z-10 mt-1 w-full overflow-hidden rounded-md border shadow-sm"
@@ -291,7 +291,7 @@ function Search({ focus, setFocus }: { focus: number | null; setFocus: (id: numb
           <button type="button" onClick={() => setFocus(null)} className={pill} style={{ ...border, color: "var(--muted)" }}>
             ← all brands
           </button>
-          <button type="button" className={pill} style={{ ...border, color: "var(--origin)" }}
+          <button type="button" className={pill} style={{ ...border, color: "var(--primary)" }}
             onClick={() => window.dispatchEvent(new CustomEvent("yarn-brands:add", { detail: { id: focus } }))}>
             ↑ compare in the line chart
           </button>
@@ -303,7 +303,7 @@ function Search({ focus, setFocus }: { focus: number | null; setFocus: (id: numb
 
 function Tile({ label, a, b, unit = "" }: { label: string; a: number | null; b: number | null; unit?: string }) {
   return (
-    <div className="rounded-md border px-3 py-2" style={{ borderColor: "color-mix(in srgb, var(--muted) 30%, transparent)", background: "var(--tile-bg, transparent)" }}>
+    <div className="rounded-md border px-3 py-2" style={{ borderColor: "color-mix(in srgb, var(--muted) 30%, transparent)", background: "var(--surface-tile)" }}>
       <div className="text-xs" style={{ color: "var(--muted)" }}>{label}</div>
       <div className="mt-0.5 flex items-baseline gap-2">
         <span className="text-xl font-semibold">{a === null ? "–" : fmt(a)}{unit}</span>
@@ -331,7 +331,8 @@ export default function YarnBrandEras() {
   const theme = useThemeColors();
 
   return (
-    <figure id="yarn-brand-eras" className="w-full rounded-lg p-4" style={{ background: "var(--figure-bg, transparent)" }}>
+    <figure id="yarn-brand-eras" className={article ? "w-full" : "w-full rounded-lg p-4"}
+      style={article ? undefined : { background: "var(--surface-figure)" }}>
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">Every brand at once</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
@@ -352,10 +353,10 @@ export default function YarnBrandEras() {
           </span>
         ))}
         <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: "var(--era-tail-mid)" }} />100 to {NAMED_MIN} projects
+          <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: "var(--ramp-tail-2)" }} />100 to {NAMED_MIN} projects
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: "var(--era-tail-small)" }} />under 100
+          <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: "var(--ramp-tail-1)" }} />under 100
         </span>
       </div>
 

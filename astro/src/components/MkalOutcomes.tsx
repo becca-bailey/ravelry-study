@@ -25,8 +25,8 @@ const ON_TIME_DAYS: number = mkalData.meta.on_time_days;
 const NINETY: number = mkalData.meta.ninety_days;
 
 const TOKEN: Record<Outcome, string> = {
-  on_time: "--mkal-finish-1", within_90: "--mkal-finish-2", later: "--mkal-finish-3",
-  open: "--mkal-open", abandoned: "--mkal-abandoned",
+  on_time: "--ramp-1", within_90: "--ramp-2", later: "--ramp-3",
+  open: "--ramp-tail-1", abandoned: "--highlight",
 };
 
 const OUTCOMES: { key: Outcome; label: string; short: string }[] = [

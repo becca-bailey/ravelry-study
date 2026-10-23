@@ -17,7 +17,7 @@ export type Role =
   | "alert"
   | "accent"
   | "warning"
-  | "origin"
+  | "primary"
   | "muted";
 
 const ROLES: Role[] = [
@@ -27,7 +27,7 @@ const ROLES: Role[] = [
   "alert",
   "accent",
   "warning",
-  "origin",
+  "primary",
   "muted",
 ];
 
@@ -42,7 +42,7 @@ const FALLBACK: Record<string, string> = {
   "--alert": "#ff6230",
   "--accent": "#f8bcca",
   "--warning": "#ffbe98",
-  "--origin": "#5e1af4",
+  "--primary": "#5e1af4",
   "--muted": "#9ca3af",
   "--chart-1": "#5e1af4",
   "--chart-2": "#7669e9",
@@ -52,28 +52,24 @@ const FALLBACK: Record<string, string> = {
   "--chart-contrast-1": "#ff6230",
   "--chart-contrast-2": "#ffbe98",
   "--chart-contrast-3": "#bdb7f4",
-  "--mkal-finish-1": "#3a1097",
-  "--mkal-finish-2": "#5e1af4",
-  "--mkal-finish-3": "#d599fb",
-  "--mkal-open": "#9ca3af",
-  "--mkal-abandoned": "#e8955e",
-  "--brand-line-1": "#5e1af4",
-  "--brand-line-2": "#ff6230",
-  "--brand-line-3": "#1f7a73",
-  "--brand-line-4": "#d63384",
-  "--brand-line-5": "#9a7b00",
-  "--brand-line-6": "#0072b2",
-  "--era-1": "#3a1097",
-  "--era-2": "#5631a6",
-  "--era-3": "#6f51b3",
-  "--era-4": "#876dc0",
-  "--era-5": "#9d88cb",
-  "--era-6": "#b09fd5",
-  "--era-tail-small": "#a9a9a9",
-  "--era-tail-mid": "#cfcfcf",
+  "--highlight": "#e8955e",
+  "--series-1": "#5e1af4",
+  "--series-2": "#ff6230",
+  "--series-3": "#1f7a73",
+  "--series-4": "#d63384",
+  "--series-5": "#9a7b00",
+  "--series-6": "#0072b2",
+  "--ramp-1": "#3a1097",
+  "--ramp-2": "#5631a6",
+  "--ramp-3": "#6f51b3",
+  "--ramp-4": "#876dc0",
+  "--ramp-5": "#9d88cb",
+  "--ramp-6": "#b09fd5",
+  "--ramp-tail-1": "#a9a9a9",
+  "--ramp-tail-2": "#cfcfcf",
   "--annotation": "#9ca3af",
-  "--role-focus": "#5e1af4",
-  "--role-context": "#9ca3af",
+  "--series-focus": "#5e1af4",
+  "--series-context": "#9ca3af",
 };
 
 function readToken(name: string): string {
