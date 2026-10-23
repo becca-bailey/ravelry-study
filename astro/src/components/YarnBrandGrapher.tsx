@@ -63,8 +63,16 @@ export const PRESETS: { key: string; label: string; names: string[]; roles?: Rec
   { key: "default", label: "one of each", names: ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"] },
   { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"],
     roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Berroco": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
-  { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres"] },
+  { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres", "Spincycle Yarns"] },
   { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Schoppel-Wolle", "Lang Yarns", "West Yorkshire Spinners"] },
+  /* the Danish brands arriving with the Scandinavian designs, with Norway's
+     Sandnes for comparison; Garnstudio is left out because it has been
+     large since 2008 and would flatten the rest */
+  { key: "nordic", label: "the Danish wave", names: ["Holst Garn", "Filcolana", "Knitting for Olive", "Hjertegarn", "CaMaRose", "Sandnes Garn"] },
+  /* the 2008 sock-yarn crazes: all peaking as the panel starts, all gone within a few years */
+  { key: "socks", label: "the 2008 sock-yarn crazes", names: ["Blue Moon Fiber Arts", "Lorna's Laces", "Dream in Color", "Rohrspatz & Wollmeise", "Koigu", "Handmaiden Fine Yarn"] },
+  /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
+  { key: "bigbox", label: "the craft-store shelf", names: ["Lion Brand", "Patons North America", "Red Heart", "Caron", "Loops & Threads", "Yarn Bee"] },
 ];
 const DEFAULT_IDS = idsOf(PRESETS[0].names);
 
@@ -249,7 +257,7 @@ function Chart({ width, slots, roles, article }: ChartProps) {
           )}
 
           <AxisLeft scale={yScale} numTicks={5}
-            tickFormat={(v) => pct(Number(v), 0)}
+            tickFormat={(v) => pct(Number(v), yMax <= 0.05 ? 1 : 0)}
             stroke={theme.role.muted} tickStroke={theme.role.muted}
             tickLabelProps={{ fill: theme.role.muted, fontSize: 11, textAnchor: "end", dx: -4 }} />
           <AxisBottom top={innerH} scale={xScale}
