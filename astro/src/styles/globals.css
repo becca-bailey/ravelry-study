@@ -163,7 +163,7 @@
 
 /* stacked brand view: hover highlight driven by a class, not React state,
    so the 150-odd paths do not re-render on every pointer move */
-.brand-eras[data-hover] .band { opacity: 0.45; transition: opacity 120ms; }
+.brand-eras[data-hover] .band { opacity: 0.4; transition: opacity 120ms; }
 .brand-eras[data-hover] .band.is-hover { opacity: 1; fill: var(--chart-contrast-1); }
 
 body {
@@ -215,5 +215,60 @@ h2 {
     --mkal-finish-2: var(--west-teal-light);
     --mkal-finish-3: var(--west-teal-pale);
     --mkal-open: #8a857c;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PAGE PALETTE: "dyed" (the yarn-brands page). Hand-dyed skeins on a shelf:
+   fuchsia, sky blue, mustard, violet, teal, coral, with plum for headings
+   and the era ramp. Line slots keep the same hue family in both modes so a
+   brand's colour follows it across themes; every set was run through the
+   dataviz validator (categorical for the lines, --ordinal for the era
+   ramp) against each surface. Activated by <Layout palette="dyed">.
+   ───────────────────────────────────────────────────────────────────────── */
+:root[data-palette="dyed"] {
+  --dyed-plum: #5a1246;
+  --dyed-fuchsia: #c2255c;
+  --dyed-teal: #0f9b9b;
+
+  --origin: #7a1f5c;
+  --accent: var(--dyed-fuchsia);
+  --chart-1: var(--dyed-plum); /* solo-brand area in the stacked view */
+  --chart-contrast-1: var(--dyed-teal); /* hover highlight on the stack */
+
+  --brand-line-1: var(--dyed-fuchsia);
+  --brand-line-2: #1c7ed6; /* sky */
+  --brand-line-3: #a87400; /* mustard */
+  --brand-line-4: #5f3dc4; /* violet */
+  --brand-line-5: var(--dyed-teal);
+  --brand-line-6: #e8590c; /* coral */
+
+  --era-1: #5a1246;
+  --era-2: #713360;
+  --era-3: #875278;
+  --era-4: #9a6e8e;
+  --era-5: #ad89a3;
+  --era-6: #bda0b5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-palette="dyed"] {
+    --origin: #f49ac9;
+    --chart-1: #f0a7d0;
+    --chart-contrast-1: #3fd1c8;
+
+    --brand-line-1: #e64980;
+    --brand-line-2: #3b8fe0;
+    --brand-line-3: #b38f1f;
+    --brand-line-4: #9775fa;
+    --brand-line-5: #1aa39a;
+    --brand-line-6: #e25f2a;
+
+    --era-1: #ffc2e2;
+    --era-2: #dea5c6;
+    --era-3: #be88a9;
+    --era-4: #a16e90;
+    --era-5: #88577a;
+    --era-6: #724468;
   }
 }

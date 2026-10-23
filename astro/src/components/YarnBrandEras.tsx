@@ -82,8 +82,8 @@ const Bands = memo(function Bands({ scales, fills, interactive }: { scales: Scal
       {BANDS.map((b, i) => (
         <Area<number> key={b.id} data={YEARS.map((_, yi) => yi)} curve={curveMonotoneX}
           x={(yi) => scales.x(YEARS[yi])} y0={(yi) => scales.y(Y0[i][yi])} y1={(yi) => scales.y(Y0[i][yi] + b.v[yi])}
-          className="band" data-band={i}
-          style={{ fill: fills[i], cursor: interactive ? "pointer" : undefined }}
+          className="band" data-band={i} fill={fills[i]}
+          style={{ cursor: interactive ? "pointer" : undefined }}
           stroke="var(--background)" strokeWidth={0.4} />
       ))}
     </>
@@ -337,7 +337,7 @@ export default function YarnBrandEras() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Brands with at least {NAMED_MIN} panel projects, stacked by share of brand uses in
           the order they peaked and coloured by when: the earlier the peak, the deeper the
-          purple. The long tail sits on the baseline in grey.
+          colour. The long tail sits on the baseline in grey.
           {!article && " Hover a band, click to see one brand on its own, or search."}
         </p>
       </figcaption>
