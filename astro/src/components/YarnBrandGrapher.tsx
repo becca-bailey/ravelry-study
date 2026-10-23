@@ -462,9 +462,10 @@ export default function YarnBrandGrapher() {
           ))}
         </div>
       )}
-      {current && (
-        <p className="mb-3 max-w-2xl text-sm" style={{ color: "var(--foreground)" }}>{current.blurb}</p>
-      )}
+      {/* fixed height so the chart does not move when the description changes or clears */}
+      <p className="mb-3 max-w-2xl text-sm" style={{ color: "var(--foreground)", minHeight: "3.75rem" }}>
+        {current?.blurb}
+      </p>
       <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} sales={sales} article={article} />}</ParentSize>
       {shownEvents.length > 0 && (
         <div className="mt-1 flex items-center gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
