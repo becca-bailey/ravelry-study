@@ -86,12 +86,6 @@ export const PRESETS: { key: string; label: string; blurb: string; names: string
   { key: "next", label: "The next big brand?",
     blurb: "Brands that first reached a tenth of a percent of the panel after 2015 and have grown fastest since 2022.",
     names: ["Hobbii", "Juniper Moon Farm", "Purl Soho", "Farmer's Daughter Fibers", "Cardiff Cashmere", "Laines du Nord"] },
-  /* direct to knitter: brands that sell mainly from their own site. Knit
-     Picks, the original online-only yarn brand, is left out so the others
-     stay readable at 0 to 1%; add it from the picker to compare */
-  { key: "online", label: "Direct to knitter",
-    blurb: "Brands that sell mainly from their own websites. Knit Picks, the original online-only yarn brand, is left out so the others stay readable.",
-    names: ["Purl Soho", "Hobbii", "Quince & Co.", "Brooklyn Tweed", "Valley Yarns", "Kelbourne Woolens"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "The craft-store shelf",
     blurb: "The brands sold on craft-store shelves, the chains' own labels included.",
