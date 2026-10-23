@@ -184,9 +184,10 @@ function Chart({ width, slots, roles, article }: ChartProps) {
         <Group left={MARGIN.left} top={top}>
           <GridRows scale={yScale} width={innerW} stroke={theme.role.muted} strokeOpacity={0.18} />
 
-          {/* ownership changes: a ringed dot on the line at the sale month, tagged
-              with the year; each tag takes the first of above / below / further
-              out that does not overlap a tag already placed */}
+          {/* ownership changes: a ringed dot on the line at the sale month with a
+              dotted drop line to the axis, tagged with brand and year; each tag
+              takes the first of above / below / further out that does not
+              overlap a tag already placed */}
           {(() => {
             const placed: { x: number; y: number; w: number }[] = [];
             const TAG_H = 11;
@@ -202,6 +203,8 @@ function Chart({ width, slots, roles, article }: ChartProps) {
               const tx = Math.min(innerW - w / 2, Math.max(w / 2, m.x));
               return (
               <Group key={`${m.e.id}-${m.e.date}`}>
+                {/* drop line: divides this brand's time into before and after, and stops at its line */}
+                <line x1={m.x} x2={m.x} y1={cy + 6.5} y2={innerH} stroke={c} strokeWidth={1.25} strokeDasharray="2 3" strokeOpacity={0.8} />
                 <circle cx={m.x} cy={cy} r={6.5} fill="var(--background)" stroke={c} strokeWidth={1.5} />
                 <circle cx={m.x} cy={cy} r={3} fill={c} />
                 <text x={tx} y={ty} fontSize={10} fontWeight={600} textAnchor="middle" fill="var(--foreground)"
@@ -445,7 +448,8 @@ export default function YarnBrandGrapher() {
       <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} article={article} />}</ParentSize>
       {shownEvents.length > 0 && (
         <div className="mt-1 flex items-center gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
-          <svg width={14} height={14} aria-hidden="true">
+          <svg width={14} height={20} aria-hidden="true">
+            <line x1={7} x2={7} y1={12} y2={20} stroke="currentColor" strokeWidth={1.25} strokeDasharray="2 3" />
             <circle cx={7} cy={7} r={5.5} fill="var(--background)" stroke="currentColor" strokeWidth={1.5} />
             <circle cx={7} cy={7} r={2.5} fill="currentColor" />
           </svg>
