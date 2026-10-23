@@ -29,10 +29,9 @@ interface Coverage { year: number; projects: number; with_packs: number; with_br
 const META = brandData.meta;
 const YEARS: number[] = META.years_list;
 /* the JSON stores each company's series as parallel arrays over META.years_list */
-/* brands under meta.min_total carry the index series only */
-export const COMPANIES: Company[] = (brandData.companies as { id: number; name: string; total: number; index: number[]; pooled?: number[]; n?: number[] }[]).map((c) => ({
+export const COMPANIES: Company[] = brandData.companies.map((c) => ({
   id: c.id, name: c.name, total: c.total,
-  series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled?.[i] ?? 0, n: c.n?.[i] ?? 0 })),
+  series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled[i], n: c.n[i] })),
 }));
 const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
 export interface OwnerEvent { id: number; name: string; date: string; t: number; buyer: string; buyer_type: "pe" | "pe_backed" | "private"; note: string; source: string; confirmed: boolean; first_pe: boolean }

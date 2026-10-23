@@ -6,10 +6,10 @@ patterns with >= MIN_DENOM linked projects that year), the pooled share and
 the number of panel projects using the brand. Years are kept from the first
 with >= MIN_PATTERNS patterns in the index (2008) through the last full
 year. Every company with at least MIN_TOTAL panel projects is exported
-with its full series; those with MIN_LITE to MIN_TOTAL get the index
-series only, so the stacked view can fan its tail tiers out brand by
-brand; the rest are summed into `other`. Series are parallel arrays over
-meta.years_list to keep the file small. The coverage series (projects,
+by name; the stacked view's two tail tiers (100 to 500 and MIN_STACK to
+100 projects) are summarised per year (share, brands used, five biggest)
+in `tiers`; brands under MIN_STACK are summed into `other`. Series are
+parallel arrays over meta.years_list to keep the file small. The coverage series (projects,
 share with a pack, share with a linked brand) backs the source note.
 
 Run:  uv run scripts/export_yarn_brands_site.py
@@ -29,8 +29,8 @@ from closingwindow.config import DATA_DIR
 OUT = DATA_DIR.parent / "astro" / "src" / "data" / "yarn_brands.json"
 MIN_DENOM = 50     # a pattern-year needs this many linked projects to enter the index
 MIN_PATTERNS = 10  # a year needs this many patterns before its index is shown (2008 on)
-MIN_TOTAL = 100    # a company needs this many panel projects for the full series
-MIN_LITE = 20      # down to this many, the index series only (the stack's tail tiers)
+MIN_TOTAL = 100    # a company needs this many panel projects to be exported by name
+MIN_STACK = 20     # the stacked view's lowest tier starts here; below it, mostly individual crafters
 RAREFY = 1000      # projects drawn per year for the effective-brands measure
 LOYALTY_MIN_USERS = 1000   # brands shown on the return-rate chart
 LOYALTY_WINDOW = 3         # a return counts within this many later panel projects
@@ -57,8 +57,8 @@ def main() -> None:
 
     # rank by total panel projects within the exported years
     totals = index.groupby(["company_id", "company_name"])["n"].sum().sort_values(ascending=False)
-    named = totals[totals >= MIN_LITE]
-    tail_ids = set(totals[totals < MIN_LITE].index.get_level_values(0))
+    named = totals[totals >= MIN_TOTAL]
+    tail_ids = set(totals[totals < MIN_STACK].index.get_level_values(0))
 
     clean = lambda n: str(n).replace("®", "").replace("™", "").strip()
 
@@ -72,12 +72,24 @@ def main() -> None:
         g = index[index["company_id"] == cid]
         # Ravelry's display names carry trademark marks ("Cascade Yarns ®")
         name = str(name).replace("®", "").replace("™", "").strip()
-        row = {"id": int(cid), "name": name, "total": int(total), "index": series_of(g, "index", nd=4)}
-        if total >= MIN_TOTAL:
-            row.update(pooled=series_of(g, "pooled"), n=series_of(g, "n", nd=0))
-        companies.append(row)
+        companies.append({"id": int(cid), "name": name, "total": int(total),
+                          "index": series_of(g, "index"), "pooled": series_of(g, "pooled"),
+                          "n": series_of(g, "n", nd=0)})
     tail = index[index["company_id"].isin(tail_ids)].groupby("year").agg(index=("index", "sum"), n=("n", "sum")).reset_index()
     other = {"companies": len(tail_ids), "index": series_of(tail, "index"), "n": series_of(tail, "n", nd=0)}
+
+    # the stacked view's tail tiers: per-year share, brands used, five biggest
+    def tier(lo: int, hi: int) -> dict:
+        ids = set(totals[(totals >= lo) & (totals < hi)].index.get_level_values(0))
+        rows = index[index["company_id"].isin(ids)]
+        agg = rows.groupby("year").agg(index=("index", "sum"), n=("n", "sum"),
+                                       active=("company_id", "nunique")).reset_index()
+        top = {int(y): [clean(nm) for nm in g.sort_values("n", ascending=False)["company_name"].head(5)]
+               for y, g in rows.groupby("year")}
+        return {"min": lo, "max": hi, "companies": len(ids),
+                "index": series_of(agg, "index"), "n": series_of(agg, "n", nd=0),
+                "active": series_of(agg, "active", nd=0), "top": [top.get(y, []) for y in years]}
+    tiers = [tier(MIN_TOTAL, 500), tier(MIN_STACK, MIN_TOTAL)]
 
 
     cov = B.coverage(frame[frame["year"].between(first_year, last_year)])
@@ -173,7 +185,7 @@ def main() -> None:
             "years": [first_year, last_year],
             "years_list": years,
             "min_total": MIN_TOTAL,
-            "min_lite": MIN_LITE,
+            "min_stack": MIN_STACK,
             "rarefy": RAREFY,
             "acquired": ACQUIRED,
         },
@@ -187,6 +199,7 @@ def main() -> None:
         "loyalty": {"meta": loyalty_meta, "rows": loyalty},
         "companies": companies,
         "other": other,
+        "tiers": tiers,
     }
     OUT.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     print(f"wrote {OUT}: {len(companies)} companies, {first_year}-{last_year}")

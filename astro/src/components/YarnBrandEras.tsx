@@ -18,17 +18,15 @@ import brandData from "@/data/yarn_brands.json";
    year it peaked, earliest with the most ink, so the old guard thinning
    under a pale crowd of newcomers is the picture, not an inference. The
    long tail sits on the baseline in two grey tiers (100 to 500 projects,
-   and 20 to 100); brands under 20 projects, mostly individual crafters,
-   are left out of the stack and its denominator. Shares are the panel
-   index normalised to each year's sum over the brands shown.
-
-   Click the 100-500 tier and it fans out: a full-height stack of just
-   the brands inside it, each coloured by era, with the same hover and
-   click. Click a brand, or search, to see it on its own. */
+   and 20 to 100), each described on hover by the brands used that year
+   and its five biggest; brands under 20 projects, mostly individual
+   crafters, are left out of the stack and its denominator. Shares are the
+   panel index normalised to each year's sum over the brands shown. Click
+   a brand, or search, to see it on its own. */
 
 interface Company { id: number; name: string; total: number; index: number[] }
-interface Tier { lo: number; hi: number; label: string; ids: number[]; fan: boolean }
-interface Band { id: number; name: string; total: number; v: number[]; peakYear: number; era: number; tier?: Tier }
+interface TierData { min: number; max: number; companies: number; index: number[]; active: number[]; top: string[][] }
+interface Band { id: number; name: string; total: number; v: number[]; peakYear: number; era: number; tier?: TierData }
 
 const META = brandData.meta;
 const YEARS: number[] = META.years_list;
@@ -40,58 +38,34 @@ const TIER_TOKENS = ["--ramp-tail-2", "--ramp-tail-1"]; /* 100-500, 20-100 */
 
 const COMPANIES: Company[] = brandData.companies as Company[];
 const BY_COMPANY = new Map(COMPANIES.map((c) => [c.id, c]));
-/* only the 100-500 tier fans out; the 20-100 one holds over a thousand
-   brands, too many paths to draw */
-const TIERS: Tier[] = [
-  { lo: 100, hi: NAMED_MIN, label: `brands with 100 to ${NAMED_MIN} projects`, ids: [], fan: true },
-  { lo: META.min_lite, hi: 100, label: `brands with ${META.min_lite} to 100 projects`, ids: [], fan: false },
-];
-for (const c of COMPANIES) for (const t of TIERS) if (c.total >= t.lo && c.total < t.hi) t.ids.push(c.id);
-
-const zeros = () => YEARS.map(() => 0);
-const sumOf = (ids: number[]) => ids.reduce((acc, id) => { BY_COMPANY.get(id)!.index.forEach((x, i) => { acc[i] += x; }); return acc; }, zeros());
-/* denominator: every brand with >= min_lite projects */
-const YEAR_TOTAL = sumOf(COMPANIES.map((c) => c.id));
+const TIERS: TierData[] = brandData.tiers as TierData[];
+const NAMED = COMPANIES.filter((c) => c.total >= NAMED_MIN);
+/* the 100-500 tier holds the named companies below NAMED_MIN, so the named
+   bands plus the two tiers cover every brand with >= min_stack projects */
+const YEAR_TOTAL = YEARS.map((_, i) => NAMED.reduce((a, c) => a + c.index[i], 0) + TIERS.reduce((a, t) => a + t.index[i], 0));
 const eraOf = (y: number) => { const i = ERAS.findIndex((b) => y <= b); return i === -1 ? ERAS.length : i; };
 const peakOf = (v: number[]) => YEARS[v.indexOf(Math.max(...v))];
 
-/** stack a set of bands: tiers first (in the order given), then named by peak year */
-function stack(bands: Band[]): { bands: Band[]; y0: number[][] } {
-  const sorted = [...bands].sort((a, b) =>
-    (a.tier || b.tier) ? Number(Boolean(b.tier)) - Number(Boolean(a.tier)) : a.peakYear - b.peakYear || b.total - a.total);
-  const y0: number[][] = [];
-  const acc = zeros();
-  for (const b of sorted) { y0.push([...acc]); b.v.forEach((x, i) => { acc[i] += x; }); }
-  return { bands: sorted, y0 };
-}
-
-/* the full view: named brands plus the two tiers (smallest on the baseline), as shares of all brands shown */
-const FULL = stack([
+/* tiers first, smallest on the baseline, then named brands by peak year */
+const BANDS: Band[] = [
   ...[...TIERS].reverse().map((t): Band => {
-    const i = TIERS.indexOf(t);
-    const v = sumOf(t.ids).map((x, yi) => x / YEAR_TOTAL[yi]);
-    return { id: -(i + 1), name: `${t.ids.length.toLocaleString("en-US")} ${t.label}`,
-      total: t.ids.reduce((a, id) => a + BY_COMPANY.get(id)!.total, 0), v, peakYear: peakOf(v), era: 0, tier: t };
+    const v = t.index.map((x, i) => x / YEAR_TOTAL[i]);
+    return { id: -t.min, name: `${t.companies.toLocaleString("en-US")} brands with ${t.min} to ${t.max} projects`,
+      total: 0, v, peakYear: peakOf(v), era: 0, tier: t };
   }),
-  ...COMPANIES.filter((c) => c.total >= NAMED_MIN).map((c): Band => {
+  ...NAMED.map((c): Band => {
     const v = c.index.map((x, i) => x / YEAR_TOTAL[i]);
     const peakYear = peakOf(v);
     return { id: c.id, name: c.name, total: c.total, v, peakYear, era: eraOf(peakYear) };
-  }),
-]);
-
-/* a tier fanned out: its brands as shares of the tier that year */
-function fanOut(t: Tier): { bands: Band[]; y0: number[][] } {
-  const total = sumOf(t.ids);
-  return stack(t.ids.map((id): Band => {
-    const c = BY_COMPANY.get(id)!;
-    const v = c.index.map((x, i) => (total[i] > 0 ? x / total[i] : 0));
-    const peakYear = peakOf(v);
-    return { id, name: c.name, total: c.total, v, peakYear, era: eraOf(peakYear) };
-  }));
+  }).sort((a, b) => a.peakYear - b.peakYear || b.total - a.total),
+];
+const Y0: number[][] = [];
+{
+  const acc = YEARS.map(() => 0);
+  for (const b of BANDS) { Y0.push([...acc]); b.v.forEach((x, i) => { acc[i] += x; }); }
 }
-
 const VARIETY = brandData.variety;
+
 const MARGIN = { top: 16, right: 24, bottom: 40, left: 44 };
 const CHART_H = 460;
 const MIN_LABEL_PX = 15;
@@ -103,25 +77,25 @@ interface Scales { x: (y: number) => number; y: (v: number) => number }
 
 /* The band paths never depend on hover, so they are memoised and the hover
    highlight is a class toggled on the DOM (see .brand-eras in globals.css). */
-const Bands = memo(function Bands({ bands, y0, scales, fills, interactive }: { bands: Band[]; y0: number[][]; scales: Scales; fills: string[]; interactive: boolean }) {
+const Bands = memo(function Bands({ scales, fills, interactive }: { scales: Scales; fills: string[]; interactive: boolean }) {
   return (
     <>
-      {bands.map((b, i) => (
+      {BANDS.map((b, i) => (
         <Area<number> key={b.id} data={YEARS.map((_, yi) => yi)} curve={curveMonotoneX}
-          x={(yi) => scales.x(YEARS[yi])} y0={(yi) => scales.y(y0[i][yi])} y1={(yi) => scales.y(y0[i][yi] + b.v[yi])}
+          x={(yi) => scales.x(YEARS[yi])} y0={(yi) => scales.y(Y0[i][yi])} y1={(yi) => scales.y(Y0[i][yi] + b.v[yi])}
           className="band" data-band={i} fill={fills[i]}
-          style={{ cursor: interactive ? "pointer" : undefined }}
+          style={{ cursor: interactive && !b.tier ? "pointer" : undefined }}
           stroke="var(--background)" strokeWidth={0.4} />
       ))}
     </>
   );
 });
 
-type View = { kind: "full" } | { kind: "tier"; tier: Tier } | { kind: "solo"; id: number };
+interface Solo { name: string; v: number[]; total: number; peakYear: number }
 
-interface ChartProps { width: number; view: View; setView: (v: View) => void; article: boolean }
+interface ChartProps { width: number; solo: Solo | null; onPick: (id: number | null) => void; article: boolean }
 
-function Chart({ width, view, setView, article }: ChartProps) {
+function Chart({ width, solo, onPick, article }: ChartProps) {
   const theme = useThemeColors();
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
     useTooltip<{ band: number | null; yi: number }>();
@@ -129,16 +103,6 @@ function Chart({ width, view, setView, article }: ChartProps) {
   const hovered = useRef<SVGPathElement | null>(null);
   const innerW = width - MARGIN.left - MARGIN.right;
   const innerH = CHART_H - MARGIN.top - MARGIN.bottom;
-
-  const stacked = useMemo(() => (view.kind === "tier" ? fanOut(view.tier) : FULL), [view]);
-  const { bands, y0 } = stacked;
-  const solo = useMemo(() => {
-    if (view.kind !== "solo") return null;
-    const c = BY_COMPANY.get(view.id);
-    if (!c) return null;
-    const v = c.index.map((x, i) => x / YEAR_TOTAL[i]);
-    return { name: c.name, v, total: c.total, peakYear: peakOf(v) };
-  }, [view]);
 
   const xScale = useMemo(() => scaleLinear({ domain: [YEARS[0], YEARS[LAST]], range: [0, Math.max(1, innerW)] }), [innerW]);
   const yMax = useMemo(() => {
@@ -149,15 +113,10 @@ function Chart({ width, view, setView, article }: ChartProps) {
   }, [solo]);
   const yScale = useMemo(() => scaleLinear({ domain: [0, yMax], range: [innerH, 0] }), [innerH, yMax]);
   const scales = useMemo<Scales>(() => ({ x: (y) => xScale(y), y: (v) => yScale(v) }), [xScale, yScale]);
-  const fills = useMemo(() => bands.map((b) =>
-    (b.tier ? theme.resolve(TIER_TOKENS[TIERS.indexOf(b.tier)]) : theme.resolve(ERA_TOKENS[b.era]))), [bands, theme]);
+  const fills = useMemo(() => BANDS.map((b) =>
+    (b.tier ? theme.resolve(TIER_TOKENS[TIERS.indexOf(b.tier)]) : theme.resolve(ERA_TOKENS[b.era]))), [theme]);
   const yi = tooltipData?.yi ?? LAST;
-  /* the five biggest brands at the hovered year, within the current view */
-  const inTier = view.kind === "tier" ? view.tier : null;
-  const topAtYear = useMemo(() => {
-    const pool = inTier ? inTier.ids : COMPANIES.map((c) => c.id);
-    return pool.map((id) => BY_COMPANY.get(id)!).sort((a, b) => b.index[yi] - a.index[yi]).slice(0, 5);
-  }, [yi, inTier]);
+  const topAtYear = useMemo(() => [...COMPANIES].sort((a, b) => b.index[yi] - a.index[yi]).slice(0, 5), [yi]);
 
   if (width < 10) return null;
   const grey = theme.role.muted;
@@ -185,13 +144,13 @@ function Chart({ width, view, setView, article }: ChartProps) {
   const onLeave = () => { setHover(null); hideTooltip(); };
   const onClick = (e: React.MouseEvent<SVGSVGElement>) => {
     if (article) return;
-    if (solo) { setView({ kind: "full" }); return; }
+    if (solo) { onPick(null); return; }
     const t = e.target as Element;
     if (!t.classList?.contains("band")) return;
-    const b = bands[Number((t as SVGPathElement).dataset.band)];
-    if (b.tier && !b.tier.fan) return;
+    const b = BANDS[Number((t as SVGPathElement).dataset.band)];
+    if (b.tier) return;
     setHover(null); hideTooltip();
-    setView(b.tier ? { kind: "tier", tier: b.tier } : { kind: "solo", id: b.id });
+    onPick(b.id);
   };
 
   /* labels for bands thick enough at their widest point, thickest first,
@@ -199,14 +158,14 @@ function Chart({ width, view, setView, article }: ChartProps) {
   type Label = { i: number; x: number; y: number; w: number; size: number; name: string; px: number };
   const labels: Label[] = [];
   if (!solo) {
-    const cands = bands.flatMap((b, i) => {
+    const cands = BANDS.flatMap((b, i) => {
       let best = 0, bestPx = 0;
       b.v.forEach((x, k) => { const px = x * innerH; if (px > bestPx) { bestPx = px; best = k; } });
       if (bestPx < MIN_LABEL_PX) return [];
       const size = Math.min(15, 9 + bestPx / 8);
       const w = b.name.length * size * 0.58;
       const x = Math.min(innerW - w / 2, Math.max(w / 2, xScale(YEARS[best])));
-      return [{ i, x, y: yScale(y0[i][best] + b.v[best] / 2), w, size, name: b.name, px: bestPx }];
+      return [{ i, x, y: yScale(Y0[i][best] + b.v[best] / 2), w, size, name: b.name, px: bestPx }];
     }).sort((a, b) => b.px - a.px);
     for (const c of cands) {
       const clash = labels.some((l) => Math.abs(l.x - c.x) < (l.w + c.w) / 2 + 6 && Math.abs(l.y - c.y) < (l.size + c.size) / 2 + 2);
@@ -214,14 +173,8 @@ function Chart({ width, view, setView, article }: ChartProps) {
     }
   }
 
-  const tipBand = tooltipData && tooltipData.band !== null ? bands[tooltipData.band] : null;
-  /* inside a fanned-out tier, the "biggest" shares are of the tier, like the band values */
-  const denom = inTier ? sumOf(inTier.ids)[yi] : YEAR_TOTAL[yi];
-  const tierActive = (t: Tier, year: number) => t.ids.filter((id) => BY_COMPANY.get(id)!.index[year] > 0).length;
-  const tierTop = (t: Tier, year: number) =>
-    t.ids.map((id) => BY_COMPANY.get(id)!).sort((a, b) => b.index[year] - a.index[year]).slice(0, 5);
+  const tipBand = tooltipData && tooltipData.band !== null ? BANDS[tooltipData.band] : null;
   const aria = solo ? `Share of brand uses for ${solo.name}, ${YEARS[0]} to ${YEARS[LAST]}.`
-    : inTier ? `The ${fmt(inTier.ids.length)} ${inTier.label}, stacked as shares of that tier, ${YEARS[0]} to ${YEARS[LAST]}, coloured by the year each peaked.`
     : `Every yarn brand's share of brand uses on the panel, stacked, ${YEARS[0]} to ${YEARS[LAST]}: the long tail on the baseline in two tiers, then named brands by the year they peaked, coloured by era.`;
 
   return (
@@ -242,7 +195,7 @@ function Chart({ width, view, setView, article }: ChartProps) {
             </>
           ) : (
             <>
-              <Bands bands={bands} y0={y0} scales={scales} fills={fills} interactive={!article} />
+              <Bands scales={scales} fills={fills} interactive={!article} />
               {labels.map((l) => (
                 <text key={l.i} x={l.x} y={l.y + l.size / 3} textAnchor="middle" fontSize={l.size} fontWeight={600}
                   fill="var(--foreground)"
@@ -266,22 +219,22 @@ function Chart({ width, view, setView, article }: ChartProps) {
           style={{ position: "absolute", background: "var(--background)", color: "var(--foreground)",
             border: "1px solid var(--muted)", borderRadius: 6, padding: "8px 10px", fontSize: 12, lineHeight: 1.5, maxWidth: 300 }}>
           <div className="font-semibold">{solo ? solo.name : tipBand!.name}</div>
-          <div className="tabular-nums">
-            {YEARS[yi]}: {pct(solo ? solo.v[yi] : tipBand!.v[yi])} of {inTier && !solo ? "the tier" : "brand uses"}
-          </div>
+          <div className="tabular-nums">{YEARS[yi]}: {pct(solo ? solo.v[yi] : tipBand!.v[yi])} of brand uses</div>
           {!solo && tipBand!.tier && (
-            <div style={{ color: grey }}>{fmt(tierActive(tipBand!.tier, yi))} of them used in {YEARS[yi]}{tipBand!.tier.fan ? " · click to fan out" : ""}</div>
+            <div style={{ color: grey }}>{fmt(tipBand!.tier.active[yi])} of them used in {YEARS[yi]}</div>
           )}
           {!solo && !tipBand!.tier && (
             <div style={{ color: grey }}>peaked {tipBand!.peakYear} · {fmt(tipBand!.total)} panel projects · click to see on its own</div>
           )}
           <div className="mt-1.5 border-t pt-1.5" style={{ borderColor: "color-mix(in srgb, var(--muted) 30%, transparent)", color: grey }}>
-            biggest in {YEARS[yi]}{!solo && tipBand!.tier ? " in the tier" : inTier ? " in the tier" : ""}
-            {(!solo && tipBand!.tier ? tierTop(tipBand!.tier, yi) : topAtYear).map((c) => (
-              <div key={c.id} className="flex justify-between gap-4 tabular-nums" style={{ color: "var(--foreground)" }}>
-                <span>{c.name}</span><span>{pct(c.index[yi] / (!solo && tipBand!.tier ? YEAR_TOTAL[yi] : denom))}</span>
-              </div>
-            ))}
+            biggest in {YEARS[yi]}{!solo && tipBand!.tier ? " in the tier" : ""}
+            {!solo && tipBand!.tier
+              ? tipBand!.tier.top[yi].map((name) => <div key={name} style={{ color: "var(--foreground)" }}>{name}</div>)
+              : topAtYear.map((c) => (
+                <div key={c.id} className="flex justify-between gap-4 tabular-nums" style={{ color: "var(--foreground)" }}>
+                  <span>{c.name}</span><span>{pct(c.index[yi] / YEAR_TOTAL[yi])}</span>
+                </div>
+              ))}
           </div>
         </TooltipWithBounds>
       )}
@@ -289,7 +242,7 @@ function Chart({ width, view, setView, article }: ChartProps) {
   );
 }
 
-function Search({ view, setView }: { view: View; setView: (v: View) => void }) {
+function Search({ focus, setFocus }: { focus: number | null; setFocus: (id: number | null) => void }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [cursor, setCursor] = useState(0);
@@ -307,15 +260,14 @@ function Search({ view, setView }: { view: View; setView: (v: View) => void }) {
     return () => document.removeEventListener("pointerdown", close);
   }, []);
 
-  const pick = (id: number) => { setView({ kind: "solo", id }); setQuery(""); setOpen(false); setCursor(0); };
+  const pick = (id: number) => { setFocus(id); setQuery(""); setOpen(false); setCursor(0); };
   const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") { e.preventDefault(); setCursor((c) => Math.min(c + 1, matches.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setCursor((c) => Math.max(c - 1, 0)); }
     else if (e.key === "Enter") { e.preventDefault(); if (matches[cursor]) pick(matches[cursor].id); }
-    else if (e.key === "Escape") { setOpen(false); setView({ kind: "full" }); }
+    else if (e.key === "Escape") { setOpen(false); setFocus(null); }
   };
   const border = { borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)" };
-  const pill = "rounded-full border px-2.5 py-0.5";
 
   return (
     <div ref={wrap} className="mb-3 flex flex-wrap items-center gap-2 text-sm">
@@ -341,15 +293,10 @@ function Search({ view, setView }: { view: View; setView: (v: View) => void }) {
           </ul>
         )}
       </div>
-      {view.kind !== "full" && (
-        <button type="button" onClick={() => setView({ kind: "full" })} className={pill} style={{ ...border, color: "var(--muted)" }}>
+      {focus !== null && (
+        <button type="button" onClick={() => setFocus(null)} className="rounded-full border px-2.5 py-0.5" style={{ ...border, color: "var(--muted)" }}>
           ← all brands
         </button>
-      )}
-      {view.kind === "tier" && (
-        <span className="text-xs" style={{ color: "var(--muted)" }}>
-          the {fmt(view.tier.ids.length)} {view.tier.label}, as shares of that tier
-        </span>
       )}
     </div>
   );
@@ -370,10 +317,16 @@ function Tile({ label, a, b, unit = "" }: { label: string; a: number | null; b: 
 
 export default function YarnBrandEras() {
   const article = useVariant() === "article";
-  const [view, setView] = useState<View>({ kind: "full" });
+  const [focus, setFocus] = useState<number | null>(null);
+  const solo = useMemo<Solo | null>(() => {
+    if (focus === null) return null;
+    const c = BY_COMPANY.get(focus);
+    if (!c) return null;
+    const v = c.index.map((x, i) => x / YEAR_TOTAL[i]);
+    return { name: c.name, v, total: c.total, peakYear: peakOf(v) };
+  }, [focus]);
   const v0 = VARIETY[0], v1 = VARIETY[VARIETY.length - 1];
   const peakEff = VARIETY.reduce((a, b) => ((b.eff_brands ?? 0) > (a.eff_brands ?? 0) ? b : a));
-  const named = COMPANIES.filter((c) => c.total >= NAMED_MIN).length;
 
   return (
     <figure id="yarn-brand-eras" className={article ? "w-full" : "w-full rounded-lg p-4"}
@@ -384,11 +337,11 @@ export default function YarnBrandEras() {
           Brands with at least {NAMED_MIN} panel projects, stacked by share of brand uses in
           the order they peaked and coloured by when: the earlier the peak, the deeper the
           colour. The long tail sits on the baseline in two grey tiers.
-          {!article && " Hover a band; click the 100-to-500 tier to fan it out brand by brand, click a brand to see it on its own, or search."}
+          {!article && " Hover a band, click a brand to see it on its own, or search."}
         </p>
       </figcaption>
-      {!article && <Search view={view} setView={setView} />}
-      <ParentSize>{({ width }) => <Chart width={width} view={view} setView={setView} article={article} />}</ParentSize>
+      {!article && <Search focus={focus} setFocus={setFocus} />}
+      <ParentSize>{({ width }) => <Chart width={width} solo={solo} onPick={setFocus} article={article} />}</ParentSize>
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: "var(--muted)" }}>
         <span className="inline-flex items-center gap-1.5">
@@ -398,8 +351,8 @@ export default function YarnBrandEras() {
           later
         </span>
         {TIERS.map((t, i) => (
-          <span key={t.lo} className="inline-flex items-center gap-1.5">
-            <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: `var(${TIER_TOKENS[i]})` }} />{t.lo} to {t.hi} projects
+          <span key={t.min} className="inline-flex items-center gap-1.5">
+            <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: `var(${TIER_TOKENS[i]})` }} />{t.min} to {t.max} projects
           </span>
         ))}
       </div>
@@ -420,7 +373,7 @@ export default function YarnBrandEras() {
               <th className="py-1 text-right font-medium">effective brands</th>
               <th className="py-1 text-right font-medium">covering half</th>
               <th className="py-1 text-right font-medium">top ten share</th>
-              {TIERS.map((t) => <th key={t.lo} className="py-1 text-right font-medium">{t.lo} to {t.hi}</th>)}
+              {TIERS.map((t) => <th key={t.min} className="py-1 text-right font-medium">{t.min} to {t.max}</th>)}
             </tr>
           </thead>
           <tbody>
@@ -431,7 +384,7 @@ export default function YarnBrandEras() {
                 <td className="py-1 text-right">{r.eff_brands ?? "–"}</td>
                 <td className="py-1 text-right">{r.half_cover}</td>
                 <td className="py-1 text-right">{pct(r.top10_share, 0)}</td>
-                {TIERS.map((t) => <td key={t.lo} className="py-1 text-right">{pct(FULL.bands.find((b) => b.tier === t)!.v[i], 0)}</td>)}
+                {TIERS.map((t) => <td key={t.min} className="py-1 text-right">{pct(t.index[i] / YEAR_TOTAL[i], 0)}</td>)}
               </tr>
             ))}
           </tbody>
@@ -443,14 +396,13 @@ export default function YarnBrandEras() {
           Each band is a brand's panel index divided by the year's sum over every brand shown,
           so the stack fills 100% of brand uses; a project that linked two brands counts once
           for each, and these shares are not comparable with the lines above. Bands are drawn
-          for the {named} brands with at least {NAMED_MIN} panel projects; the {fmt(TIERS[0].ids.length)} with
-          100 to {NAMED_MIN} and the {fmt(TIERS[1].ids.length)} with {META.min_lite} to 100 are the two grey
-          tiers; the first fans out on a click, the second is too many bands to draw and is
-          described on hover instead. The {fmt(brandData.other.companies)} brands
-          with fewer than {META.min_lite} panel projects, most of them individual crafters, are left
-          out of the stack and its denominator. "Effective number of brands" is the inverse
-          Simpson index on a fixed draw of {fmt(META.rarefy)} linked projects a year, so growth
-          in the panel itself does not inflate it; it peaked at {peakEff.eff_brands} in {peakEff.year}.
+          for the {NAMED.length} brands with at least {NAMED_MIN} panel projects; the {fmt(TIERS[0].companies)} with
+          100 to {NAMED_MIN} and the {fmt(TIERS[1].companies)} with {META.min_stack} to 100 are the two grey
+          tiers, described on hover. The {fmt(brandData.other.companies)} brands with fewer
+          than {META.min_stack} panel projects, most of them individual crafters, are left out of
+          the stack and its denominator. "Effective number of brands" is the inverse Simpson
+          index on a fixed draw of {fmt(META.rarefy)} linked projects a year, so growth in the
+          panel itself does not inflate it; it peaked at {peakEff.eff_brands} in {peakEff.year}.
         </p>
       )}
     </figure>
