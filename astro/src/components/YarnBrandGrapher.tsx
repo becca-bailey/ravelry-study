@@ -90,6 +90,10 @@ export const PRESETS: { key: string; label: string; blurb: string; names: string
   { key: "german", label: "The German mills",
     blurb: "Long-established German mill brands, the sock-yarn names included, with Lang from German-speaking Switzerland.",
     names: ["Lang Yarns", "Lana Grossa", "Schoppel-Wolle", "Zwerger Garn", "Regia", "Rico Design"] },
+  /* becca's own shelf */
+  { key: "favorites", label: "Personal favorites",
+    blurb: "The brands in the author's own stash, for no reason other than fondness.",
+    names: ["Malabrigo Yarn", "Spincycle Yarns", "Hazel Knits", "Manos del Uruguay", "The Lamb & Kid"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "The craft-store shelf",
     blurb: "The brands sold on craft-store shelves, the chains' own labels included.",
