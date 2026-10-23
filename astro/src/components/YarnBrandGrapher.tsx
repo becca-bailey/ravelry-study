@@ -47,9 +47,13 @@ const idsOf = (names: string[]) => names
    crashed. "sale" is Knit Picks against the control basket of mass brands
    from the notes; "dyers" the hand-dyed cycles; "risers" the brands still
    climbing after a decade and more. */
-export const PRESETS: { key: string; label: string; names: string[] }[] = [
+/* A preset may give brands a role instead of a slot colour: the brand the
+   story is about takes --role-focus and its peers --role-context, so the
+   question is visible before the labels are read. */
+export const PRESETS: { key: string; label: string; names: string[]; roles?: Record<string, string> }[] = [
   { key: "default", label: "one of each", names: ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"] },
-  { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"] },
+  { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"],
+    roles: { "Knit Picks": "--role-focus", "Cascade Yarns": "--role-context", "Garnstudio": "--role-context", "Berroco": "--role-context", "Lion Brand": "--role-context", "Patons North America": "--role-context" } },
   { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres"] },
   { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Schoppel-Wolle", "Lang Yarns", "West Yorkshire Spinners"] },
 ];
@@ -58,6 +62,10 @@ const DEFAULT_IDS = idsOf(PRESETS[0].names);
 /* Six categorical line colours, one per picker slot (see --brand-line-* in
    globals.css). A brand keeps its slot, and so its colour, until removed. */
 const SLOT_TOKENS = [1, 2, 3, 4, 5, 6].map((i) => `--brand-line-${i}`);
+
+type Roles = Map<number, string>;
+const rolesOf = (p: { names: string[]; roles?: Record<string, string> }): Roles =>
+  new Map(Object.entries(p.roles ?? {}).flatMap(([n, t]) => { const id = idsOf([n])[0]; return id === undefined ? [] : [[id, t]]; }));
 
 const MARGIN = { top: 24, right: 156, bottom: 40, left: 44 };
 const CHART_H = 400;
@@ -94,9 +102,9 @@ function spreadLabels(items: { id: number; y: number }[], maxY: number) {
   return new Map(sorted.map((s) => [s.id, s.y]));
 }
 
-interface ChartProps { width: number; slots: (number | null)[]; article: boolean }
+interface ChartProps { width: number; slots: (number | null)[]; roles: Roles; article: boolean }
 
-function Chart({ width, slots, article }: ChartProps) {
+function Chart({ width, slots, roles, article }: ChartProps) {
   const theme = useThemeColors();
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
     useTooltip<number>();
@@ -120,7 +128,9 @@ function Chart({ width, slots, article }: ChartProps) {
   const yScale = useMemo(() => scaleLinear({ domain: [0, yMax], range: [innerH, 0] }), [innerH, yMax]);
 
   if (width < 10) return null;
-  const colour = (slot: number) => theme.resolve(SLOT_TOKENS[slot]);
+  const colour = (slot: number, id?: number) => theme.resolve((id !== undefined && roles.get(id)) || SLOT_TOKENS[slot]);
+  const isContext = (id: number) => roles.get(id) === "--role-context";
+  const marker = theme.resolve("--annotation");
   const last = YEARS[YEARS.length - 1];
   const labelY = spreadLabels(
     lines.map((l) => ({ id: l.company.id, y: yScale(l.company.series[l.company.series.length - 1].index) })),
@@ -149,23 +159,27 @@ function Chart({ width, slots, article }: ChartProps) {
         <Group left={MARGIN.left} top={MARGIN.top}>
           <GridRows scale={yScale} width={innerW} stroke={theme.role.muted} strokeOpacity={0.18} />
 
-          {/* acquisition marker */}
+          {/* acquisition marker: the annotation colour, the page's one pointer */}
           <line x1={acquiredX} x2={acquiredX} y1={0} y2={innerH}
-            stroke={theme.role.muted} strokeDasharray="4 4" strokeWidth={1} />
-          <text x={acquiredX + 5} y={10} fontSize={11} fill={theme.role.muted}>
+            stroke={marker} strokeDasharray="4 4" strokeWidth={1} />
+          <text x={acquiredX + 5} y={10} fontSize={11} fontWeight={600} fill={marker}>
             Knit Picks sold
           </text>
 
           {lines.map((l) => {
-            const c = colour(l.slot);
+            const c = colour(l.slot, l.company.id);
+            const quiet = isContext(l.company.id);
+            const ly = labelY.get(l.company.id) ?? 0;
             return (
               <Group key={l.company.id}>
                 <LinePath<Point> data={l.company.series} curve={curveMonotoneX}
                   x={(p) => xScale(p.year)} y={(p) => yScale(p.index)}
-                  stroke={c} strokeWidth={2.25}
+                  stroke={c} strokeWidth={quiet ? 1.5 : 2.25}
                   strokeLinejoin="round" strokeLinecap="round" />
-                <text x={innerW + 8} y={(labelY.get(l.company.id) ?? 0) + 4}
-                  fontSize={11.5} fontWeight={600} fill={c}>
+                {/* end label in ink; the dot carries identity */}
+                <circle cx={innerW + 10} cy={ly} r={3.5} fill={c} />
+                <text x={innerW + 18} y={ly + 4} fontSize={11.5} fontWeight={quiet ? 500 : 600}
+                  fill={quiet ? theme.role.muted : "var(--foreground)"}>
                   {l.company.name}
                 </text>
               </Group>
@@ -179,7 +193,7 @@ function Chart({ width, slots, article }: ChartProps) {
                 stroke={theme.role.muted} strokeOpacity={0.6} />
               {hoverRows.map((r) => (
                 <circle key={r.company.id} cx={xScale(tooltipData)} cy={yScale(r.point.index)} r={4}
-                  fill={colour(r.slot)} stroke="var(--background)" strokeWidth={1.5} />
+                  fill={colour(r.slot, r.company.id)} stroke="var(--background)" strokeWidth={1.5} />
               ))}
             </Group>
           )}
@@ -209,7 +223,7 @@ function Chart({ width, slots, article }: ChartProps) {
           {hoverRows.map((r) => (
             <div key={r.company.id} className="flex items-baseline gap-3 tabular-nums">
               <span className="inline-flex items-center gap-1.5">
-                <i className="inline-block h-2 w-2 rounded-full" style={{ background: colour(r.slot) }} />
+                <i className="inline-block h-2 w-2 rounded-full" style={{ background: colour(r.slot, r.company.id) }} />
                 {r.company.name}
               </span>
               <span className="ml-auto">{pct(r.point.index)}</span>
@@ -221,9 +235,9 @@ function Chart({ width, slots, article }: ChartProps) {
   );
 }
 
-interface PickerProps { slots: (number | null)[]; onChange: (ids: number[]) => void }
+interface PickerProps { slots: (number | null)[]; roles: Roles; onChange: (ids: number[]) => void }
 
-function Picker({ slots, onChange }: PickerProps) {
+function Picker({ slots, roles, onChange }: PickerProps) {
   const theme = useThemeColors();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -263,14 +277,14 @@ function Picker({ slots, onChange }: PickerProps) {
     else if (e.key === "Backspace" && query === "" && selected.length) remove(selected[selected.length - 1]);
   };
 
-  const chipStyle = { borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)" };
+  const chipStyle = { borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", background: "var(--chip-bg, transparent)" };
 
   return (
     <div ref={wrap} className="mb-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         {slots.map((id, i) => id === null ? null : (
           <span key={id} className="inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-2 pr-1" style={chipStyle}>
-            <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: `var(${SLOT_TOKENS[i]})` }} />
+            <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: `var(${roles.get(id) ?? SLOT_TOKENS[i]})` }} />
             {BY_ID.get(id)!.name}
             <button type="button" onClick={() => remove(id)} aria-label={`Remove ${BY_ID.get(id)!.name}`}
               className="ml-0.5 rounded-full px-1 leading-none hover:bg-[color-mix(in_srgb,var(--muted)_25%,transparent)]"
@@ -309,12 +323,22 @@ export default function YarnBrandGrapher() {
   const article = useVariant() === "article";
   const [slots, setSlots] = useState<(number | null)[]>(() =>
     assignSlots(Array(MAX_SELECTED).fill(null), DEFAULT_IDS));
+  const [roles, setRoles] = useState<Roles>(() => new Map());
+  const loadPreset = (p: typeof PRESETS[number]) => {
+    setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(p.names)));
+    setRoles(rolesOf(p));
+  };
+  /* picker edits keep a role only for brands still selected */
+  const changeSelection = (ids: number[]) => {
+    setSlots((prev) => assignSlots(prev, ids));
+    setRoles((prev) => new Map([...prev].filter(([id]) => ids.includes(id))));
+  };
   /* ?preset=sale|dyers|risers loads a story's cast (used by the screenshot
      script for the article variant) */
   useEffect(() => {
     const key = new URLSearchParams(window.location.search).get("preset");
     const preset = PRESETS.find((p) => p.key === key);
-    if (preset) setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(preset.names)));
+    if (preset) loadPreset(preset);
   }, []);
   /* the stacked view below can push a brand into the picker (a window event,
      since the two charts are separate Astro islands); a full picker drops
@@ -339,7 +363,7 @@ export default function YarnBrandGrapher() {
   const latest = COVERAGE[COVERAGE.length - 1];
 
   return (
-    <figure id="yarn-brand-grapher" className="w-full">
+    <figure id="yarn-brand-grapher" className="w-full rounded-lg p-4" style={{ background: "var(--figure-bg, transparent)" }}>
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">Which yarn brands knitters chose</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
@@ -348,13 +372,13 @@ export default function YarnBrandGrapher() {
           {!article && " Pick up to six brands; hover for the numbers."}
         </p>
       </figcaption>
-      {!article && <Picker slots={slots} onChange={(ids) => setSlots((prev) => assignSlots(prev, ids))} />}
+      {!article && <Picker slots={slots} roles={roles} onChange={changeSelection} />}
       {!article && (
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: "var(--muted)" }}>
           <span>stories:</span>
           {PRESETS.map((p) => (
             <button key={p.key} type="button"
-              onClick={() => setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(p.names)))}
+              onClick={() => loadPreset(p)}
               className="rounded-full border px-2.5 py-0.5 hover:border-[var(--origin)]"
               style={{ borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", color: "var(--foreground)" }}>
               {p.label}
@@ -362,7 +386,7 @@ export default function YarnBrandGrapher() {
           ))}
         </div>
       )}
-      <ParentSize>{({ width }) => <Chart width={width} slots={slots} article={article} />}</ParentSize>
+      <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} article={article} />}</ParentSize>
 
       {!article && lines.length > 0 && <details className="mt-3 text-xs">
         <summary className="cursor-pointer" style={{ color: "var(--muted)" }}>Table view</summary>

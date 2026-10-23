@@ -331,7 +331,7 @@ export default function YarnBrandEras() {
   const theme = useThemeColors();
 
   return (
-    <figure id="yarn-brand-eras" className="w-full">
+    <figure id="yarn-brand-eras" className="w-full rounded-lg p-4" style={{ background: "var(--figure-bg, transparent)" }}>
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">Every brand at once</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>

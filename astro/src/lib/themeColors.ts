@@ -71,6 +71,9 @@ const FALLBACK: Record<string, string> = {
   "--era-6": "#b09fd5",
   "--era-tail-small": "#a9a9a9",
   "--era-tail-mid": "#cfcfcf",
+  "--annotation": "#9ca3af",
+  "--role-focus": "#5e1af4",
+  "--role-context": "#9ca3af",
 };
 
 function readToken(name: string): string {
