@@ -95,6 +95,21 @@ def main() -> None:
                         "top10_share": round(float(yr["n"].head(10).sum() / yr["n"].sum()), 4),
                         "eff_brands": None if d is None else round(float(d["eff_brands"]), 1)})
 
+    # ownership changes, matched to exported company ids by display name
+    by_name = {c["name"]: c["id"] for c in companies}
+    events = []
+    for e in yb.load_events():
+        cid = by_name.get(e["company"])
+        if cid is None:
+            print(f"  event for {e['company']!r} skipped: not among exported companies")
+            continue
+        y, _, m = e["date"].partition("-")
+        t = int(y) + ((int(m) - 0.5) / 12 if m else 0.5)   # mid-month as a fraction of the year
+        events.append({"id": cid, "name": e["company"], "date": e["date"], "t": round(t, 3),
+                       "buyer": e["buyer"], "note": e["note"], "source": e["source"],
+                       "confirmed": e["confirmed"]})
+    events.sort(key=lambda e: (e["t"], e["name"]))
+
     out = {
         "meta": {
             "source": "Ravelry projects on a panel of long-lived patterns and the "
@@ -118,6 +133,7 @@ def main() -> None:
                      for p in roster],
         "coverage": coverage,
         "variety": variety,
+        "events": events,
         "companies": companies,
         "other": other,
     }

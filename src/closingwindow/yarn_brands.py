@@ -77,6 +77,19 @@ def load_aliases(path: Path = ROSTER_PATH) -> dict[int, dict]:
     return out
 
 
+def load_events(path: Path = ROSTER_PATH) -> list[dict]:
+    """Ownership changes among panel brands (company name, YYYY-MM date,
+    buyer, note, source, confirmed). Unconfirmed entries are kept so the
+    gap is visible, and flagged."""
+    raw = yaml.safe_load(path.read_text())
+    out = []
+    for e in raw.get("company_events", []) or []:
+        out.append({"company": e["company"], "date": str(e["date"]), "buyer": e.get("buyer", ""),
+                    "note": e.get("note", ""), "source": e.get("source", ""),
+                    "confirmed": bool(e.get("confirmed", True))})
+    return out
+
+
 def _concat(folder: Path) -> pd.DataFrame:
     files = sorted(folder.glob("*.parquet")) if folder.exists() else []
     if not files:

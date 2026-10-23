@@ -33,6 +33,7 @@ const TARGETS = [
   { path: "/mkal/?variant=article&year=2021", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2021_article.png" },
   { path: "/mkal/?variant=article&year=2025", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2025_article.png" },
   { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_article.png" },
+  { path: "/yarn-brands/?variant=article&preset=sold", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_sold_article.png" },
   { path: "/yarn-brands/?variant=article&preset=sale", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_sale_article.png" },
   { path: "/yarn-brands/?variant=article&preset=dyers", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_dyers_article.png" },
   { path: "/yarn-brands/?variant=article&preset=risers", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_risers_article.png" },
