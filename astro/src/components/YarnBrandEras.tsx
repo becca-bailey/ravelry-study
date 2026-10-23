@@ -303,7 +303,7 @@ function Search({ focus, setFocus }: { focus: number | null; setFocus: (id: numb
 
 function Tile({ label, a, b, unit = "" }: { label: string; a: number | null; b: number | null; unit?: string }) {
   return (
-    <div className="rounded-md border px-3 py-2" style={{ borderColor: "color-mix(in srgb, var(--muted) 30%, transparent)" }}>
+    <div className="rounded-md border px-3 py-2" style={{ borderColor: "color-mix(in srgb, var(--muted) 30%, transparent)", background: "var(--tile-bg, transparent)" }}>
       <div className="text-xs" style={{ color: "var(--muted)" }}>{label}</div>
       <div className="mt-0.5 flex items-baseline gap-2">
         <span className="text-xl font-semibold">{a === null ? "–" : fmt(a)}{unit}</span>

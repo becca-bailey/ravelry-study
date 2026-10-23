@@ -219,56 +219,65 @@ h2 {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   PAGE PALETTE: "dyed" (the yarn-brands page). Hand-dyed skeins on a shelf:
-   fuchsia, sky blue, mustard, violet, teal, coral, with plum for headings
-   and the era ramp. Line slots keep the same hue family in both modes so a
-   brand's colour follows it across themes; every set was run through the
-   dataviz validator (categorical for the lines, --ordinal for the era
-   ramp) against each surface. Activated by <Layout palette="dyed">.
+   PAGE PALETTE: "dyed" (the yarn-brands page). Artcoast's "Forest Nymph"
+   set: dark vanilla #fbe3e7, pink pearl #d7adcd, atomic tangerine #f09b69,
+   brass #b9a135, aloe green #7c7548, purple wine #854273. Pink pearl and
+   dark vanilla are too light to carry a line and aloe green reads as grey
+   to the validator, so the six line slots are wine, tangerine and brass
+   (deepened where contrast needed it), pink pearl deepened, and two
+   coordinating colours, a blue and a teal. The stacked view's era ramp
+   runs purple wine (oldest cohort) to pink pearl (newest). Every set was
+   run through the dataviz validator against each surface; the dark steps
+   are their own picks. Activated by <Layout palette="dyed">.
    ───────────────────────────────────────────────────────────────────────── */
 :root[data-palette="dyed"] {
-  --dyed-plum: #5a1246;
-  --dyed-fuchsia: #c2255c;
-  --dyed-teal: #0f9b9b;
+  --fn-vanilla: #fbe3e7;
+  --fn-pearl: #d7adcd;
+  --fn-tangerine: #f09b69;
+  --fn-brass: #b9a135;
+  --fn-aloe: #7c7548;
+  --fn-wine: #854273;
 
-  --origin: #7a1f5c;
-  --accent: var(--dyed-fuchsia);
-  --chart-1: var(--dyed-plum); /* solo-brand area in the stacked view */
-  --chart-contrast-1: var(--dyed-teal); /* hover highlight on the stack */
+  --origin: var(--fn-wine);
+  --accent: var(--fn-tangerine);
+  --chart-1: var(--fn-wine); /* solo-brand area in the stacked view */
+  --chart-contrast-1: var(--fn-tangerine); /* hover highlight on the stack */
+  --tile-bg: var(--fn-vanilla);
 
-  --brand-line-1: var(--dyed-fuchsia);
-  --brand-line-2: #1c7ed6; /* sky */
-  --brand-line-3: #a87400; /* mustard */
-  --brand-line-4: #5f3dc4; /* violet */
-  --brand-line-5: var(--dyed-teal);
-  --brand-line-6: #e8590c; /* coral */
+  --brand-line-1: var(--fn-wine);
+  --brand-line-2: #4a6fc4; /* coordinating blue */
+  --brand-line-3: #d9793c; /* tangerine, deepened */
+  --brand-line-4: #0f9b9b; /* coordinating teal */
+  --brand-line-5: #9a8a1f; /* brass, deepened */
+  --brand-line-6: #b3689c; /* pink pearl, deepened */
 
-  --era-1: #5a1246;
-  --era-2: #713360;
-  --era-3: #875278;
-  --era-4: #9a6e8e;
-  --era-5: #ad89a3;
-  --era-6: #bda0b5;
+  --era-1: #6e3560;
+  --era-2: #814a74;
+  --era-3: #955f88;
+  --era-4: #a8759c;
+  --era-5: #bc8ab0;
+  --era-6: #cf9fc4;
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-palette="dyed"] {
-    --origin: #f49ac9;
-    --chart-1: #f0a7d0;
-    --chart-contrast-1: #3fd1c8;
+    --origin: var(--fn-pearl);
+    --chart-1: var(--fn-pearl);
+    --chart-contrast-1: var(--fn-tangerine);
+    --tile-bg: #2a1a26;
 
-    --brand-line-1: #e64980;
-    --brand-line-2: #3b8fe0;
-    --brand-line-3: #b38f1f;
-    --brand-line-4: #9775fa;
-    --brand-line-5: #1aa39a;
-    --brand-line-6: #e25f2a;
+    --brand-line-1: #b86aa3;
+    --brand-line-2: #6b8fe0;
+    --brand-line-3: #d6713a;
+    --brand-line-4: #1aa39a;
+    --brand-line-5: #a8921f;
+    --brand-line-6: #c06da8;
 
-    --era-1: #ffc2e2;
-    --era-2: #dea5c6;
-    --era-3: #be88a9;
-    --era-4: #a16e90;
-    --era-5: #88577a;
-    --era-6: #724468;
+    --era-1: #e9c3df;
+    --era-2: #d5a9c9;
+    --era-3: #c18fb4;
+    --era-4: #ad769e;
+    --era-5: #995c89;
+    --era-6: var(--fn-wine);
   }
 }
