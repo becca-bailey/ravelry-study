@@ -134,8 +134,9 @@ function Chart({ width, slots, roles, article }: ChartProps) {
     [innerW],
   );
 
-  /* ownership markers for the selected brands: one per sale, drawn on the
-     brand's own line, so the dot's position names the brand */
+  /* ownership markers for the selected brands: one dot per sale on the
+     brand's own line, tagged "sold <year>"; tags alternate above and below
+     when two sales sit close together */
   type Marker = { e: OwnerEvent; line: typeof lines[number]; x: number };
   const markers: Marker[] = lines
     .flatMap((l) => (EVENTS_BY_ID.get(l.company.id) ?? []).map((e) => ({ e, line: l, x: xScale(e.t) })))
@@ -181,16 +182,30 @@ function Chart({ width, slots, roles, article }: ChartProps) {
         <Group left={MARGIN.left} top={top}>
           <GridRows scale={yScale} width={innerW} stroke={theme.role.muted} strokeOpacity={0.18} />
 
-          {/* ownership changes: a dashed rule and a dot on the line for each sale */}
-          {markers.map((m) => {
-            const c = colour(m.line.slot, m.line.company.id);
-            return (
+          {/* ownership changes: a ringed dot on the line at the sale month, tagged
+              with the year; each tag takes the first of above / below / further
+              out that does not overlap a tag already placed */}
+          {(() => {
+            const placed: { x: number; y: number }[] = [];
+            const TAG_W = 52, TAG_H = 11;
+            return markers.map((m) => {
+              const c = colour(m.line.slot, m.line.company.id);
+              const cy = yScale(indexAt(m.line.company, m.e.t));
+              const options = [cy - 10, cy + 17, cy - 22, cy + 29, cy - 34];
+              const ty = options.find((y) => !placed.some((p) => Math.abs(p.x - m.x) < TAG_W && Math.abs(p.y - y) < TAG_H)) ?? options[0];
+              placed.push({ x: m.x, y: ty });
+              return (
               <Group key={`${m.e.id}-${m.e.date}`}>
-                <line x1={m.x} x2={m.x} y1={0} y2={innerH} stroke={c} strokeDasharray="3 3" strokeOpacity={0.55} />
-                <circle cx={m.x} cy={yScale(indexAt(m.line.company, m.e.t))} r={4.5} fill={c} stroke="var(--background)" strokeWidth={1.5} />
+                <circle cx={m.x} cy={cy} r={6.5} fill="var(--background)" stroke={c} strokeWidth={1.5} />
+                <circle cx={m.x} cy={cy} r={3} fill={c} />
+                <text x={m.x} y={ty} fontSize={10} fontWeight={600} textAnchor="middle" fill="var(--foreground)"
+                  style={{ paintOrder: "stroke", stroke: "var(--background)", strokeWidth: 3, strokeLinejoin: "round" }}>
+                  sold {Math.floor(m.e.t)}
+                </text>
               </Group>
-            );
-          })}
+              );
+            });
+          })()}
 
           {lines.map((l) => {
             const c = colour(l.slot, l.company.id);
@@ -403,7 +418,7 @@ export default function YarnBrandGrapher() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Share of projects on 25 long-lived patterns that used each brand, by
           the year the project was started, {YEARS[0]} to {YEARS[YEARS.length - 1]}.
-          A dot on a line marks the month that brand changed owners.
+          A ringed dot marks the month a brand changed owners.
           {!article && " Pick up to six brands; hover for the numbers."}
         </p>
       </figcaption>
@@ -422,6 +437,15 @@ export default function YarnBrandGrapher() {
         </div>
       )}
       <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} article={article} />}</ParentSize>
+      {shownEvents.length > 0 && (
+        <div className="mt-1 flex items-center gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
+          <svg width={14} height={14} aria-hidden="true">
+            <circle cx={7} cy={7} r={5.5} fill="var(--background)" stroke="currentColor" strokeWidth={1.5} />
+            <circle cx={7} cy={7} r={2.5} fill="currentColor" />
+          </svg>
+          the month the brand changed owners
+        </div>
+      )}
 
       {!article && lines.length > 0 && <details className="mt-3 text-xs">
         <summary className="cursor-pointer" style={{ color: "var(--muted)" }}>Table view</summary>
