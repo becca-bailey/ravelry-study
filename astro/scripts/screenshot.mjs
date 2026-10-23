@@ -22,7 +22,6 @@ const TARGETS = [
   { path: "/mkal/", selector: "#mkal-participation", out: "mkal_participation_web.png" },
   { path: "/mkal/", selector: "#mkal-outcomes", out: "mkal_outcomes_web.png" },
   { path: "/yarn-brands/", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_web.png" },
-  { path: "/yarn-brands/", selector: "#yarn-brand-stream", out: "yarn_brand_stream_web.png" },
   { path: "/yarn-brands/", selector: "#yarn-brand-eras", out: "yarn_brand_eras_web.png" },
   // stripped-down versions for the essay/interview (see src/lib/variant.ts)
   { path: "/?variant=article", selector: "#window-chart", out: "window_explorer_article.png" },
@@ -34,7 +33,6 @@ const TARGETS = [
   { path: "/mkal/?variant=article&year=2021", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2021_article.png" },
   { path: "/mkal/?variant=article&year=2025", selector: "#mkal-finish-curve", out: "mkal_finish_curve_2025_article.png" },
   { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_article.png" },
-  { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-stream", out: "yarn_brand_stream_article.png" },
   { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-eras", out: "yarn_brand_eras_article.png" },
 ];
 

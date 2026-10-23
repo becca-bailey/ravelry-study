@@ -13,7 +13,7 @@ import { useThemeColors } from "@/lib/themeColors";
 import { useVariant } from "@/lib/variant";
 import brandData from "@/data/yarn_brands.json";
 
-/* The stacked view, second pass: colour means era. Each named band (a brand
+/* The stacked view: colour means era. Each named band (a brand
    with >= NAMED_MIN panel projects) takes a step of a one-hue ramp keyed to
    the year it peaked, earliest with the most ink, so the old guard thinning
    under a pale crowd of newcomers is the picture, not an inference. The
@@ -355,7 +355,7 @@ export default function YarnBrandEras() {
   return (
     <figure id="yarn-brand-eras" className="w-full">
       <figcaption className="mb-3">
-        <h2 className="text-lg font-semibold">Every brand at once, coloured by era</h2>
+        <h2 className="text-lg font-semibold">Every brand at once</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Brands with at least {NAMED_MIN} panel projects, stacked by share of brand uses in
           the order they peaked and coloured by when: the earlier the peak, the deeper the
@@ -417,8 +417,9 @@ export default function YarnBrandEras() {
 
       {!article && (
         <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-          Same measure as the chart above: each band is a brand's panel index divided by the
-          year's sum over every brand, so the stack fills 100% of brand uses. Bands are drawn
+          Each band is a brand's panel index divided by the year's sum over every brand, so
+          the stack fills 100% of brand uses; a project that linked two brands counts once for
+          each, and these shares are not comparable with the lines above. Bands are drawn
           for the {named.length} brands with at least {NAMED_MIN} panel projects; the {mid.length} with
           100 to {NAMED_MIN} and the {fmt(brandData.other.companies)} under 100 are the two grey
           tiers, and any of the named or mid-tier brands can be searched. "Effective number of
