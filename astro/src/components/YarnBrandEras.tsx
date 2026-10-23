@@ -70,7 +70,6 @@ const MIN_LABEL_PX = 15;
 
 const pct = (v: number, d = 1) => `${(100 * v).toFixed(d)}%`;
 const fmt = (n: number) => n.toLocaleString("en-US");
-const eraLabel = (e: number) => e === 0 ? `to ${ERAS[0]}` : e === ERAS.length ? `${ERAS[ERAS.length - 1] + 1} on` : `${ERAS[e - 1] + 1} to ${ERAS[e]}`;
 
 interface Scales { x: (y: number) => number; y: (v: number) => number }
 
@@ -346,12 +345,12 @@ export default function YarnBrandEras() {
       <ParentSize>{({ width }) => <Chart width={width} solo={solo} onPick={setFocus} article={article} />}</ParentSize>
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: "var(--muted)" }}>
-        <span>peaked</span>
-        {ERA_TOKENS.map((t, e) => (
-          <span key={t} className="inline-flex items-center gap-1.5">
-            <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: `var(${t})` }} />{eraLabel(e)}
-          </span>
-        ))}
+        <span className="inline-flex items-center gap-1.5">
+          peaked earlier
+          <i className="inline-block h-2.5 w-16 rounded-sm"
+            style={{ background: `linear-gradient(to right, ${ERA_TOKENS.map((t) => `var(${t})`).join(", ")})` }} />
+          later
+        </span>
         <span className="inline-flex items-center gap-1.5">
           <i className="inline-block h-2.5 w-3.5 rounded-sm" style={{ background: "var(--ramp-tail-2)" }} />100 to {NAMED_MIN} projects
         </span>
