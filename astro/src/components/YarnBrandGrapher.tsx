@@ -296,6 +296,24 @@ export default function YarnBrandGrapher() {
   const article = useVariant() === "article";
   const [slots, setSlots] = useState<(number | null)[]>(() =>
     assignSlots(Array(MAX_SELECTED).fill(null), DEFAULT_IDS));
+  /* the stacked view below can push a brand into the picker (a window event,
+     since the two charts are separate Astro islands); a full picker drops
+     its last-added brand to make room */
+  useEffect(() => {
+    const onAdd = (e: Event) => {
+      const id = (e as CustomEvent<{ id: number }>).detail?.id;
+      if (id === undefined || !BY_ID.has(id)) return;
+      setSlots((prev) => {
+        const ids = prev.filter((s): s is number => s !== null);
+        if (ids.includes(id)) return prev;
+        const next = ids.length >= MAX_SELECTED ? [...ids.slice(0, -1), id] : [...ids, id];
+        return assignSlots(prev, next);
+      });
+      document.getElementById("yarn-brand-grapher")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    window.addEventListener("yarn-brands:add", onAdd);
+    return () => window.removeEventListener("yarn-brands:add", onAdd);
+  }, []);
   const lines = slots.flatMap((id, i) => (id === null ? [] : [{ company: BY_ID.get(id)!, slot: i }]));
   const first = COVERAGE[0];
   const latest = COVERAGE[COVERAGE.length - 1];

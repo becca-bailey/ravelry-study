@@ -169,7 +169,7 @@ function Chart({ width, focus, setFocus, article }: ChartProps) {
             </>
           )}
 
-          <AxisLeft scale={yScale} numTicks={5} tickFormat={(v) => pct(Number(v), yMax < 0.02 ? 1 : 0)}
+          <AxisLeft scale={yScale} numTicks={5} tickFormat={(v) => pct(Number(v), yMax <= 0.05 ? 1 : 0)}
             stroke={grey} tickStroke={grey}
             tickLabelProps={{ fill: grey, fontSize: 11, textAnchor: "end", dx: -4 }} />
           <AxisBottom top={innerH} scale={xScale}

@@ -86,6 +86,19 @@
   --brand-line-4: #d63384; /* magenta */
   --brand-line-5: #9a7b00; /* ochre */
   --brand-line-6: #0072b2; /* blue */
+
+  /* Era ramp for the stacked brand view (src/components/YarnBrandEras.tsx):
+     an ordinal one-hue ramp keyed to the year a brand peaked, earliest
+     with the most ink. Passed the dataviz validator (--ordinal) on both
+     surfaces; the dark set is its own pick, not a flip. */
+  --era-1: #3a1097;
+  --era-2: #5631a6;
+  --era-3: #6f51b3;
+  --era-4: #876dc0;
+  --era-5: #9d88cb;
+  --era-6: #b09fd5;
+  --era-tail-small: #a9a9a9; /* brands under 100 panel projects */
+  --era-tail-mid: #cfcfcf;   /* 100 to 500 */
 }
 
 @theme inline {
@@ -137,8 +150,21 @@
     --brand-line-4: #f277b5;
     --brand-line-5: #e6c04a;
     --brand-line-6: #56b4e9;
+    --era-1: #dcd0ff;
+    --era-2: #bfb3e5;
+    --era-3: #a296cc;
+    --era-4: #887cb5;
+    --era-5: #7266a1;
+    --era-6: #5e528f;
+    --era-tail-small: #4a4a4a;
+    --era-tail-mid: #333333;
   }
 }
+
+/* stacked brand view: hover highlight driven by a class, not React state,
+   so the 150-odd paths do not re-render on every pointer move */
+.brand-eras[data-hover] .band { opacity: 0.45; transition: opacity 120ms; }
+.brand-eras[data-hover] .band.is-hover { opacity: 1; fill: var(--chart-contrast-1); }
 
 body {
   background: var(--background);

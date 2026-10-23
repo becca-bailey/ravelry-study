@@ -27,6 +27,8 @@ OUT = DATA_DIR.parent / "astro" / "src" / "data" / "yarn_brands.json"
 MIN_DENOM = 50     # a pattern-year needs this many linked projects to enter the index
 MIN_PATTERNS = 5   # a year needs this many patterns before its index is shown
 MIN_TOTAL = 100    # a company needs this many panel projects to be exported by name
+RAREFY = 1000      # projects drawn per year for the effective-brands measure
+BOOTS = 50
 ACQUIRED = 2017    # Blue Point / Premier Needle Arts closes on Crafts Americana, Feb 2017
 
 
@@ -76,6 +78,23 @@ def main() -> None:
                  "n_patterns": int(n_patterns.get(y, 0))}
                 for y in years]
 
+    # variety per year: rarefied effective brands (inverse Simpson at a fixed
+    # draw of RAREFY linked projects across the panel) and the number of
+    # brands needed to cover half of that year's brand uses
+    div = B.rarefied_diversity(frame[frame["year"].between(first_year, last_year)], brands,
+                               n=RAREFY, boots=BOOTS, by=("year",))
+    div = div.set_index("year")
+    variety = []
+    for y in years:
+        yr = index[index["year"] == y].sort_values("n", ascending=False)
+        cum = yr["n"].cumsum() / yr["n"].sum()
+        half = int((cum < 0.5).sum() + 1)
+        d = div.loc[y] if y in div.index else None
+        variety.append({"year": y, "half_cover": half,
+                        "brands": int((yr["n"] > 0).sum()),
+                        "top10_share": round(float(yr["n"].head(10).sum() / yr["n"].sum()), 4),
+                        "eff_brands": None if d is None else round(float(d["eff_brands"]), 1)})
+
     out = {
         "meta": {
             "source": "Ravelry projects on a panel of long-lived patterns and the "
@@ -90,9 +109,11 @@ def main() -> None:
             "years": [first_year, last_year],
             "years_list": years,
             "min_total": MIN_TOTAL,
+            "rarefy": RAREFY,
             "acquired": ACQUIRED,
         },
         "coverage": coverage,
+        "variety": variety,
         "companies": companies,
         "other": other,
     }

@@ -63,6 +63,14 @@ const FALLBACK: Record<string, string> = {
   "--brand-line-4": "#d63384",
   "--brand-line-5": "#9a7b00",
   "--brand-line-6": "#0072b2",
+  "--era-1": "#3a1097",
+  "--era-2": "#5631a6",
+  "--era-3": "#6f51b3",
+  "--era-4": "#876dc0",
+  "--era-5": "#9d88cb",
+  "--era-6": "#b09fd5",
+  "--era-tail-small": "#a9a9a9",
+  "--era-tail-mid": "#cfcfcf",
 };
 
 function readToken(name: string): string {
