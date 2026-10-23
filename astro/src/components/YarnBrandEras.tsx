@@ -286,15 +286,9 @@ function Search({ focus, setFocus }: { focus: number | null; setFocus: (id: numb
         )}
       </div>
       {focus !== null && (
-        <>
-          <button type="button" onClick={() => setFocus(null)} className={pill} style={{ ...border, color: "var(--muted)" }}>
-            ← all brands
-          </button>
-          <button type="button" className={pill} style={{ ...border, color: "var(--primary)" }}
-            onClick={() => window.dispatchEvent(new CustomEvent("yarn-brands:add", { detail: { id: focus } }))}>
-            ↑ compare in the line chart
-          </button>
-        </>
+        <button type="button" onClick={() => setFocus(null)} className={pill} style={{ ...border, color: "var(--muted)" }}>
+          ← all brands
+        </button>
       )}
     </div>
   );
