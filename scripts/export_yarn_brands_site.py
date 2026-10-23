@@ -31,6 +31,7 @@ MIN_PATTERNS = 5   # a year needs this many patterns before its index is shown
 MIN_TOTAL = 100    # a company needs this many panel projects to be exported by name
 RAREFY = 1000      # projects drawn per year for the effective-brands measure
 LOYALTY_MIN_USERS = 1000   # brands shown on the return-rate chart
+LOYALTY_WINDOW = 3         # a return counts within this many later panel projects
 LOYALTY_PERIODS = [2007, 2012, 2016, 2021]   # bin edges (upper bound added from last_year)
 BOOTS = 50
 ACQUIRED = 2017    # Blue Point / Premier Needle Arts closes on Crafts Americana, Feb 2017
@@ -123,12 +124,15 @@ def main() -> None:
 
     # coming back: return rate vs base rate per brand, and by period for the
     # brands shown (aggregates only; per-knitter sequences stay here)
-    trans = B.transitions(frame[frame["year"].between(first_year, last_year)], brands)
-    ret = B.return_rate(frame, brands, min_users=LOYALTY_MIN_USERS, trans=trans)
+    span = frame[frame["year"].between(first_year, last_year)]
+    trans = B.transitions(span, brands, window=LOYALTY_WINDOW)
+    wins = B.window_brands(span, brands, window=LOYALTY_WINDOW)
+    ret = B.return_rate(frame, brands, min_users=LOYALTY_MIN_USERS, trans=trans, wins=wins)
     edges = LOYALTY_PERIODS + [last_year]
     labels = [f"{edges[i] + 1}-{edges[i + 1]}" for i in range(len(edges) - 1)]
     trans["period"] = pd.cut(trans["year"], edges, labels=labels).astype(str)
-    retp = B.return_rate(frame, brands, min_users=200, by="period", trans=trans)
+    wins["period"] = pd.cut(wins["year"], edges, labels=labels).astype(str)
+    retp = B.return_rate(frame, brands, min_users=200, by="period", trans=trans, wins=wins)
     clean = lambda n: str(n).replace("®", "").replace("™", "").strip()
     loyalty = []
     for _, r in ret.iterrows():
@@ -138,15 +142,17 @@ def main() -> None:
                         "return_rate": round(float(r["return_diff"]), 4),
                         "base_rate": round(float(r["base_rate"]), 4),
                         "lift": round(float(r["lift_diff"]), 2),
-                        "same_pattern_share": round(float(r["same_pattern_share"]), 3),
+                        "next_same_share": round(float(r["next_same_share"]), 3),
                         "periods": [{"period": lab, "return_rate": round(float(per.loc[lab, "return_diff"]), 4),
                                      "base_rate": round(float(per.loc[lab, "base_rate"]), 4),
                                      "users": int(per.loc[lab, "users"])} if lab in per.index else
                                     {"period": lab, "return_rate": None, "base_rate": None, "users": 0}
                                     for lab in labels]})
-    loyalty_meta = {"min_users": LOYALTY_MIN_USERS, "periods": labels,
-                    "transitions": int(len(trans)), "knitters": int(trans["user_id"].nunique()),
-                    "same_pattern_share": round(float(trans["same_pattern"].mean()), 3)}
+    eligible = trans[trans["n_diff"] > 0]
+    loyalty_meta = {"min_users": LOYALTY_MIN_USERS, "window": LOYALTY_WINDOW, "periods": labels,
+                    "projects": int(eligible.drop_duplicates(["user_id", "project_id"]).shape[0]),
+                    "knitters": int(eligible["user_id"].nunique()),
+                    "next_same_share": round(float(eligible.drop_duplicates(["user_id", "project_id"])["next_same"].mean()), 3)}
 
     out = {
         "meta": {

@@ -241,83 +241,131 @@ def stayers(frame: pd.DataFrame, pre: tuple[int, int], post: tuple[int, int]) ->
 
 # --- coming back to a brand ----------------------------------------------------------
 
-def transitions(frame: pd.DataFrame, brands: pd.DataFrame) -> pd.DataFrame:
-    """One row per (project, brand used) that has a later panel project by
-    the same knitter with a linked brand: the knitter's next project, and
-    whether it used the same brand.
+def transitions(frame: pd.DataFrame, brands: pd.DataFrame, window: int = 3) -> pd.DataFrame:
+    """One row per (project, brand used) that has at least one later panel
+    project by the same knitter with a linked brand: whether the brand
+    appears again within the knitter's next `window` panel projects.
 
     Columns: project_id, user_id, key, year, company_id, company_name,
-    next_id, next_key, next_year, returned (next used the brand),
-    same_pattern (next is the same pattern). Projects are ordered by start
+    n_next (later projects in the window, 1..window), n_diff (of those,
+    on a different pattern), returned (the brand appears in any of the
+    window's projects), returned_diff (appears in one on a different
+    pattern; a second pair of the same socks says less), next_same (the
+    very next project is the same pattern). Projects are ordered by start
     date, falling back to the record's creation date. Only linked-brand
     projects take part, so a project with free-text yarn is skipped when
-    finding the next one."""
+    counting the window."""
     f = frame.loc[frame["has_brand"], ["id", "user_id", "key", "year", "started", "created_at"]].copy()
     when = pd.to_datetime(f["started"], errors="coerce")
     created = pd.to_datetime(f["created_at"], errors="coerce", utc=True).dt.tz_localize(None)
     f["when"] = when.fillna(created)
-    f = f.sort_values(["user_id", "when", "id"])
+    f = f.sort_values(["user_id", "when", "id"]).reset_index(drop=True)
     g = f.groupby("user_id")
-    f["next_id"] = g["id"].shift(-1)
-    f["next_key"] = g["key"].shift(-1)
-    f["next_year"] = g["year"].shift(-1)
-    f = f[f["next_id"].notna()].copy()
-    f["next_id"] = f["next_id"].astype(int)
+    # long form: one row per (project, later project within the window)
+    steps = []
+    for k in range(1, window + 1):
+        nk = f[["id", "user_id", "key", "year"]].copy()
+        nk["next_id"] = g["id"].shift(-k)
+        nk["next_key"] = g["key"].shift(-k)
+        nk["step"] = k
+        steps.append(nk[nk["next_id"].notna()])
+    long = pd.concat(steps, ignore_index=True)
+    long["next_id"] = long["next_id"].astype(int)
+    long["diff"] = long["next_key"] != long["key"]
     linked = brands[brands["company_id"] != UNLINKED_ID][["project_id", "company_id", "company_name"]]
-    cur = f.merge(linked, left_on="id", right_on="project_id")
-    nxt = linked[["project_id", "company_id"]].rename(columns={"project_id": "next_id"}).assign(returned=True)
-    out = cur.merge(nxt, on=["next_id", "company_id"], how="left")
-    out["returned"] = out["returned"].fillna(False).astype(bool)
-    out["same_pattern"] = out["key"] == out["next_key"]
+    # brands present in each project's window, all projects and different-pattern ones
+    wb = long.merge(linked[["project_id", "company_id"]].rename(columns={"project_id": "next_id"}), on="next_id")
+    win_any = wb.groupby(["id", "company_id"]).size().rename("hit_any").reset_index()
+    win_diff = wb[wb["diff"]].groupby(["id", "company_id"]).size().rename("hit_diff").reset_index()
+    per = long.groupby("id").agg(n_next=("next_id", "size"), n_diff=("diff", "sum"),
+                                 next_same=("diff", lambda d: not bool(d.iloc[0])))
+    cur = f.merge(linked, left_on="id", right_on="project_id").merge(per, left_on="id", right_index=True)
+    out = (cur.merge(win_any, on=["id", "company_id"], how="left")
+              .merge(win_diff, on=["id", "company_id"], how="left"))
+    out["returned"] = out["hit_any"].notna()
+    out["returned_diff"] = out["hit_diff"].notna()
+    out["n_diff"] = out["n_diff"].astype(int)
     return out[["project_id", "user_id", "key", "year", "company_id", "company_name",
-                "next_id", "next_key", "next_year", "returned", "same_pattern"]].reset_index(drop=True)
+                "n_next", "n_diff", "returned", "returned_diff", "next_same"]].reset_index(drop=True)
+
+
+def window_brands(frame: pd.DataFrame, brands: pd.DataFrame, window: int = 3) -> pd.DataFrame:
+    """Companion to `transitions`: one row per (project, brand in the
+    project's window of later projects on a different pattern), for the
+    base rate. Columns: id, user_id, year, company_id."""
+    f = frame.loc[frame["has_brand"], ["id", "user_id", "key", "year", "started", "created_at"]].copy()
+    when = pd.to_datetime(f["started"], errors="coerce")
+    created = pd.to_datetime(f["created_at"], errors="coerce", utc=True).dt.tz_localize(None)
+    f["when"] = when.fillna(created)
+    f = f.sort_values(["user_id", "when", "id"]).reset_index(drop=True)
+    g = f.groupby("user_id")
+    steps = []
+    for k in range(1, window + 1):
+        nk = f[["id", "user_id", "key", "year"]].copy()
+        nk["next_id"] = g["id"].shift(-k)
+        nk["next_key"] = g["key"].shift(-k)
+        steps.append(nk[nk["next_id"].notna() & (nk["next_key"] != nk["key"])])
+    long = pd.concat(steps, ignore_index=True)
+    long["next_id"] = long["next_id"].astype(int)
+    linked = brands[brands["company_id"] != UNLINKED_ID][["project_id", "company_id"]]
+    wb = long.merge(linked.rename(columns={"project_id": "next_id"}), on="next_id")
+    return wb.drop_duplicates(["id", "company_id"])[["id", "user_id", "year", "company_id"]].reset_index(drop=True)
 
 
 def return_rate(frame: pd.DataFrame, brands: pd.DataFrame, min_users: int = 300,
-                by: str | None = None, trans: pd.DataFrame | None = None) -> pd.DataFrame:
-    """How likely a knitter who used a brand is to use it on their next panel
-    project, against how likely any next project is to use it.
+                by: str | None = None, window: int = 3,
+                trans: pd.DataFrame | None = None, wins: pd.DataFrame | None = None) -> pd.DataFrame:
+    """How likely a knitter who used a brand is to use it again within their
+    next `window` panel projects, against how likely any knitter's window
+    is to contain it.
 
-    Each knitter counts once: a knitter's transitions are weighted 1/n so
-    prolific knitters do not dominate. Per brand (and per `by` column of the
-    originating project, e.g. a period, if given):
+    Only projects with at least one later project on a different pattern
+    count (n_diff > 0), and each knitter counts once: their projects are
+    weighted 1/n so prolific knitters do not dominate. Per brand (and per
+    `by` column of the originating project, e.g. a period, if given):
 
-      users          distinct knitters with a next project
-      transitions    (project, brand) pairs with a next project, unweighted
-      return_rate    weighted share of transitions whose next project used
-                     the brand
-      return_diff    the same, counting only next projects on a different
-                     pattern (a second pair of the same socks says less)
-      base_rate      weighted share of all next projects that used the brand
+      users          distinct knitters
+      transitions    (project, brand) pairs, unweighted
+      return_rate    weighted share whose window (any pattern) used the brand again
+      return_diff    the same, counting only window projects on a different
+                     pattern (the headline)
+      base_rate      weighted share of all projects' different-pattern
+                     windows that contain the brand
       lift           return_rate / base_rate
-      lift_diff      return_diff / base_rate (the headline)
+      lift_diff      return_diff / base_rate
+      next_same_share  share whose very next project is the same pattern
 
-    Brands with fewer than `min_users` are dropped."""
-    t = transitions(frame, brands) if trans is None else trans
-    t = t.copy()
-    t["w"] = 1.0 / t.groupby("user_id")["project_id"].transform("size")
+    Brands with fewer than `min_users` are dropped. Pass precomputed
+    `trans` (from `transitions`) and `wins` (from `window_brands`) when
+    calling repeatedly; `by` must then be a column on both."""
+    t = (transitions(frame, brands, window) if trans is None else trans)
+    t = t[t["n_diff"] > 0].copy()
+    w = window_brands(frame, brands, window) if wins is None else wins
+    # weights: each knitter once, over their projects that have a window
+    nproj = t.drop_duplicates(["user_id", "project_id"]).groupby("user_id").size()
+    t["w"] = 1.0 / t["user_id"].map(nproj)
     keys = ["company_id", "company_name"] + ([by] if by else [])
-    # base: over the universe of next projects (one row per next project per user-transition)
-    nexts = t.drop_duplicates(["project_id", "next_id"])[["user_id", "project_id", "next_id", "w"] + ([by] if by else [])]
-    linked = brands[brands["company_id"] != UNLINKED_ID][["project_id", "company_id"]]
-    nb = nexts.merge(linked.rename(columns={"project_id": "next_id"}), on="next_id")
-    base = (nb.groupby(["company_id"] + ([by] if by else []))["w"].sum()
-            / nexts.groupby([by])["w"].sum() if by else
-            nb.groupby("company_id")["w"].sum() / nexts["w"].sum()).rename("base_rate")
+    # base: weighted share of projects whose window contains the brand, over the
+    # same universe of projects
+    universe = t.drop_duplicates(["user_id", "project_id"])[["project_id", "user_id", "w"] + ([by] if by else [])]
+    wb = universe.merge(w.rename(columns={"id": "project_id"})[["project_id", "company_id"]], on="project_id")
+    if by:
+        base = (wb.groupby(["company_id", by])["w"].sum() / universe.groupby(by)["w"].sum()).rename("base_rate")
+    else:
+        base = (wb.groupby("company_id")["w"].sum() / universe["w"].sum()).rename("base_rate")
     rows = []
     for k, g in t.groupby(keys):
-        diff = g[~g["same_pattern"]]
         rows.append({**dict(zip(keys, k if isinstance(k, tuple) else (k,))),
                      "users": int(g["user_id"].nunique()), "transitions": int(len(g)),
                      "return_rate": float((g["w"] * g["returned"]).sum() / g["w"].sum()),
-                     "return_diff": float((diff["w"] * diff["returned"]).sum() / diff["w"].sum()) if len(diff) else np.nan,
-                     "same_pattern_share": float((g["w"] * g["same_pattern"]).sum() / g["w"].sum())})
+                     "return_diff": float((g["w"] * g["returned_diff"]).sum() / g["w"].sum()),
+                     "next_same_share": float((g["w"] * g["next_same"]).sum() / g["w"].sum())})
     out = pd.DataFrame(rows)
     out = out[out["users"] >= min_users]
     out = out.merge(base.reset_index(), on=["company_id"] + ([by] if by else []), how="left")
     out["lift"] = out["return_rate"] / out["base_rate"]
     out["lift_diff"] = out["return_diff"] / out["base_rate"]
-    return out.sort_values("lift_diff", ascending=False).reset_index(drop=True)
+    return out.sort_values("return_diff", ascending=False).reset_index(drop=True)
 
 
 # --- notes as a check on logging bias ---------------------------------------------

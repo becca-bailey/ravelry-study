@@ -109,34 +109,36 @@ def test_stayers_and_notes():
     assert m["knit_picks"].tolist() == [True, False, False, False, True]
 
 
-def test_return_rate_counts_next_project_only():
-    # knitter 1: brand A on pattern a, then A on pattern b (returned, different
-    #            pattern), then B on a (A not returned; B has no next)
-    # knitter 2: brand A on a, then B on b (not returned; B has no next)
-    # knitter 3: A once (no next)
+def test_return_rate_counts_window():
+    # knitter 1: A on a, B on b, A on c  -> A returns within 2 (different pattern)
+    # knitter 2: A on a, A on a          -> A returns, but on the same pattern only
+    # knitter 3: A on a, B on b          -> no return; knitter 4: A once
     projects = pd.DataFrame({
-        "id": [1, 2, 3, 4, 5, 6],
-        "key": ["a", "b", "a", "a", "b", "a"],
-        "user_id": [1, 1, 1, 2, 2, 3],
-        "started": ["2015/01/01", "2015/02/01", "2015/03/01", "2016/01/01", "2016/02/01", "2017/01/01"],
-        "created_at": ["2015/01/01 00:00:00 -0400"] * 6,
-        "n_packs": [1] * 6,
-        "notes": [""] * 6,
+        "id": [1, 2, 3, 4, 5, 6, 7, 8],
+        "key": ["a", "b", "c", "a", "a", "a", "b", "a"],
+        "user_id": [1, 1, 1, 2, 2, 3, 3, 4],
+        "started": ["2015/01/01", "2015/02/01", "2015/03/01", "2016/01/01", "2016/02/01",
+                    "2017/01/01", "2017/02/01", "2018/01/01"],
+        "created_at": ["2015/01/01 00:00:00 -0400"] * 8,
+        "n_packs": [1] * 8,
+        "notes": [""] * 8,
     })
     packs = pd.DataFrame({
-        "project_id": [1, 2, 3, 4, 5, 6], "key": projects["key"],
-        "yarn_company_id": [100, 100, 200, 100, 200, 100],
-        "yarn_company_name": ["A", "A", "B", "A", "B", "A"],
+        "project_id": projects["id"], "key": projects["key"],
+        "yarn_company_id": [100, 200, 100, 100, 100, 100, 200, 100],
+        "yarn_company_name": ["A", "B", "A", "A", "A", "A", "B", "A"],
     })
     brands = B.project_brands(packs)
     frame = B.panel_frame(projects, brands)
-    t = B.transitions(frame, brands)
-    assert len(t) == 3                       # projects 1, 2 and 4 have a next
-    a = t[t["company_id"] == 100]
-    assert list(a["returned"]) == [True, False, False]
+    t = B.transitions(frame, brands, window=3)
+    a = t[t["company_id"] == 100].set_index("project_id")
+    assert bool(a.loc[1, "returned_diff"]) and a.loc[1, "n_diff"] == 2
+    assert bool(a.loc[4, "returned"]) and not bool(a.loc[4, "returned_diff"]) and a.loc[4, "n_diff"] == 0
+    assert not bool(a.loc[6, "returned"])
     r = B.return_rate(frame, brands, min_users=1).set_index("company_name")
-    # knitter 1 has 2 transitions (w=1/2 each), knitter 2 has 1 (w=1):
-    # A's transitions are 1 (returned), 2 and 4; returned weight 1/2 of 2
-    assert r.loc["A", "return_rate"] == pytest.approx(0.25)
+    # projects with a different-pattern window: 1, 2 (knitter 1, w=1/2 each), 6 (knitter 3, w=1)
+    # A starts at 1 (returned) and 6 (not): return_diff = (1/2) / (1/2 + 1)
+    assert r.loc["A", "return_diff"] == pytest.approx((1 / 2) / (3 / 2))
     assert r.loc["A", "users"] == 2
-    assert "B" not in r.index                # B never has a next project
+    # base: windows containing A: project 1 (A at 3) and 2 (A at 3) -> weight 1; universe weight 2
+    assert r.loc["A", "base_rate"] == pytest.approx(0.5)

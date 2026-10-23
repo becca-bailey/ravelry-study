@@ -12,19 +12,20 @@ import { useVariant } from "@/lib/variant";
 import brandData from "@/data/yarn_brands.json";
 
 /* Which brands knitters come back to. For every panel project that used a
-   brand, the same knitter's next panel project with a linked yarn: did it
-   use the brand again? The return rate counts only next projects on a
-   different pattern; the base rate is how often any next project uses the
-   brand. The gap between the two dots is loyalty beyond availability. Each
-   knitter is weighted once. Only panel projects are seen, so "next" means
-   the next panel project. */
+   brand, the same knitter's next few panel projects with a linked yarn:
+   did any of them use the brand again? The return rate counts only later
+   projects on a different pattern; the base rate is how often any
+   knitter's next few contain the brand. The gap between the two dots is
+   loyalty beyond availability. Each knitter is weighted once. Only panel
+   projects are seen, so "next" means the next panel projects. */
 
 interface Period { period: string; return_rate: number | null; base_rate: number | null; users: number }
-interface Row { id: number; name: string; users: number; transitions: number; return_rate: number; base_rate: number; lift: number; same_pattern_share: number; periods: Period[] }
+interface Row { id: number; name: string; users: number; transitions: number; return_rate: number; base_rate: number; lift: number; next_same_share: number; periods: Period[] }
 
 const ROWS: Row[] = (brandData.loyalty.rows as Row[]).slice().sort((a, b) => b.return_rate - a.return_rate);
 const META = brandData.loyalty.meta;
 const SHOW = 24;
+const WINDOW: number = META.window;
 
 const ROW_H = 22;
 const MARGIN = { top: 8, right: 24, bottom: 36, left: 150 };
@@ -48,7 +49,7 @@ function Chart({ width, rows, article }: { width: number; rows: Row[]; article: 
   return (
     <div className="relative">
       <svg width={width} height={innerH + MARGIN.top + MARGIN.bottom} role="img"
-        aria-label={`Return rate against base rate for ${rows.length} brands with at least ${fmt(META.min_users)} knitters, sorted by return rate.`}>
+        aria-label={`Share of knitters whose next ${WINDOW} projects on another pattern include the brand, against the base rate, for ${rows.length} brands with at least ${fmt(META.min_users)} knitters, sorted by return rate.`}>
         <Group left={MARGIN.left} top={MARGIN.top}>
           {x.ticks(5).map((t) => (
             <line key={t} x1={x(t)} x2={x(t)} y1={0} y2={innerH} stroke={grey} strokeOpacity={0.18} />
@@ -78,7 +79,7 @@ function Chart({ width, rows, article }: { width: number; rows: Row[]; article: 
           <AxisBottom top={innerH} scale={x} numTicks={5} tickFormat={(v) => pct(Number(v))}
             stroke={grey} tickStroke={grey} tickLabelProps={{ fill: grey, fontSize: 11, textAnchor: "middle" }} />
           <text x={innerW} y={innerH + 32} fontSize={11} textAnchor="end" fill={grey}>
-            share of a knitter's next project (on another pattern) using the brand
+            share whose next {WINDOW} projects (on another pattern) include the brand
           </text>
         </Group>
       </svg>
@@ -88,7 +89,7 @@ function Chart({ width, rows, article }: { width: number; rows: Row[]; article: 
           <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: ink }} /> after a project with the brand
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-2.5 rounded-full border" style={{ borderColor: grey, borderWidth: 1.5 }} /> any next project
+          <i className="inline-block h-2.5 w-2.5 rounded-full border" style={{ borderColor: grey, borderWidth: 1.5 }} /> any knitter's next {WINDOW}{" "}
         </span>
       </div>
 
@@ -97,8 +98,8 @@ function Chart({ width, rows, article }: { width: number; rows: Row[]; article: 
           style={{ position: "absolute", background: "var(--background)", color: "var(--foreground)",
             border: "1px solid var(--muted)", borderRadius: 6, padding: "8px 10px", fontSize: 12, lineHeight: 1.5, maxWidth: 280 }}>
           <div className="font-semibold">{tooltipData.name}</div>
-          <div>{pct(tooltipData.return_rate, 1)} come back on another pattern, against {pct(tooltipData.base_rate, 1)} for any next project ({tooltipData.lift.toFixed(1)}×)</div>
-          <div style={{ color: grey }}>{fmt(tooltipData.users)} knitters · {pct(tooltipData.same_pattern_share)} of their next projects were the same pattern</div>
+          <div>{pct(tooltipData.return_rate, 1)} use it again within their next {WINDOW} projects on another pattern, against {pct(tooltipData.base_rate, 1)} for any knitter ({tooltipData.lift.toFixed(1)}×)</div>
+          <div style={{ color: grey }}>{fmt(tooltipData.users)} knitters · {pct(tooltipData.next_same_share)} made the same pattern next</div>
           <div className="mt-1.5 border-t pt-1.5 tabular-nums" style={{ borderColor: "color-mix(in srgb, var(--muted) 30%, transparent)" }}>
             {tooltipData.periods.map((p) => (
               <div key={p.period} className="flex justify-between gap-4">
@@ -125,9 +126,9 @@ export default function YarnBrandLoyalty() {
       <figcaption className="mb-3">
         <h2 className="text-lg font-semibold">Which brands knitters come back to</h2>
         <p className="text-sm" style={{ color: "var(--muted)" }}>
-          After a project with a brand, how often the same knitter's next project on another
-          pattern used it again, against how often any next project did. Brands with at
-          least {fmt(META.min_users)} knitters, sorted by return rate.
+          After a project with a brand, how often the same knitter used it again within their
+          next {WINDOW} projects on another pattern, against how often any knitter's next {WINDOW}{" "}
+          include it. Brands with at least {fmt(META.min_users)} knitters, sorted by return rate.
           {!article && " Hover a brand for its numbers by period."}
         </p>
       </figcaption>
@@ -171,12 +172,15 @@ export default function YarnBrandLoyalty() {
 
       {!article && (
         <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-          {fmt(META.transitions)} project-to-next-project steps by {fmt(META.knitters)} knitters, each
-          knitter weighted once; {pct(META.same_pattern_share)} of next projects were the same
-          pattern and are left out of the return rate. Only projects on the panel's patterns
-          are seen, so "next" means the next panel project with a linked yarn.
+          {fmt(META.projects)} projects by {fmt(META.knitters)} knitters that were followed by at least one
+          project on another pattern, each knitter weighted once; later projects on the same
+          pattern ({pct(META.next_same_share)} of next projects) do not count as a return. Only
+          projects on the panel's patterns are seen, so "next" means the next panel projects
+          with a linked yarn.
           {kp && <> Knit Picks has the highest return rate of any large brand, {pct(kp.return_rate)}, and it
-          did not fall after the 2017 sale; its decline is fewer new knitters picking it up.</>}
+          held through 2021 after the 2017 sale while its base rate fell, so the decline up to
+          then is fewer new knitters picking it up. The last period is lower for every brand:
+          those knitters have had less time for a next project.</>}
         </p>
       )}
     </figure>
