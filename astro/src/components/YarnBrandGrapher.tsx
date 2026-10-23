@@ -463,9 +463,7 @@ export default function YarnBrandGrapher() {
         </div>
       )}
       {current && (
-        <p className="mb-3 max-w-2xl text-sm" style={{ color: "var(--foreground)" }}>
-          <strong>{current.label}.</strong> {current.blurb}
-        </p>
+        <p className="mb-3 max-w-2xl text-sm" style={{ color: "var(--foreground)" }}>{current.blurb}</p>
       )}
       <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} sales={sales} article={article} />}</ParentSize>
       {shownEvents.length > 0 && (
