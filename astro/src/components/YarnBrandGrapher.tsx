@@ -70,8 +70,6 @@ export const PRESETS: { key: string; label: string; names: string[]; roles?: Rec
      Sandnes for comparison; Garnstudio is left out because it has been
      large since 2008 and would flatten the rest */
   { key: "nordic", label: "the Danish wave", names: ["Hobbii", "Knitting for Olive", "Filcolana", "Holst Garn", "Isager Yarn", "Sandnes Garn"] },
-  /* the class of 2008: peaking as the panel starts, under half of that by 2016 */
-  { key: "socks", label: "the class of 2008", names: ["Noro", "Debbie Bliss", "Blue Moon Fiber Arts", "Lorna's Laces", "Rohrspatz & Wollmeise", "Koigu"] },
   /* the next big brand? the brands that first reached a tenth of a percent
      after 2015 and have grown fastest since 2022; Hobbii leads, and took
      growth-equity money from Verdane in 2022 */
