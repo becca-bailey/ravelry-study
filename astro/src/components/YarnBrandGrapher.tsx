@@ -86,6 +86,10 @@ export const PRESETS: { key: string; label: string; blurb: string; names: string
   { key: "next", label: "The next big brand?",
     blurb: "Brands that first reached a tenth of a percent of the panel after 2015 and have grown fastest since 2022.",
     names: ["Hobbii", "Juniper Moon Farm", "Purl Soho", "Farmer's Daughter Fibers", "Cardiff Cashmere", "Laines du Nord"] },
+  /* the German mills: the old-line German and Swiss-German mill brands, sock yarns included */
+  { key: "german", label: "The German mills",
+    blurb: "Long-established German mill brands, the sock-yarn names included, with Lang from German-speaking Switzerland.",
+    names: ["Lang Yarns", "Lana Grossa", "Schoppel-Wolle", "Zwerger Garn", "Regia", "Rico Design"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "The craft-store shelf",
     blurb: "The brands sold on craft-store shelves, the chains' own labels included.",

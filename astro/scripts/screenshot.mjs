@@ -41,6 +41,7 @@ const TARGETS = [
   { path: "/yarn-brands/?variant=article&preset=nordic", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_nordic_article.png" },
   { path: "/yarn-brands/?variant=article&preset=bigbox", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_bigbox_article.png" },
   { path: "/yarn-brands/?variant=article&preset=next", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_next_article.png" },
+  { path: "/yarn-brands/?variant=article&preset=german", selector: "#yarn-brand-grapher", out: "yarn_brand_grapher_german_article.png" },
   { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-eras", out: "yarn_brand_eras_article.png" },
   { path: "/yarn-brands/?variant=article", selector: "#yarn-brand-loyalty", out: "yarn_brand_loyalty_article.png" },
 ];
