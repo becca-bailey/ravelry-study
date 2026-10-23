@@ -76,7 +76,6 @@ const rolesOf = (p: { names: string[]; roles?: Record<string, string> }): Roles 
   new Map(Object.entries(p.roles ?? {}).flatMap(([n, t]) => { const id = idsOf([n])[0]; return id === undefined ? [] : [[id, t]]; }));
 
 const MARGIN = { top: 20, right: 156, bottom: 40, left: 44 };
-const EVENT_ROW_H = 13; /* each row of ownership labels adds this to the top margin */
 
 /** a brand's index at a fractional year, linear between the two surrounding years */
 function indexAt(c: Company, t: number): number {
@@ -135,26 +134,13 @@ function Chart({ width, slots, roles, article }: ChartProps) {
     [innerW],
   );
 
-  /* ownership markers for the selected brands; labels (brand name only) are
-     packed left to right into as many rows as they need, and the plot
-     starts below those rows */
-  type Marker = { e: OwnerEvent; line: typeof lines[number]; x: number; w: number; row: number; anchorEnd: boolean };
-  const markers: Marker[] = [];
-  const rowEnd: number[] = [];
-  for (const m of lines
-    .flatMap((l) => (EVENTS_BY_ID.get(l.company.id) ?? []).map((e) => ({ e, line: l })))
-    .sort((a, b) => a.e.t - b.e.t)) {
-    const x = xScale(m.e.t);
-    const w = m.e.name.length * 5.8 + 8;
-    const anchorEnd = x + w > innerW;
-    const x0 = anchorEnd ? x - w : x;
-    let row = rowEnd.findIndex((end) => end + 6 < x0);
-    if (row < 0) { row = rowEnd.length; rowEnd.push(0); }
-    rowEnd[row] = x0 + w;
-    markers.push({ ...m, x, w, row, anchorEnd });
-  }
-  const nRows = rowEnd.length;
-  const top = MARGIN.top + nRows * EVENT_ROW_H;
+  /* ownership markers for the selected brands: one per sale, drawn on the
+     brand's own line, so the dot's position names the brand */
+  type Marker = { e: OwnerEvent; line: typeof lines[number]; x: number };
+  const markers: Marker[] = lines
+    .flatMap((l) => (EVENTS_BY_ID.get(l.company.id) ?? []).map((e) => ({ e, line: l, x: xScale(e.t) })))
+    .sort((a, b) => a.e.t - b.e.t);
+  const top = MARGIN.top;
   const innerH = CHART_H - top - MARGIN.bottom;
   const yMax = useMemo(() => {
     const m = Math.max(0.01, ...lines.flatMap((l) => l.company.series.map((p) => p.index)));
@@ -167,7 +153,6 @@ function Chart({ width, slots, roles, article }: ChartProps) {
   if (width < 10) return null;
   const colour = (slot: number, id?: number) => theme.resolve((id !== undefined && roles.get(id)) || SLOT_TOKENS[slot]);
   const isContext = (id: number) => roles.get(id) === "--series-context";
-  const anchorEnd = (m: Marker) => m.anchorEnd;
   const last = YEARS[YEARS.length - 1];
 
   const labelY = spreadLabels(
@@ -199,16 +184,10 @@ function Chart({ width, slots, roles, article }: ChartProps) {
           {/* ownership changes: a dashed rule and a dot on the line for each sale */}
           {markers.map((m) => {
             const c = colour(m.line.slot, m.line.company.id);
-            const ly = -4 - (nRows - 1 - m.row) * EVENT_ROW_H;
             return (
               <Group key={`${m.e.id}-${m.e.date}`}>
                 <line x1={m.x} x2={m.x} y1={0} y2={innerH} stroke={c} strokeDasharray="3 3" strokeOpacity={0.55} />
                 <circle cx={m.x} cy={yScale(indexAt(m.line.company, m.e.t))} r={4.5} fill={c} stroke="var(--background)" strokeWidth={1.5} />
-                <circle cx={anchorEnd(m) ? m.x - 4 : m.x + 4} cy={ly - 3.5} r={2.5} fill={c} />
-                <text x={anchorEnd(m) ? m.x - 10 : m.x + 10} y={ly} fontSize={10} fontWeight={600}
-                  textAnchor={anchorEnd(m) ? "end" : "start"} fill="var(--foreground)">
-                  {m.e.name}
-                </text>
               </Group>
             );
           })}
@@ -411,6 +390,8 @@ export default function YarnBrandGrapher() {
     return () => window.removeEventListener("yarn-brands:add", onAdd);
   }, []);
   const lines = slots.flatMap((id, i) => (id === null ? [] : [{ company: BY_ID.get(id)!, slot: i }]));
+  const shownIds = new Set(lines.map((l) => l.company.id));
+  const shownEvents = EVENTS.filter((e) => shownIds.has(e.id));
   const first = COVERAGE[0];
   const latest = COVERAGE[COVERAGE.length - 1];
 
@@ -422,7 +403,7 @@ export default function YarnBrandGrapher() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Share of projects on 25 long-lived patterns that used each brand, by
           the year the project was started, {YEARS[0]} to {YEARS[YEARS.length - 1]}.
-          A dot marks the month a brand changed owners.
+          A dot on a line marks the month that brand changed owners.
           {!article && " Pick up to six brands; hover for the numbers."}
         </p>
       </figcaption>
@@ -466,8 +447,8 @@ export default function YarnBrandGrapher() {
         </div>
       </details>}
 
-      {!article && <details className="mt-2 text-xs">
-        <summary className="cursor-pointer" style={{ color: "var(--muted)" }}>Ownership changes</summary>
+      {!article && shownEvents.length > 0 && <details className="mt-2 text-xs">
+        <summary className="cursor-pointer" style={{ color: "var(--muted)" }}>Ownership changes for the brands shown</summary>
         <table className="mt-2 w-full" style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ color: "var(--muted)" }}>
@@ -478,7 +459,7 @@ export default function YarnBrandGrapher() {
             </tr>
           </thead>
           <tbody>
-            {EVENTS.map((e) => (
+            {shownEvents.map((e) => (
               <tr key={`${e.id}-${e.date}`} style={{ borderTop: "1px solid color-mix(in srgb, var(--muted) 30%, transparent)" }}>
                 <td className="py-1 pr-3">{e.name}</td>
                 <td className="py-1 pr-3 whitespace-nowrap">{e.date}</td>
@@ -500,8 +481,8 @@ export default function YarnBrandGrapher() {
           so one popular pattern cannot carry a line. Only projects whose yarn is linked
           to Ravelry's yarn database count: {pct(first.with_brand, 0)} of {first.year} projects,
           {" "}{pct(latest.with_brand, 0)} of {latest.year}.
-          Ownership markers are placed at the announced month of each sale; the table
-          above lists them with sources. Sales resting on a single secondary report are
+          Ownership markers sit at the announced month of each sale; the table above
+          lists them with sources for the brands shown. Sales resting on a single secondary report are
           left off the chart.
         </p>
       )}
