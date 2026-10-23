@@ -48,19 +48,17 @@ const idsOf = (names: string[]) => names
   .map((n) => COMPANIES.find((c) => c.name === n)?.id)
   .filter((id): id is number => id !== undefined);
 
-/* Casts for the three stories in the write-up. The default is one brand of
-   each trajectory type: the brand in question, a slow riser, a slowly
-   eroding workhorse, a hand-dyer with a long arc, and a fashion that
-   crashed. "sale" is Knit Picks against the control basket of mass brands
-   from the notes; "dyers" the hand-dyed cycles; "risers" the brands still
-   climbing after a decade and more. */
+/* Casts for the stories in the write-up; the first is the default. "sale"
+   is Knit Picks against the control basket of mass brands from the notes;
+   "dyers" the hand-dyed cycles; "risers" the brands still climbing after a
+   decade and more. */
 /* A preset may give brands a role instead of a slot colour: the brand the
    story is about takes --series-focus and its peers --series-context, so the
    question is visible before the labels are read. */
-export const PRESETS: { key: string; label: string; names: string[]; roles?: Record<string, string> }[] = [
-  /* the six biggest panel brands that changed owners; each gets a marker per sale */
-  { key: "sold", label: "sold to private equity", names: ["Knit Picks", "madelinetosh", "Berroco", "Regia", "Rowan", "Red Heart"] },
-  { key: "default", label: "one of each", names: ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"] },
+export const PRESETS: { key: string; label: string; names: string[]; roles?: Record<string, string>; sales?: boolean }[] = [
+  /* the six biggest panel brands sold to private equity; the only story
+     that draws the sale markers */
+  { key: "sold", label: "sold to private equity", names: ["Knit Picks", "madelinetosh", "Berroco", "Regia", "Rowan", "Red Heart"], sales: true },
   { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"],
     roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Berroco": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
   { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres", "Spincycle Yarns"] },
@@ -126,9 +124,9 @@ function spreadLabels(items: { id: number; y: number }[], maxY: number) {
   return new Map(sorted.map((s) => [s.id, s.y]));
 }
 
-interface ChartProps { width: number; slots: (number | null)[]; roles: Roles; article: boolean }
+interface ChartProps { width: number; slots: (number | null)[]; roles: Roles; sales: boolean; article: boolean }
 
-function Chart({ width, slots, roles, article }: ChartProps) {
+function Chart({ width, slots, roles, sales, article }: ChartProps) {
   const theme = useThemeColors();
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
     useTooltip<number>();
@@ -146,7 +144,7 @@ function Chart({ width, slots, roles, article }: ChartProps) {
   /* one marker per selected brand, at its first private-equity sale, on
      the brand's own line and tagged with its name and the year */
   type Marker = { e: OwnerEvent; line: typeof lines[number]; x: number };
-  const markers: Marker[] = lines
+  const markers: Marker[] = !sales ? [] : lines
     .flatMap((l) => { const e = PE_EVENT.get(l.company.id); return e ? [{ e, line: l, x: xScale(e.t) }] : []; })
     .sort((a, b) => a.e.t - b.e.t);
   const top = MARGIN.top;
@@ -163,7 +161,7 @@ function Chart({ width, slots, roles, article }: ChartProps) {
   const colour = (slot: number, id?: number) => theme.resolve((id !== undefined && roles.get(id)) || SLOT_TOKENS[slot]);
   const isContext = (id: number) => roles.get(id) === "--series-context";
   const shownEventsAt = (year: number) =>
-    EVENTS.filter((e) => Math.floor(e.t) === year && lines.some((l) => l.company.id === e.id));
+    !sales ? [] : EVENTS.filter((e) => Math.floor(e.t) === year && lines.some((l) => l.company.id === e.id));
   const last = YEARS[YEARS.length - 1];
 
   const labelY = spreadLabels(
@@ -387,9 +385,13 @@ export default function YarnBrandGrapher() {
   const [slots, setSlots] = useState<(number | null)[]>(() =>
     assignSlots(Array(MAX_SELECTED).fill(null), DEFAULT_IDS));
   const [roles, setRoles] = useState<Roles>(() => new Map());
+  /* sale markers belong to the private-equity story; picker edits keep
+     whatever the last story set */
+  const [sales, setSales] = useState<boolean>(() => Boolean(PRESETS[0].sales));
   const loadPreset = (p: typeof PRESETS[number]) => {
     setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(p.names)));
     setRoles(rolesOf(p));
+    setSales(Boolean(p.sales));
   };
   /* picker edits keep a role only for brands still selected */
   const changeSelection = (ids: number[]) => {
@@ -423,7 +425,7 @@ export default function YarnBrandGrapher() {
   }, []);
   const lines = slots.flatMap((id, i) => (id === null ? [] : [{ company: BY_ID.get(id)!, slot: i }]));
   const shownIds = new Set(lines.map((l) => l.company.id));
-  const shownEvents = EVENTS.filter((e) => shownIds.has(e.id));
+  const shownEvents = sales ? EVENTS.filter((e) => shownIds.has(e.id)) : [];
   const first = COVERAGE[0];
   const latest = COVERAGE[COVERAGE.length - 1];
 
@@ -435,7 +437,7 @@ export default function YarnBrandGrapher() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Share of projects on 25 long-lived patterns that used each brand, by
           the year the project was started, {YEARS[0]} to {YEARS[YEARS.length - 1]}.
-          A ringed dot marks the month a brand was first sold to a private-equity owner.
+          {sales && "A ringed dot marks the month a brand was first sold to a private-equity owner. "}
           {!article && " Pick up to six brands; hover for the numbers."}
         </p>
       </figcaption>
@@ -453,7 +455,7 @@ export default function YarnBrandGrapher() {
           ))}
         </div>
       )}
-      <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} article={article} />}</ParentSize>
+      <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} sales={sales} article={article} />}</ParentSize>
       {shownEvents.length > 0 && (
         <div className="mt-1 flex items-center gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
           <svg width={14} height={20} aria-hidden="true">
@@ -525,11 +527,11 @@ export default function YarnBrandGrapher() {
           so one popular pattern cannot carry a line. Only projects whose yarn is linked
           to Ravelry's yarn database count: {pct(first.with_brand, 0)} of {first.year} projects,
           {" "}{pct(latest.with_brand, 0)} of {latest.year}.
-          Each marker sits at the announced month of the brand's first sale to a
-          private-equity firm, or to a company one owned; later sales and sales to
-          private owners are in the table above (● marks the one drawn). Patons North
-          America, Bernat and Caron have no marker because their parent, Spinrite, was
-          already private-equity-owned before {YEARS[0]}. Sales resting on a single secondary report are
+          {sales && <>On the private-equity story, each marker sits at the announced month of
+          the brand's first sale to a private-equity firm, or to a company one owned; later
+          sales and sales to private owners are in the table above (● marks the one
+          drawn). Patons North America, Bernat and Caron have no marker because their
+          parent, Spinrite, was already private-equity-owned before {YEARS[0]}.</>} Sales resting on a single secondary report are
           left off the chart.
         </p>
       )}
