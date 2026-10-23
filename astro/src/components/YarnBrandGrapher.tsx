@@ -93,7 +93,7 @@ export const PRESETS: { key: string; label: string; blurb: string; names: string
   /* becca's own shelf */
   { key: "favorites", label: "Personal favorites",
     blurb: "The brands in the author's own stash, for no reason other than fondness.",
-    names: ["Malabrigo Yarn", "Spincycle Yarns", "Hazel Knits", "Manos del Uruguay", "The Lamb & Kid"] },
+    names: ["Spincycle Yarns", "Hazel Knits", "Manos del Uruguay", "The Lamb & Kid", "Koigu"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "The craft-store shelf",
     blurb: "The brands sold on craft-store shelves, the chains' own labels included.",
