@@ -443,7 +443,6 @@ export default function YarnBrandGrapher() {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Share of projects on 25 long-lived patterns that used each brand, by
           the year the project was started, {YEARS[0]} to {YEARS[YEARS.length - 1]}.
-          {sales && "A ringed dot marks the month a brand was first sold to a private-equity owner. "}
           {!article && " Pick up to six brands; hover for the numbers."}
         </p>
       </figcaption>
