@@ -112,6 +112,10 @@ def main() -> None:
             "rarefy": RAREFY,
             "acquired": ACQUIRED,
         },
+        "patterns": [{"key": p.key, "name": p.name, "designer": p.designer,
+                      "published": p.published, "weight": p.weight, "stratum": p.stratum,
+                      "role": p.role, "projects": int((frame["key"] == p.key).sum())}
+                     for p in roster],
         "coverage": coverage,
         "variety": variety,
         "companies": companies,

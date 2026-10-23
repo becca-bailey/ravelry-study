@@ -37,16 +37,29 @@ const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
 const BY_ID = new Map(COMPANIES.map((c) => [c.id, c]));
 
 const MAX_SELECTED = 6;
-const DEFAULT_NAMES = ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"];
-const DEFAULT_IDS = DEFAULT_NAMES
+const idsOf = (names: string[]) => names
   .map((n) => COMPANIES.find((c) => c.name === n)?.id)
   .filter((id): id is number => id !== undefined);
+
+/* Casts for the three stories in the write-up. The default is one brand of
+   each trajectory type: the brand in question, a slow riser, a slowly
+   eroding workhorse, a hand-dyer with a long arc, and a fashion that
+   crashed. "sale" is Knit Picks against the control basket of mass brands
+   from the notes; "dyers" the hand-dyed cycles; "risers" the brands still
+   climbing after a decade and more. */
+export const PRESETS: { key: string; label: string; names: string[] }[] = [
+  { key: "default", label: "one of each", names: ["Knit Picks", "Malabrigo Yarn", "Cascade Yarns", "madelinetosh", "Noro"] },
+  { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"] },
+  { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres"] },
+  { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Schoppel-Wolle", "Lang Yarns", "West Yorkshire Spinners"] },
+];
+const DEFAULT_IDS = idsOf(PRESETS[0].names);
 
 /* Six categorical line colours, one per picker slot (see --brand-line-* in
    globals.css). A brand keeps its slot, and so its colour, until removed. */
 const SLOT_TOKENS = [1, 2, 3, 4, 5, 6].map((i) => `--brand-line-${i}`);
 
-const MARGIN = { top: 24, right: 128, bottom: 40, left: 44 };
+const MARGIN = { top: 24, right: 156, bottom: 40, left: 44 };
 const CHART_H = 400;
 const LABEL_H = 14;
 
@@ -296,6 +309,13 @@ export default function YarnBrandGrapher() {
   const article = useVariant() === "article";
   const [slots, setSlots] = useState<(number | null)[]>(() =>
     assignSlots(Array(MAX_SELECTED).fill(null), DEFAULT_IDS));
+  /* ?preset=sale|dyers|risers loads a story's cast (used by the screenshot
+     script for the article variant) */
+  useEffect(() => {
+    const key = new URLSearchParams(window.location.search).get("preset");
+    const preset = PRESETS.find((p) => p.key === key);
+    if (preset) setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(preset.names)));
+  }, []);
   /* the stacked view below can push a brand into the picker (a window event,
      since the two charts are separate Astro islands); a full picker drops
      its last-added brand to make room */
@@ -329,6 +349,19 @@ export default function YarnBrandGrapher() {
         </p>
       </figcaption>
       {!article && <Picker slots={slots} onChange={(ids) => setSlots((prev) => assignSlots(prev, ids))} />}
+      {!article && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: "var(--muted)" }}>
+          <span>stories:</span>
+          {PRESETS.map((p) => (
+            <button key={p.key} type="button"
+              onClick={() => setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(p.names)))}
+              className="rounded-full border px-2.5 py-0.5 hover:border-[var(--origin)]"
+              style={{ borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", color: "var(--foreground)" }}>
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
       <ParentSize>{({ width }) => <Chart width={width} slots={slots} article={article} />}</ParentSize>
 
       {!article && lines.length > 0 && <details className="mt-3 text-xs">

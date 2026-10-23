@@ -2,6 +2,19 @@
 import Layout from "../layouts/Layout.astro";
 import YarnBrandGrapher from "../components/YarnBrandGrapher";
 import YarnBrandEras from "../components/YarnBrandEras";
+import data from "../data/yarn_brands.json";
+
+const { meta, patterns, coverage } = data;
+const fmt = (n: number) => n.toLocaleString("en-US");
+const pct = (v: number) => `${Math.round(100 * v)}%`;
+const first = coverage[0];
+const last = coverage[coverage.length - 1];
+const strata = ["shawl", "sock", "hat", "cowl", "garment"];
+const byStratum = strata.map((s) => ({
+  stratum: s,
+  rows: patterns.filter((p) => p.stratum === s).sort((a, b) => (a.published ?? 0) - (b.published ?? 0)),
+}));
+const anchors = patterns.filter((p) => p.role === "anchor").length;
 ---
 
 <Layout
@@ -14,10 +27,82 @@ import YarnBrandEras from "../components/YarnBrandEras";
       <div class="mt-3 h-1.5 w-24 rounded-full" style="background: var(--accent)"></div>
       <p class="mt-2 max-w-2xl text-base" style="color: var(--muted)">
         Which yarns knitters reached for, year by year, as recorded in the
-        projects on 25 patterns that have been knit continuously since
+        projects on {patterns.length} patterns that have been knit continuously since
         Ravelry's early days. A data project by Becca Bailey.
       </p>
     </header>
+
+    <section class="mb-12 max-w-2xl text-sm" aria-labelledby="method">
+      <h2 id="method" class="text-lg font-semibold">How to read these charts</h2>
+      <ul class="mt-2 list-disc space-y-1.5 pl-5" style="color: var(--muted)">
+        <li>
+          <strong style="color: var(--foreground)">Where the projects come from.</strong>
+          Every Ravelry project on {patterns.length} patterns, {fmt(meta.projects)} in all.
+          {patterns.length - anchors} of the patterns were published by 2013 and are still
+          being knit; {anchors} newer ones keep the recent years from resting on aging designs
+          alone. Together they cover shawls, socks, hats, cowls and garments in
+          weights from fingering to aran.
+        </li>
+        <li>
+          <strong style="color: var(--foreground)">Why a fixed set of patterns.</strong>
+          Share is measured inside each pattern, then averaged across patterns with
+          equal weight. A pattern's own rise and fall, its yarn weight and what it is
+          for are held still, so the only thing moving is which brand knitters chose.
+        </li>
+        <li>
+          <strong style="color: var(--foreground)">What counts as a brand.</strong>
+          The company behind the yarn a project links in Ravelry's yarn database. A
+          project counts a brand once however many skeins it used, and a project with
+          two brands counts for both.
+        </li>
+        <li>
+          <strong style="color: var(--foreground)">Who is missing.</strong>
+          Projects with no linked yarn: {pct(1 - first.with_brand)} of {first.year} projects,
+          {pct(1 - last.with_brand)} of {last.year}. The growth is in projects that record no yarn
+          at all; free-text yarn ("handspun", "sock yarn") is a steady slice. This is
+          what knitters logged on Ravelry, not what anyone sold.
+        </li>
+        <li>
+          <strong style="color: var(--foreground)">When.</strong>
+          A project's start year, or the year its record was created when no start date
+          was given (about one project in six). The series runs {meta.years[0]} to {meta.years[1]}:
+          earlier years have too few patterns, and {meta.years[1] + 1} is still being logged.
+        </li>
+      </ul>
+      <details class="mt-3 text-xs">
+        <summary class="cursor-pointer" style="color: var(--muted)">The {patterns.length} patterns</summary>
+        <table class="mt-2 w-full tabular-nums" style="border-collapse: collapse">
+          <thead>
+            <tr style="color: var(--muted)">
+              <th class="py-1 text-left font-medium">pattern</th>
+              <th class="py-1 text-left font-medium">designer</th>
+              <th class="py-1 text-right font-medium">published</th>
+              <th class="py-1 pl-4 text-left font-medium">weight</th>
+              <th class="py-1 text-right font-medium">projects</th>
+            </tr>
+          </thead>
+          <tbody>
+            {byStratum.map(({ stratum, rows }) => (
+              <>
+                <tr>
+                  <td colspan="5" class="pt-3 pb-1 font-medium" style="color: var(--muted)">{stratum}s</td>
+                </tr>
+                {rows.map((p) => (
+                  <tr style="border-top: 1px solid color-mix(in srgb, var(--muted) 30%, transparent)">
+                    <td class="py-1">{p.name}{p.role === "anchor" ? " ·" : ""}</td>
+                    <td class="py-1">{p.designer}</td>
+                    <td class="py-1 text-right">{p.published}</td>
+                    <td class="py-1 pl-4">{p.weight}</td>
+                    <td class="py-1 text-right">{fmt(p.projects)}</td>
+                  </tr>
+                ))}
+              </>
+            ))}
+          </tbody>
+        </table>
+        <p class="mt-2" style="color: var(--muted)">· newer anchor pattern. Project counts are from the fetch of {meta.generated}.</p>
+      </details>
+    </section>
 
     <YarnBrandGrapher client:load />
 
