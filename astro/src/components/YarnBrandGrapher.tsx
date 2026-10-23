@@ -59,20 +59,23 @@ export const PRESETS: { key: string; label: string; names: string[]; roles?: Rec
   /* the six biggest panel brands sold to private equity; the only story
      that draws the sale markers */
   { key: "sold", label: "sold to private equity", names: ["Knit Picks", "madelinetosh", "Berroco", "Regia", "Rowan", "Red Heart"], sales: true },
-  { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Berroco", "Lion Brand", "Patons North America"],
-    roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Berroco": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
+  /* the control basket from the notes, with Plymouth in place of Berroco,
+     which has shared Knit Picks's owner since 2021 */
+  { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Plymouth Yarn", "Lion Brand", "Patons North America"],
+    roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Plymouth Yarn": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
   { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres", "Spincycle Yarns"] },
-  { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Schoppel-Wolle", "Lang Yarns", "West Yorkshire Spinners"] },
+  /* peaks in 2024 or 2025 and up on 2016 and 2019; Berroco has grown since its sale */
+  { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Berroco", "Lang Yarns", "West Yorkshire Spinners", "Hobbii"] },
   /* the Danish brands arriving with the Scandinavian designs, with Norway's
      Sandnes for comparison; Garnstudio is left out because it has been
      large since 2008 and would flatten the rest */
-  { key: "nordic", label: "the Danish wave", names: ["Holst Garn", "Filcolana", "Knitting for Olive", "Hjertegarn", "CaMaRose", "Sandnes Garn"] },
-  /* the 2008 sock-yarn crazes: all peaking as the panel starts, all gone within a few years */
-  { key: "socks", label: "the 2008 sock-yarn crazes", names: ["Blue Moon Fiber Arts", "Lorna's Laces", "Dream in Color", "Rohrspatz & Wollmeise", "Koigu", "Handmaiden Fine Yarn"] },
+  { key: "nordic", label: "the Danish wave", names: ["Hobbii", "Knitting for Olive", "Filcolana", "Holst Garn", "Isager Yarn", "Sandnes Garn"] },
+  /* the class of 2008: peaking as the panel starts, under half of that by 2016 */
+  { key: "socks", label: "the class of 2008", names: ["Noro", "Debbie Bliss", "Blue Moon Fiber Arts", "Lorna's Laces", "Rohrspatz & Wollmeise", "Koigu"] },
   /* the next big brand? the brands that first reached a tenth of a percent
      after 2015 and have grown fastest since 2022; Hobbii leads, and took
      growth-equity money from Verdane in 2022 */
-  { key: "next", label: "the next big brand?", names: ["Hobbii", "Knitting for Olive", "Purl Soho", "Cardiff Cashmere", "Farmer's Daughter Fibers", "Laines du Nord"] },
+  { key: "next", label: "the next big brand?", names: ["Hobbii", "Juniper Moon Farm", "Purl Soho", "Farmer's Daughter Fibers", "Cardiff Cashmere", "Laines du Nord"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
   { key: "bigbox", label: "the craft-store shelf", names: ["Lion Brand", "Patons North America", "Red Heart", "Caron", "Loops & Threads", "Yarn Bee"] },
 ];
