@@ -86,7 +86,7 @@ type Roles = Map<number, string>;
 const rolesOf = (p: { names: string[]; roles?: Record<string, string> }): Roles =>
   new Map(Object.entries(p.roles ?? {}).flatMap(([n, t]) => { const id = idsOf([n])[0]; return id === undefined ? [] : [[id, t]]; }));
 
-const MARGIN = { top: 20, right: 156, bottom: 40, left: 44 };
+const MARGIN = { top: 20, right: 184, bottom: 40, left: 44 };
 
 /** a brand's index at a fractional year, linear between the two surrounding years */
 function indexAt(c: Company, t: number): number {
