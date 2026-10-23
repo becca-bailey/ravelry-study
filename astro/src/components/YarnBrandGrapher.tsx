@@ -34,7 +34,7 @@ export const COMPANIES: Company[] = brandData.companies.map((c) => ({
   series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled[i], n: c.n[i] })),
 }));
 const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
-export interface OwnerEvent { id: number; name: string; date: string; t: number; buyer: string; buyer_type: "pe" | "pe_backed" | "private"; note: string; source: string; confirmed: boolean; first_pe: boolean }
+export interface OwnerEvent { id: number; name: string; date: string; t: number; buyer: string; buyer_type: "pe" | "pe_backed" | "private"; kind: "sold" | "backed"; note: string; source: string; confirmed: boolean; first_pe: boolean }
 /* ownership changes with dated press coverage; unconfirmed ones stay in
    the data but off the chart. The chart marks one event per brand: its
    first sale to a private-equity firm or to a company one owned. */
@@ -224,7 +224,7 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
             return markers.map((m) => {
               const c = colour(m.line.slot, m.line.company.id);
               const cy = yScale(indexAt(m.line.company, m.e.t));
-              const tag = `${m.e.name} sold ${Math.floor(m.e.t)}`;
+              const tag = `${m.e.name} ${m.e.kind === "backed" ? "backed" : "sold"} ${Math.floor(m.e.t)}`;
               const w = tag.length * 5.6;
               const options = [cy - 10, cy + 17, cy - 22, cy + 29, cy - 34];
               const ty = options.find((y) => !placed.some((p) => Math.abs(p.x - m.x) < (p.w + w) / 2 && Math.abs(p.y - y) < TAG_H)) ?? options[0];
@@ -291,7 +291,7 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
           ))}
           {shownEventsAt(tooltipData).map((e) => (
             <div key={`${e.id}-${e.date}`} className="mt-1" style={{ color: theme.role.muted }}>
-              {e.name} sold to {e.buyer}
+              {e.name} {e.kind === "backed" ? "backed by" : "sold to"} {e.buyer}
             </div>
           ))}
         </TooltipWithBounds>

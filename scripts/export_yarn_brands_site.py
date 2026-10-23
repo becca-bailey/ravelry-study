@@ -129,7 +129,7 @@ def main() -> None:
         y, _, m = e["date"].partition("-")
         t = int(y) + ((int(m) - 0.5) / 12 if m else 0.5)   # mid-month as a fraction of the year
         events.append({"id": cid, "name": e["company"], "date": e["date"], "t": round(t, 3),
-                       "buyer": e["buyer"], "buyer_type": e["buyer_type"], "note": e["note"],
+                       "buyer": e["buyer"], "buyer_type": e["buyer_type"], "kind": e["kind"], "note": e["note"],
                        "source": e["source"], "confirmed": e["confirmed"], "first_pe": False})
     events.sort(key=lambda e: (e["t"], e["name"]))
     # the chart marks each brand's first confirmed sale to a private-equity

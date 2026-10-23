@@ -375,7 +375,8 @@ company_aliases:
 # on a single secondary page and are kept out of the chart.
 # buyer_type: pe (a private-equity firm), pe_backed (a company owned by
 # one at the time), private (an individual or an independent company).
-# The chart marks each brand's first pe or pe_backed sale.
+# kind: sold (the default) or backed (a minority investment, founders in
+# control). The chart marks each brand's first pe or pe_backed event.
 company_events:
   - company: Patons North America
     date: 2007-11
@@ -489,6 +490,7 @@ company_events:
     date: 2022-06
     buyer: Verdane (growth equity, minority stake)
     buyer_type: pe
+    kind: backed
     note: founders kept control; Verdane invested to fund expansion in Germany, the US and the Nordics
     source: https://verdane.com/verdane-partners-with-hobbii-to-build-global-d2c-platform-for-knitting-and-crocheting/
   - company: Knitting for Olive
