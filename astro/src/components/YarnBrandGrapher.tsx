@@ -55,31 +55,47 @@ const idsOf = (names: string[]) => names
 /* A preset may give brands a role instead of a slot colour: the brand the
    story is about takes --series-focus and its peers --series-context, so the
    question is visible before the labels are read. */
-export const PRESETS: { key: string; label: string; names: string[]; roles?: Record<string, string>; sales?: boolean }[] = [
+export const PRESETS: { key: string; label: string; blurb: string; names: string[]; roles?: Record<string, string>; sales?: boolean }[] = [
   /* the six biggest panel brands sold to private equity; the only story
      that draws the sale markers */
-  { key: "sold", label: "sold to private equity", names: ["Knit Picks", "madelinetosh", "Berroco", "Regia", "Rowan", "Red Heart"], sales: true },
+  { key: "sold", label: "sold to private equity",
+    blurb: "The six biggest panel brands that were sold to a private-equity owner, with a marker at each one's first sale. Knit Picks peaked the year it was sold and has slid since; madelinetosh was already falling when it changed hands.",
+    names: ["Knit Picks", "madelinetosh", "Berroco", "Regia", "Rowan", "Red Heart"], sales: true },
   /* the control basket from the notes, with Plymouth in place of Berroco,
      which has shared Knit Picks's owner since 2021 */
-  { key: "sale", label: "Knit Picks and its peers", names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Plymouth Yarn", "Lion Brand", "Patons North America"],
+  { key: "sale", label: "Knit Picks and its peers",
+    blurb: "Knit Picks against five mass-market brands that stayed independently owned. The peers hold or drift while Knit Picks turns down after 2017, which is the comparison behind the private-equity question.",
+    names: ["Knit Picks", "Cascade Yarns", "Garnstudio", "Plymouth Yarn", "Lion Brand", "Patons North America"],
     roles: { "Knit Picks": "--series-focus", "Cascade Yarns": "--series-context", "Garnstudio": "--series-context", "Plymouth Yarn": "--series-context", "Lion Brand": "--series-context", "Patons North America": "--series-context" } },
-  { key: "dyers", label: "hand-dyed cycles", names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres", "Spincycle Yarns"] },
+  { key: "dyers", label: "hand-dyed cycles",
+    blurb: "One wave of hand-dyed and specialty yarn after another: Noro and Lorna's Laces fading from 2008, Wollmeise spiking around 2010, madelinetosh peaking in 2014, Hedgehog in 2016, Spincycle arriving in 2018. The fashions get smaller each time.",
+    names: ["Noro", "Rohrspatz & Wollmeise", "Lorna's Laces", "madelinetosh", "Hedgehog Fibres", "Spincycle Yarns"] },
   /* peaks in 2024 or 2025 and up on 2016 and 2019; Berroco has grown since its sale */
-  { key: "risers", label: "still rising", names: ["Malabrigo Yarn", "Garnstudio", "Berroco", "Lang Yarns", "West Yorkshire Spinners", "Hobbii"] },
+  { key: "risers", label: "still rising",
+    blurb: "Brands whose share peaked in 2024 or 2025 and is up on both 2016 and 2019. Malabrigo is now the panel's biggest brand; Hobbii has come from nothing since 2019; Berroco has grown since its 2021 sale.",
+    names: ["Malabrigo Yarn", "Garnstudio", "Berroco", "Lang Yarns", "West Yorkshire Spinners", "Hobbii"] },
   /* the Danish brands arriving with the Scandinavian designs, with Norway's
      Sandnes for comparison; Garnstudio is left out because it has been
      large since 2008 and would flatten the rest */
-  { key: "nordic", label: "the Danish wave", names: ["Hobbii", "Knitting for Olive", "Filcolana", "Holst Garn", "Isager Yarn", "Sandnes Garn"] },
+  { key: "nordic", label: "the Danish wave",
+    blurb: "Danish brands arriving with the Scandinavian designs, and Norway's Sandnes for comparison. Holst and Filcolana climb from 2016, Knitting for Olive appears in 2021 and reaches half a percent within four years. Garnstudio is left out: it has been large since 2008 and would flatten the rest.",
+    names: ["Hobbii", "Knitting for Olive", "Filcolana", "Holst Garn", "Isager Yarn", "Sandnes Garn"] },
   /* the next big brand? the brands that first reached a tenth of a percent
      after 2015 and have grown fastest since 2022; Hobbii leads, and took
      growth-equity money from Verdane in 2022 */
-  { key: "next", label: "the next big brand?", names: ["Hobbii", "Juniper Moon Farm", "Purl Soho", "Farmer's Daughter Fibers", "Cardiff Cashmere", "Laines du Nord"] },
+  { key: "next", label: "the next big brand?",
+    blurb: "Brands that first reached a tenth of a percent after 2015 and have grown fastest since 2022. Hobbii leads, Cardiff Cashmere is the held-double mohair trend showing up as a brand, and Laines du Nord went from nothing to a third of a percent in two years.",
+    names: ["Hobbii", "Juniper Moon Farm", "Purl Soho", "Farmer's Daughter Fibers", "Cardiff Cashmere", "Laines du Nord"] },
   /* direct to knitter: brands that sell mainly from their own site. Knit
      Picks, the original online-only yarn brand, is left out so the others
      stay readable at 0 to 1%; add it from the picker to compare */
-  { key: "online", label: "direct to knitter", names: ["Purl Soho", "Hobbii", "Quince & Co.", "Brooklyn Tweed", "Valley Yarns", "Kelbourne Woolens"] },
+  { key: "online", label: "direct to knitter",
+    blurb: "Brands that sell mainly from their own site. Hobbii and Purl Soho, which built a platform around the yarn, are rising; Quince & Co. and WEBS's Valley Yarns, early online pioneers with a narrower catalogue, are fading, and Quince was sold to Lion Brand in 2023. Knit Picks, the original online-only brand, is left out so the others stay readable.",
+    names: ["Purl Soho", "Hobbii", "Quince & Co.", "Brooklyn Tweed", "Valley Yarns", "Kelbourne Woolens"] },
   /* the craft-store shelf: Red Heart and Bernat giving way to the stores' own labels */
-  { key: "bigbox", label: "the craft-store shelf", names: ["Lion Brand", "Patons North America", "Red Heart", "Caron", "Loops & Threads", "Yarn Bee"] },
+  { key: "bigbox", label: "the craft-store shelf",
+    blurb: "The brands on the big-box shelf. Red Heart and Caron erode while the stores' own labels, Loops & Threads at Michaels and Yarn Bee at Hobby Lobby, take their place; Lion Brand and Patons hold.",
+    names: ["Lion Brand", "Patons North America", "Red Heart", "Caron", "Loops & Threads", "Yarn Bee"] },
 ];
 const DEFAULT_IDS = idsOf(PRESETS[0].names);
 
@@ -397,16 +413,21 @@ export default function YarnBrandGrapher() {
   /* sale markers belong to the private-equity story; picker edits keep
      whatever the last story set */
   const [sales, setSales] = useState<boolean>(() => Boolean(PRESETS[0].sales));
+  const [story, setStory] = useState<string | null>(PRESETS[0].key);
   const loadPreset = (p: typeof PRESETS[number]) => {
     setSlots(assignSlots(Array(MAX_SELECTED).fill(null), idsOf(p.names)));
     setRoles(rolesOf(p));
     setSales(Boolean(p.sales));
+    setStory(p.key);
   };
-  /* picker edits keep a role only for brands still selected */
+  /* picker edits keep a role only for brands still selected, and the
+     story's description no longer applies */
   const changeSelection = (ids: number[]) => {
     setSlots((prev) => assignSlots(prev, ids));
     setRoles((prev) => new Map([...prev].filter(([id]) => ids.includes(id))));
+    setStory(null);
   };
+  const current = PRESETS.find((p) => p.key === story);
   /* ?preset=sale|dyers|risers loads a story's cast (used by the screenshot
      script for the article variant) */
   useEffect(() => {
@@ -434,17 +455,23 @@ export default function YarnBrandGrapher() {
       </figcaption>
       {!article && <Picker slots={slots} roles={roles} onChange={changeSelection} />}
       {!article && (
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: "var(--muted)" }}>
+        <div className="mb-2 flex flex-wrap items-center gap-2 text-xs" style={{ color: "var(--muted)" }}>
           <span>stories:</span>
           {PRESETS.map((p) => (
             <button key={p.key} type="button"
               onClick={() => loadPreset(p)}
               className="rounded-full border px-2.5 py-0.5 hover:border-[var(--primary)]"
-              style={{ borderColor: "color-mix(in srgb, var(--muted) 40%, transparent)", color: "var(--foreground)" }}>
+              style={{ borderColor: p.key === story ? "var(--primary)" : "color-mix(in srgb, var(--muted) 40%, transparent)",
+                color: "var(--foreground)", background: p.key === story ? "var(--surface-chip)" : undefined }}>
               {p.label}
             </button>
           ))}
         </div>
+      )}
+      {current && (
+        <p className="mb-3 max-w-2xl text-sm" style={{ color: "var(--foreground)" }}>
+          <strong>{current.label}.</strong> {current.blurb}
+        </p>
       )}
       <ParentSize>{({ width }) => <Chart width={width} slots={slots} roles={roles} sales={sales} article={article} />}</ParentSize>
       {shownEvents.length > 0 && (
