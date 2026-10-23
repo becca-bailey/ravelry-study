@@ -6,8 +6,9 @@ patterns with >= MIN_DENOM linked projects that year), the pooled share and
 the number of panel projects using the brand. Years are kept from the first
 with >= MIN_PATTERNS patterns in the index (2008) through the last full
 year. Every company with at least MIN_TOTAL panel projects is exported
-(about 490, 86% of brand uses); the rest are summed into `other` so a
-stacked view can show the whole. Series are parallel arrays over
+with its full series; those with MIN_LITE to MIN_TOTAL get the index
+series only, so the stacked view can fan its tail tiers out brand by
+brand; the rest are summed into `other`. Series are parallel arrays over
 meta.years_list to keep the file small. The coverage series (projects,
 share with a pack, share with a linked brand) backs the source note.
 
@@ -27,8 +28,9 @@ from closingwindow.config import DATA_DIR
 
 OUT = DATA_DIR.parent / "astro" / "src" / "data" / "yarn_brands.json"
 MIN_DENOM = 50     # a pattern-year needs this many linked projects to enter the index
-MIN_PATTERNS = 5   # a year needs this many patterns before its index is shown
-MIN_TOTAL = 100    # a company needs this many panel projects to be exported by name
+MIN_PATTERNS = 10  # a year needs this many patterns before its index is shown (2008 on)
+MIN_TOTAL = 100    # a company needs this many panel projects for the full series
+MIN_LITE = 20      # down to this many, the index series only (the stack's tail tiers)
 RAREFY = 1000      # projects drawn per year for the effective-brands measure
 LOYALTY_MIN_USERS = 1000   # brands shown on the return-rate chart
 LOYALTY_WINDOW = 3         # a return counts within this many later panel projects
@@ -55,8 +57,10 @@ def main() -> None:
 
     # rank by total panel projects within the exported years
     totals = index.groupby(["company_id", "company_name"])["n"].sum().sort_values(ascending=False)
-    named = totals[totals >= MIN_TOTAL]
-    tail_ids = set(totals[totals < MIN_TOTAL].index.get_level_values(0))
+    named = totals[totals >= MIN_LITE]
+    tail_ids = set(totals[totals < MIN_LITE].index.get_level_values(0))
+
+    clean = lambda n: str(n).replace("®", "").replace("™", "").strip()
 
     def series_of(g, col, nd=5):
         # a year the brand was not used at all is a zero, not a gap
@@ -68,11 +72,13 @@ def main() -> None:
         g = index[index["company_id"] == cid]
         # Ravelry's display names carry trademark marks ("Cascade Yarns ®")
         name = str(name).replace("®", "").replace("™", "").strip()
-        companies.append({"id": int(cid), "name": name, "total": int(total),
-                          "index": series_of(g, "index"), "pooled": series_of(g, "pooled"),
-                          "n": series_of(g, "n", nd=0)})
+        row = {"id": int(cid), "name": name, "total": int(total), "index": series_of(g, "index", nd=4)}
+        if total >= MIN_TOTAL:
+            row.update(pooled=series_of(g, "pooled"), n=series_of(g, "n", nd=0))
+        companies.append(row)
     tail = index[index["company_id"].isin(tail_ids)].groupby("year").agg(index=("index", "sum"), n=("n", "sum")).reset_index()
     other = {"companies": len(tail_ids), "index": series_of(tail, "index"), "n": series_of(tail, "n", nd=0)}
+
 
     cov = B.coverage(frame[frame["year"].between(first_year, last_year)])
     n_patterns = (index[["year", "n_patterns"]].drop_duplicates()
@@ -133,7 +139,6 @@ def main() -> None:
     trans["period"] = pd.cut(trans["year"], edges, labels=labels).astype(str)
     wins["period"] = pd.cut(wins["year"], edges, labels=labels).astype(str)
     retp = B.return_rate(frame, brands, min_users=200, by="period", trans=trans, wins=wins)
-    clean = lambda n: str(n).replace("®", "").replace("™", "").strip()
     loyalty = []
     for _, r in ret.iterrows():
         per = retp[retp["company_id"] == r["company_id"]].set_index("period")
@@ -168,6 +173,7 @@ def main() -> None:
             "years": [first_year, last_year],
             "years_list": years,
             "min_total": MIN_TOTAL,
+            "min_lite": MIN_LITE,
             "rarefy": RAREFY,
             "acquired": ACQUIRED,
         },

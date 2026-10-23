@@ -29,9 +29,10 @@ interface Coverage { year: number; projects: number; with_packs: number; with_br
 const META = brandData.meta;
 const YEARS: number[] = META.years_list;
 /* the JSON stores each company's series as parallel arrays over META.years_list */
-export const COMPANIES: Company[] = brandData.companies.map((c) => ({
+/* brands under meta.min_total carry the index series only */
+export const COMPANIES: Company[] = (brandData.companies as { id: number; name: string; total: number; index: number[]; pooled?: number[]; n?: number[] }[]).map((c) => ({
   id: c.id, name: c.name, total: c.total,
-  series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled[i], n: c.n[i] })),
+  series: YEARS.map((year, i) => ({ year, index: c.index[i], pooled: c.pooled?.[i] ?? 0, n: c.n?.[i] ?? 0 })),
 }));
 const COVERAGE: Coverage[] = brandData.coverage as Coverage[];
 export interface OwnerEvent { id: number; name: string; date: string; t: number; buyer: string; buyer_type: "pe" | "pe_backed" | "private"; note: string; source: string; confirmed: boolean; first_pe: boolean }
@@ -508,7 +509,7 @@ export default function YarnBrandGrapher() {
           ({first.n_patterns} patterns in {first.year}, {latest.n_patterns} in {latest.year}),
           so one popular pattern cannot carry a line. Only projects whose yarn is linked
           to Ravelry's yarn database count: {pct(first.with_brand, 0)} of {first.year} projects,
-          {" "}{pct(latest.with_brand, 0)} of {latest.year}.
+          {" "}{pct(latest.with_brand, 0)} of {latest.year}.{" "}
           {sales && <>On the private-equity story, each marker sits at the announced month of
           the brand's first sale to a private-equity firm, or to a company one owned; later
           sales and sales to private owners are in the table above (● marks the one
