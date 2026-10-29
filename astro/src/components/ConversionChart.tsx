@@ -54,18 +54,27 @@ function Chart({ width }: { width: number }) {
       <Group left={MARGIN.left} top={MARGIN.top}>
         <GridRows scale={yScale} width={innerW} stroke={theme.role.muted} strokeOpacity={0.18} />
 
-        {/* still-converting zone: young patterns' projects lag */}
+        {/* still-converting zone: young patterns' projects lag. The note
+            starts at the zone's left edge when the zone is wide enough to
+            hold it, else ends at the plot's right edge */}
         <rect x={xScale(LAG_FROM - 0.5)} y={0}
           width={xScale(2026) - xScale(LAG_FROM - 0.5)} height={innerH}
           fill={theme.role.muted} opacity={0.1} />
-        <text x={xScale(LAG_FROM - 0.35)} y={14} fontSize={10}
-          fill={theme.role.muted}>
-          still converting —
-        </text>
-        <text x={xScale(LAG_FROM - 0.35)} y={27} fontSize={10}
-          fill={theme.role.muted}>
-          young patterns lag
-        </text>
+        {(() => {
+          const fits = innerW - xScale(LAG_FROM - 0.35) >= 100;
+          const nx = fits ? xScale(LAG_FROM - 0.35) : innerW - 2;
+          const anchor = fits ? "start" : "end";
+          return (
+            <>
+              <text x={nx} y={14} fontSize={10} textAnchor={anchor} fill={theme.role.muted}>
+                still converting —
+              </text>
+              <text x={nx} y={27} fontSize={10} textAnchor={anchor} fill={theme.role.muted}>
+                young patterns lag
+              </text>
+            </>
+          );
+        })()}
 
         <AreaClosed
           data={ROWS}

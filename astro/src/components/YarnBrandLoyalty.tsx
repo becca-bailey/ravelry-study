@@ -9,6 +9,7 @@ import { scaleBand, scaleLinear } from "@visx/scale";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { useThemeColors } from "@/lib/themeColors";
 import { useVariant } from "@/lib/variant";
+import { isNarrow } from "@/lib/chart";
 import brandData from "@/data/yarn_brands.json";
 
 /* Which brands knitters come back to. For every panel project that used a
@@ -28,7 +29,10 @@ const SHOW = 24;
 const WINDOW: number = META.window;
 
 const ROW_H = 22;
-const MARGIN = { top: 8, right: 24, bottom: 36, left: 150 };
+/* the left margin holds the brand names, the right the top row's value; a
+   narrow screen tightens the names and wraps the axis title onto two lines */
+const WIDE_MARGIN = { top: 8, right: 40, bottom: 36, left: 150 };
+const NARROW_MARGIN = { ...WIDE_MARGIN, bottom: 56, left: 132 };
 
 const pct = (v: number, d = 0) => `${(100 * v).toFixed(d)}%`;
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -36,6 +40,8 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 function Chart({ width, rows, article }: { width: number; rows: Row[]; article: boolean }) {
   const theme = useThemeColors();
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } = useTooltip<Row>();
+  const narrow = isNarrow(width);
+  const MARGIN = narrow ? NARROW_MARGIN : WIDE_MARGIN;
   const innerW = width - MARGIN.left - MARGIN.right;
   const innerH = rows.length * ROW_H;
   const xMax = useMemo(() => Math.ceil(Math.max(...rows.map((r) => r.return_rate)) * 20) / 20, [rows]);
@@ -62,7 +68,7 @@ function Chart({ width, rows, article }: { width: number; rows: Row[]; article: 
                 onPointerMove={(e) => { const p = localPoint(e); if (p) showTooltip({ tooltipData: r, tooltipLeft: p.x, tooltipTop: p.y }); }}
                 onPointerLeave={hideTooltip} style={{ cursor: article ? undefined : "default" }}>
                 <rect x={-MARGIN.left} y={y(r.name)} width={width} height={y.bandwidth()} fill="transparent" />
-                <text x={-10} y={cy + 4} fontSize={11.5} textAnchor="end" fill="var(--foreground)" fontWeight={active ? 600 : 400}>
+                <text x={-10} y={cy + 4} fontSize={narrow ? 10.5 : 11.5} textAnchor="end" fill="var(--foreground)" fontWeight={active ? 600 : 400}>
                   {r.name}
                 </text>
                 <line x1={x(r.base_rate)} x2={x(r.return_rate)} y1={cy} y2={cy} stroke={grey} strokeOpacity={0.5} strokeWidth={2} />
@@ -76,11 +82,18 @@ function Chart({ width, rows, article }: { width: number; rows: Row[]; article: 
               </Group>
             );
           })}
-          <AxisBottom top={innerH} scale={x} numTicks={5} tickFormat={(v) => pct(Number(v))}
+          <AxisBottom top={innerH} scale={x} numTicks={narrow ? 4 : 5} tickFormat={(v) => pct(Number(v))}
             stroke={grey} tickStroke={grey} tickLabelProps={{ fill: grey, fontSize: 11, textAnchor: "middle" }} />
-          <text x={innerW} y={innerH + 32} fontSize={11} textAnchor="end" fill={grey}>
-            share whose next {WINDOW} projects (on another pattern) include the brand
-          </text>
+          {narrow ? (
+            <text x={innerW} y={innerH + 36} fontSize={11} textAnchor="end" fill={grey}>
+              <tspan x={innerW}>share whose next {WINDOW} projects</tspan>
+              <tspan x={innerW} dy={13}>(on another pattern) include the brand</tspan>
+            </text>
+          ) : (
+            <text x={innerW} y={innerH + 32} fontSize={11} textAnchor="end" fill={grey}>
+              share whose next {WINDOW} projects (on another pattern) include the brand
+            </text>
+          )}
         </Group>
       </svg>
 

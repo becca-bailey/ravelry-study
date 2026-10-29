@@ -13,6 +13,7 @@ import { bisector, extent } from "d3-array";
 import { localPoint } from "@visx/event";
 import { useThemeColors } from "@/lib/themeColors";
 import { useVariant } from "@/lib/variant";
+import { isNarrow } from "@/lib/chart";
 import windowData from "@/data/window.json";
 
 export interface CohortRow {
@@ -24,7 +25,11 @@ export interface CohortRow {
 
 const ROWS: CohortRow[] = windowData.rows;
 
+/* the right margin holds the line-end labels; a narrow screen gives it to
+   the plot and puts the labels in a legend under the chart */
 const MARGIN = { top: 24, right: 168, bottom: 40, left: 48 };
+const NARROW_MARGIN = { ...MARGIN, right: 16 };
+const LEGEND_H = 44;
 const bisectYear = bisector<CohortRow, number>((d) => d.year).center;
 
 /* Annotation layers, in story order:
@@ -34,16 +39,20 @@ const bisectYear = bisector<CohortRow, number>((d) => d.year).center;
 const GOLDEN_AGE = { from: 2007, to: 2014.5 };
 const FLICKER = { from: 2015.5, to: 2016.5 };
 const MARKERS = [
-  { year: 2013.5, label: "Google Reader shuts down (Jul 2013)" },
-  { year: 2016, label: "Instagram's algorithm arrives" },
+  { year: 2013.5, label: "Google Reader shuts down (Jul 2013)", short: "Google Reader shuts down" },
+  { year: 2016, label: "Instagram's algorithm arrives", short: "Instagram's algorithm" },
 ];
 
-function Chart({ width, height }: { width: number; height: number }) {
+function Chart({ width, height: boxH }: { width: number; height: number }) {
   const theme = useThemeColors();
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
     useTooltip<CohortRow>();
-  const innerW = width - MARGIN.left - MARGIN.right;
-  const innerH = height - MARGIN.top - MARGIN.bottom;
+  const narrow = isNarrow(width);
+  const margin = narrow ? NARROW_MARGIN : MARGIN;
+  /* the legend under a narrow chart shares the fixed box with the svg */
+  const height = narrow ? boxH - LEGEND_H : boxH;
+  const innerW = width - margin.left - margin.right;
+  const innerH = height - margin.top - margin.bottom;
 
   const xScale = useMemo(() => {
     const [min, max] = extent(ROWS, (d) => d.year) as [number, number];
@@ -79,13 +88,13 @@ function Chart({ width, height }: { width: number; height: number }) {
   const onMove = (event: React.PointerEvent<SVGRectElement>) => {
     const point = localPoint(event);
     if (!point) return;
-    const year = xScale.invert(point.x - MARGIN.left);
+    const year = xScale.invert(point.x - margin.left);
     const row = ROWS[bisectYear(ROWS, year)];
     if (!row) return;
     showTooltip({
       tooltipData: row,
-      tooltipLeft: MARGIN.left + xScale(row.year),
-      tooltipTop: MARGIN.top + yScale(row.floor),
+      tooltipLeft: margin.left + xScale(row.year),
+      tooltipTop: margin.top + yScale(row.floor),
     });
   };
 
@@ -95,7 +104,7 @@ function Chart({ width, height }: { width: number; height: number }) {
     <div className="relative">
       <svg width={width} height={height} role="img"
         aria-label="Share of each entering cohort of Ravelry designers reaching 100+ fans (a modest audience) and 500 to 5,000 fans (the middle), 2007 to 2024. Both lines hold steady through 2014, break in 2015, rebound in 2016, then fall.">
-        <Group left={MARGIN.left} top={MARGIN.top}>
+        <Group left={margin.left} top={margin.top}>
           {/* golden age background */}
           <rect
             x={xScale(GOLDEN_AGE.from)}
@@ -135,7 +144,7 @@ function Chart({ width, height }: { width: number; height: number }) {
                 fontSize={10}
                 fill={theme.role.muted}
               >
-                {m.label}
+                {narrow ? m.short : m.label}
               </text>
             </Group>
           ))}
@@ -162,8 +171,10 @@ function Chart({ width, height }: { width: number; height: number }) {
                 />
               ))}
               {/* direct label at line end — no detached legend to decode.
-                  Clamped so a line ending near 0% keeps its label on-chart. */}
-              {(() => {
+                  Clamped so a line ending near 0% keeps its label on-chart.
+                  A narrow screen has no room beside the plot: the labels
+                  are the legend under it instead. */}
+              {!narrow && (() => {
                 const labelY = Math.min(
                   yScale(ROWS[ROWS.length - 1][s.key]) + 4,
                   innerH - 18,
@@ -209,6 +220,18 @@ function Chart({ width, height }: { width: number; height: number }) {
           />
         </Group>
       </svg>
+
+      {narrow && (
+        <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs" style={{ paddingLeft: margin.left, height: LEGEND_H }}>
+          {series.map((s) => (
+            <span key={s.key} className="inline-flex items-baseline gap-1.5">
+              <i className="inline-block h-2 w-2 rounded-full" style={{ background: s.color }} />
+              <span className="font-semibold" style={{ color: s.color }}>{s.label}</span>
+              <span style={{ color: theme.role.muted }}>{s.sub}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {tooltipData && (
         <TooltipWithBounds

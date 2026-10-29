@@ -12,6 +12,7 @@ import { LinePath } from "@visx/shape";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { useThemeColors } from "@/lib/themeColors";
 import { useVariant } from "@/lib/variant";
+import { isNarrow, yearTicks } from "@/lib/chart";
 import brandData from "@/data/yarn_brands.json";
 
 /* Yarn-brand share over time, baby-name-grapher style: pick up to six
@@ -109,7 +110,10 @@ type Roles = Map<number, string>;
 const rolesOf = (p: { names: string[]; roles?: Record<string, string> }): Roles =>
   new Map(Object.entries(p.roles ?? {}).flatMap(([n, t]) => { const id = idsOf([n])[0]; return id === undefined ? [] : [[id, t]]; }));
 
+/* the right margin holds the end labels; on a narrow screen it goes to the
+   plot and the names move to a legend under the chart */
 const MARGIN = { top: 20, right: 184, bottom: 40, left: 44 };
+const NARROW_MARGIN = { ...MARGIN, right: 16 };
 
 /** a brand's index at a fractional year, linear between the two surrounding years */
 function indexAt(c: Company, t: number): number {
@@ -157,7 +161,9 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
   const theme = useThemeColors();
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
     useTooltip<number>();
-  const innerW = width - MARGIN.left - MARGIN.right;
+  const narrow = isNarrow(width);
+  const margin = narrow ? NARROW_MARGIN : MARGIN;
+  const innerW = width - margin.left - margin.right;
 
   const lines = useMemo(
     () => slots.flatMap((id, i) => (id === null ? [] : [{ company: BY_ID.get(id)!, slot: i }])),
@@ -174,8 +180,8 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
   const markers: Marker[] = !sales ? [] : lines
     .flatMap((l) => { const e = PE_EVENT.get(l.company.id); return e ? [{ e, line: l, x: xScale(e.t) }] : []; })
     .sort((a, b) => a.e.t - b.e.t);
-  const top = MARGIN.top;
-  const innerH = CHART_H - top - MARGIN.bottom;
+  const top = margin.top;
+  const innerH = CHART_H - top - margin.bottom;
   const yMax = useMemo(() => {
     const m = Math.max(0.01, ...lines.flatMap((l) => l.company.series.map((p) => p.index)));
     const step = m > 0.05 ? 0.02 : 0.01;
@@ -199,9 +205,9 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
   const onMove = (e: React.PointerEvent<SVGRectElement>) => {
     const p = localPoint(e);
     if (!p) return;
-    const year = Math.round(xScale.invert(p.x - MARGIN.left));
+    const year = Math.round(xScale.invert(p.x - margin.left));
     const y = Math.min(last, Math.max(YEARS[0], year));
-    showTooltip({ tooltipData: y, tooltipLeft: MARGIN.left + xScale(y), tooltipTop: p.y });
+    showTooltip({ tooltipData: y, tooltipLeft: margin.left + xScale(y), tooltipTop: p.y });
   };
 
   const hoverRows = tooltipData === undefined ? [] : lines
@@ -214,7 +220,7 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
     <div className="relative">
       <svg width={width} height={CHART_H} role="img"
         aria-label={`Panel share of ${names || "no brands"} by project start year, ${YEARS[0]} to ${last}.`}>
-        <Group left={MARGIN.left} top={top}>
+        <Group left={margin.left} top={top}>
           <GridRows scale={yScale} width={innerW} stroke={theme.role.muted} strokeOpacity={0.18} />
 
           {lines.map((l) => {
@@ -227,27 +233,34 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
                   x={(p) => xScale(p.year)} y={(p) => yScale(p.index)}
                   stroke={c} strokeWidth={quiet ? 1.5 : 2.25}
                   strokeLinejoin="round" strokeLinecap="round" />
-                {/* end label in ink; the dot carries identity */}
-                <circle cx={innerW + 10} cy={ly} r={3.5} fill={c} />
-                <text x={innerW + 18} y={ly + 4} fontSize={11.5} fontWeight={quiet ? 500 : 600}
-                  fill={quiet ? theme.role.muted : "var(--foreground)"}>
-                  {l.company.name}
-                </text>
+                {/* end label in ink; the dot carries identity. On a narrow
+                    screen the names are in the legend under the chart instead */}
+                {!narrow && (
+                  <>
+                    <circle cx={innerW + 10} cy={ly} r={3.5} fill={c} />
+                    <text x={innerW + 18} y={ly + 4} fontSize={11.5} fontWeight={quiet ? 500 : 600}
+                      fill={quiet ? theme.role.muted : "var(--foreground)"}>
+                      {l.company.name}
+                    </text>
+                  </>
+                )}
               </Group>
             );
           })}
 
           {/* ownership changes: a ringed dot on the line at the sale month with a
-              dotted drop line to the axis, tagged with brand and year; each tag
-              takes the first of above / below / further out that does not
-              overlap a tag already placed */}
+              dotted drop line to the axis, tagged with brand and year (without
+              the brand where the plot is narrow; the ring's colour names it);
+              each tag takes the first of above / below / further out that does
+              not overlap a tag already placed */}
           {(() => {
             const placed: { x: number; y: number; w: number }[] = [];
             const TAG_H = 11;
             return markers.map((m) => {
               const c = colour(m.line.slot, m.line.company.id);
               const cy = yScale(indexAt(m.line.company, m.e.t));
-              const tag = `${m.e.name} ${m.e.kind === "backed" ? "backed" : "sold"} ${Math.floor(m.e.t)}`;
+              const verb = m.e.kind === "backed" ? "backed" : "sold";
+              const tag = narrow ? `${verb} ${Math.floor(m.e.t)}` : `${m.e.name} ${verb} ${Math.floor(m.e.t)}`;
               const w = tag.length * 5.6;
               const options = [cy - 10, cy + 17, cy - 22, cy + 29, cy - 34];
               const ty = options.find((y) => !placed.some((p) => Math.abs(p.x - m.x) < (p.w + w) / 2 && Math.abs(p.y - y) < TAG_H)) ?? options[0];
@@ -286,7 +299,7 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
             stroke={theme.role.muted} tickStroke={theme.role.muted}
             tickLabelProps={{ fill: theme.role.muted, fontSize: 11, textAnchor: "end", dx: -4 }} />
           <AxisBottom top={innerH} scale={xScale}
-            tickValues={YEARS.filter((y) => y % (innerW < 420 ? 4 : 2) === 0)}
+            tickValues={yearTicks(YEARS, innerW)}
             tickFormat={(v) => String(v)}
             stroke={theme.role.muted} tickStroke={theme.role.muted}
             tickLabelProps={{ fill: theme.role.muted, fontSize: 11, textAnchor: "middle" }} />
@@ -297,6 +310,21 @@ function Chart({ width, slots, roles, sales, article }: ChartProps) {
           )}
         </Group>
       </svg>
+
+      {narrow && lines.length > 0 && (
+        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ paddingLeft: margin.left }}>
+          {lines.map((l) => {
+            const quiet = isContext(l.company.id);
+            return (
+              <span key={l.company.id} className="inline-flex items-center gap-1.5"
+                style={{ color: quiet ? theme.role.muted : "var(--foreground)", fontWeight: quiet ? 500 : 600 }}>
+                <i className="inline-block h-2 w-2 rounded-full" style={{ background: colour(l.slot, l.company.id) }} />
+                {l.company.name}
+              </span>
+            );
+          })}
+        </div>
+      )}
 
       {tooltipData !== undefined && hoverRows.length > 0 && (
         <TooltipWithBounds left={tooltipLeft} top={tooltipTop} className="pointer-events-none"

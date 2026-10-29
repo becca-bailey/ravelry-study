@@ -11,6 +11,7 @@ import { Area } from "@visx/shape";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { useThemeColors } from "@/lib/themeColors";
 import { useVariant } from "@/lib/variant";
+import { yearTicks } from "@/lib/chart";
 import brandData from "@/data/yarn_brands.json";
 
 /* The stacked view: colour means era. Each named band (a brand with >=
@@ -154,7 +155,8 @@ function Chart({ width, solo, onPick, article }: ChartProps) {
   };
 
   /* labels for bands thick enough at their widest point, thickest first,
-     kept inside the plot and dropped when they would overlap one placed */
+     kept inside the plot and dropped when they would overlap one placed; a
+     name wider than the plot shrinks to fit, and is dropped below 9px */
   type Label = { i: number; x: number; y: number; w: number; size: number; name: string; px: number };
   const labels: Label[] = [];
   if (!solo) {
@@ -162,7 +164,8 @@ function Chart({ width, solo, onPick, article }: ChartProps) {
       let best = 0, bestPx = 0;
       b.v.forEach((x, k) => { const px = x * innerH; if (px > bestPx) { bestPx = px; best = k; } });
       if (bestPx < MIN_LABEL_PX) return [];
-      const size = Math.min(15, 9 + bestPx / 8);
+      const size = Math.min(15, 9 + bestPx / 8, (innerW - 8) / (b.name.length * 0.58));
+      if (size < 9) return [];
       const w = b.name.length * size * 0.58;
       const x = Math.min(innerW - w / 2, Math.max(w / 2, xScale(YEARS[best])));
       return [{ i, x, y: yScale(Y0[i][best] + b.v[best] / 2), w, size, name: b.name, px: bestPx }];
@@ -208,7 +211,7 @@ function Chart({ width, solo, onPick, article }: ChartProps) {
           <AxisLeft scale={yScale} numTicks={5} tickFormat={(v) => pct(Number(v), yMax <= 0.05 ? 1 : 0)}
             stroke={grey} tickStroke={grey} tickLabelProps={{ fill: grey, fontSize: 11, textAnchor: "end", dx: -4 }} />
           <AxisBottom top={innerH} scale={xScale}
-            tickValues={YEARS.filter((y) => y % (innerW < 420 ? 4 : 2) === 0)}
+            tickValues={yearTicks(YEARS, innerW)}
             tickFormat={(v) => String(v)} stroke={grey} tickStroke={grey}
             tickLabelProps={{ fill: grey, fontSize: 11, textAnchor: "middle" }} />
         </Group>

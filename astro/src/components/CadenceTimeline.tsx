@@ -8,6 +8,7 @@ import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { quadtree } from "d3-quadtree";
 import { useThemeColors } from "@/lib/themeColors";
 import { useVariant, type Variant } from "@/lib/variant";
+import { isNarrow } from "@/lib/chart";
 import cadenceData from "@/data/cadence.json";
 
 /* The flagship chart: every pattern released by the 18 rule-selected
@@ -26,7 +27,8 @@ const MILESTONES: [number, string][] = cadenceData.milestones as [number, string
 // article variant: only the events the prose actually discusses
 const ARTICLE_MILESTONES = new Set([2007, 2013, 2016]);
 
-const MARGIN = { top: 148, right: 24, bottom: 36, left: 176 }; // top holds the vertical milestone labels
+const WIDE_MARGIN = { top: 148, right: 24, bottom: 36, left: 176 }; // top holds the vertical milestone labels
+const NARROW_MARGIN = { ...WIDE_MARGIN, right: 16, left: 140 }; // names set smaller so the dot field keeps its width
 const ROW_H = 34;
 const X_MIN = 2005;
 const X_MAX = 2026.7;
@@ -69,6 +71,8 @@ function Chart({ width, variant }: { width: number; variant: Variant }) {
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } =
     useTooltip<Dot>();
 
+  const narrow = isNarrow(width);
+  const MARGIN = narrow ? NARROW_MARGIN : WIDE_MARGIN;
   const innerW = width - MARGIN.left - MARGIN.right;
   const innerH = DESIGNERS.length * ROW_H;
   const height = innerH + MARGIN.top + MARGIN.bottom;
@@ -149,11 +153,11 @@ function Chart({ width, variant }: { width: number; variant: Variant }) {
                 <rect x={0} y={i * ROW_H} width={innerW} height={ROW_H}
                   fill={theme.role.muted} opacity={0.06} />
               )}
-              <text x={-10} y={rowY(i) + 4} textAnchor="end" fontSize={11}
+              <text x={-10} y={rowY(i) + 4} textAnchor="end" fontSize={narrow ? 10 : 11}
                 fill="var(--foreground)">
                 {d.name}
                 {!article && (
-                  <tspan fill={theme.role.muted} fontSize={9}>
+                  <tspan fill={theme.role.muted} fontSize={narrow ? 8 : 9}>
                     {"  " + d.badges}
                   </tspan>
                 )}
